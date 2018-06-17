@@ -1,0 +1,2165 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
+
+/* Support functions to render output of link-library shortcode */
+
+function link_library_add_http( $url ) {
+	if ( !preg_match( '~^(?:f|ht)tps?://~i', $url ) ) {
+		$url = 'http://' . $url;
+	}
+	return $url;
+}
+
+function link_library_highlight_phrase( $str, $phrase, $tag_open = '<strong>', $tag_close = '</strong>' ) {
+	if ( empty( $str ) ) {
+		return '';
+	}
+
+	if ( !empty( $phrase ) ) {
+		return preg_replace( '/(' . preg_quote( $phrase, '/') . '(?![^<]*>))/i', $tag_open . "\\1" . $tag_close, $str );
+	}
+
+	return $str;
+}
+
+function link_library_get_category_path( $slug ) {
+
+	$cat_path = '';
+
+	$term = get_term_by( 'slug', $slug, 'link_library_category' );
+
+	if ( !empty( $term ) && $term->parent != 0 ) {
+		$parent_term = get_term_by( 'id', $term->parent, 'link_library_category' );
+		if ( !empty( $parent_term ) ) {
+			$cat_path .= link_library_get_category_path( $parent_term->slug );
+		}
+	}
+
+	$cat_path .= '/' . $slug;
+	return $cat_path;
+}
+
+function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
+	$cat_path = '';
+
+	$term = get_term_by( 'slug', $slug, 'link_library_category' );
+
+	if ( !empty( $term ) ) {
+		$parent_term = get_term_by( 'id', $term->parent, 'link_library_category' );
+		if ( !empty( $parent_term ) ) {
+			$cat_path .= link_library_get_breadcrumb_path( $parent_term->slug, $rewritepage, $level + 1 ) . ' - ';
+		}
+	}
+
+	$new_link = home_url() . '/' . $rewritepage . link_library_get_category_path( $slug );
+	if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
+		$new_link = add_query_arg( 'link_tags', $_GET['link_tags'], $new_link );
+	}
+
+	if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
+		$new_link = add_query_arg( 'link_price', $_GET['link_price'], $new_link );
+	}
+
+	$cat_path .= '<a href="' . $new_link . '">' . $term->name . '</a>';
+
+	if ( $level == 0 ) {
+		$new_top_link = home_url() . '/' . $rewritepage;
+
+		if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
+			$new_top_link = add_query_arg( 'link_tags', $_GET['link_tags'], $new_top_link );
+		}
+		if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
+			$new_top_link = add_query_arg( 'link_price', $_GET['link_price'], $new_top_link );
+		}
+
+		$cat_path = '<a href="' . $new_top_link .  '">Home</a> - ' . $cat_path;
+	}
+
+	return $cat_path;
+}
+
+function link_library_display_pagination( $previouspagenumber, $nextpagenumber, $numberofpages, $pagenumber,
+										  $showonecatonly, $showonecatmode, $AJAXcatid, $settings, $pageID, $currentcatletter ) {
+
+	$dotbelow = false;
+	$dotabove = false;
+	$paginationoutput = '';
+
+	if ( isset( $_GET ) ) {
+		$incomingget = $_GET;
+		unset ( $incomingget['page_id'] );
+		unset ( $incomingget['linkresultpage'] );
+		unset ( $incomingget['cat_id'] );
+		unset ( $incomingget['catletter'] );
+	}
+
+	if ( 1 < $numberofpages ) {
+		$paginationoutput = '<div class="pageselector"><!-- Div Pagination -->';
+
+		if ( 1 != $pagenumber ) {
+			$paginationoutput .= '<span class="previousnextactive">';
+
+			if ( !$showonecatonly ) {
+				if ( 'AJAX' == $showonecatmode ) {
+					$paginationoutput .= "<a href=\"#\" onClick=\"showLinkCat" . $settings . "('', '" . $settings . "', " . $previouspagenumber . ");return false;\" >" . __('Previous', 'link-library') . '</a>';
+				} else {
+					global $page_query;
+					$argumentarray = array( 'linkresultpage' => $previouspagenumber );
+
+					if ( ! empty( $currentcatletter ) ) {
+						$argumentarray['catletter'] = $currentcatletter;
+					}
+
+					$argumentarray = array_merge( $argumentarray, $incomingget );
+					$targetaddress = esc_url( add_query_arg( $argumentarray ) );
+
+					$paginationoutput .= '<a href="' . $targetaddress . '">' . __( 'Previous', 'link-library' ) . '</a>';
+				}
+			} elseif ( $showonecatonly ) {
+				if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
+					$paginationoutput .= "<a href=\"#\" onClick=\"showLinkCat" . $settings . "('" . $AJAXcatid . "', '" . $settings . "', " . $previouspagenumber . ");return false;\" >" . __('Previous', 'link-library') . '</a>';
+				} elseif ( 'HTMLGET' == $showonecatmode || 'HTMLGETSLUG' == $showonecatmode || 'HTMLGETCATNAME' == $showonecatmode || 'HTMLGETPERM' == $showonecatmode ) {
+					if ( 'HTMLGET' == $showonecatmode ) {
+						$argumentarray = array ( 'linkresultpage' => $previouspagenumber, 'cat_id' => $AJAXcatid );
+					} elseif ( 'HTMLGETCATNAME' == $showonecatmode ) {
+						$argumentarray = array ( 'linkresultpage' => $previouspagenumber, 'catname' => $AJAXcatid );
+					} else {
+						$argumentarray = array ( 'linkresultpage' => $previouspagenumber, 'cat' => $AJAXcatid );
+					}
+
+					$argumentarray = array_merge( $argumentarray, $incomingget );
+					$targetaddress = esc_url( add_query_arg( $argumentarray ) );
+
+					$paginationoutput .= '<a href="' . $targetaddress . '" >' . __('Previous', 'link-library') . '</a>';
+				}
+			}
+
+			$paginationoutput .= '</span>';
+		} else {
+			$paginationoutput .= '<span class="previousnextinactive">' . __('Previous', 'link-library') . '</span>';
+		}
+
+		for ( $counter = 1; $counter <= $numberofpages; $counter++ ) {
+			if ( $counter <= 2 || $counter >= $numberofpages - 1 || ( $counter <= $pagenumber + 2 && $counter >= $pagenumber - 2 ) ) {
+				if ( $counter != $pagenumber ) {
+					$paginationoutput .= '<span class="unselectedpage">';
+				} else {
+					$paginationoutput .= '<span class="selectedpage">';
+				}
+
+				if ( !$showonecatonly ) {
+					if ( 'AJAX' == $showonecatmode ) {
+						$paginationoutput .= "<a href=\"#\" onClick=\"showLinkCat" . $settings . "('', '" . $settings . "', " . $counter . ");return false;\" >" . $counter . '</a>';
+					} else {
+						$argumentarray = array( 'linkresultpage' => $counter );
+
+						if ( ! empty( $currentcatletter ) ) {
+							$argumentarray['catletter'] = $currentcatletter;
+						}
+
+						$argumentarray = array_merge( $argumentarray, $incomingget );
+						$targetaddress = esc_url( add_query_arg( $argumentarray ) );
+
+						$paginationoutput .= '<a href="' . $targetaddress . '">' . $counter . '</a>';
+					}
+				} elseif ( $showonecatonly ) {
+					if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
+						$paginationoutput .= "<a href=\"#\" onClick=\"showLinkCat" . $settings . "('" . $AJAXcatid . "', '" . $settings . "', " . $counter . ");return false;\" >" . $counter . '</a>';
+					} elseif ( 'HTMLGET' == $showonecatmode || 'HTMLGETSLUG' == $showonecatmode || 'HTMLGETCATNAME' == $showonecatmode || 'HTMLGETPERM' == $showonecatmode ) {
+						if ( 'HTMLGET' == $showonecatmode ) {
+							$argumentarray = array ( 'linkresultpage' => $counter, 'cat_id' => $AJAXcatid );
+						} elseif ( 'HTMLGETCATNAME' == $showonecatmode ) {
+							$argumentarray = array ( 'linkresultpage' => $counter, 'catname' => $AJAXcatid );
+						} else {
+							$argumentarray = array ( 'linkresultpage' => $counter, 'cat' => $AJAXcatid );
+						}
+
+						$argumentarray = array_merge( $argumentarray, $incomingget );
+						$targetaddress = esc_url( add_query_arg( $argumentarray ) );
+
+						$paginationoutput .= '<a href="' . $targetaddress . '" >' . $counter . '</a>';
+					}
+				}
+
+				$paginationoutput .= '</a></span>';
+			}
+
+			$dotabove = false;
+			$dotbelow = false;
+
+			if ( $counter >= 2 && $counter < $pagenumber - 2 && false == $dotbelow ) {
+				$dotbelow = true;
+				$paginationoutput .= '...';
+			} elseif ( $counter > $pagenumber + 2 && $counter < $numberofpages - 1 && false == $dotabove ) {
+				$dotabove = true;
+				$paginationoutput .= '...';
+			}
+		}
+
+		if ( $pagenumber != $numberofpages ) {
+			$paginationoutput .= '<span class="previousnextactive">';
+
+			if ( !$showonecatonly ) {
+				if ( 'AJAX' == $showonecatmode ) {
+					$paginationoutput .= "<a href=\"#\" onClick=\"showLinkCat" . $settings . "('', '" . $settings . "', " . $nextpagenumber . ");return false;\" >" . __('Next', 'link-library') . '</a>';
+				} else {
+					$argumentarray = array( 'page_id' => $pageID, 'linkresultpage' => $nextpagenumber );
+
+					if ( ! empty( $currentcatletter ) ) {
+						$argumentarray['catletter'] = $currentcatletter;
+					}
+
+					$argumentarray = array_merge( $argumentarray, $incomingget );
+					$targetaddress = esc_url( add_query_arg( $argumentarray ) );
+
+					$paginationoutput .= '<a href="' . $targetaddress . '">' . __( 'Next', 'link-library' ) . '</a>';
+				}
+			} elseif ( $showonecatonly ) {
+				if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
+					$paginationoutput .= "<a href=\"#\" onClick=\"showLinkCat" . $settings . "('" . $AJAXcatid . "', '" . $settings . "', " . $nextpagenumber . ");return false;\" >" . __('Next', 'link-library') . '</a>';
+				} elseif ( 'HTMLGET' == $showonecatmode || 'HTMLGETSLUG' == $showonecatmode || 'HTMLGETCATNAME' == $showonecatmode || 'HTMLGETPERM' == $showonecatmode ) {
+					$argumentarray = array ( 'page_id' => $pageID, 'linkresultpage' => $nextpagenumber );
+					$argumentarray = array_merge( $argumentarray, $incomingget );
+					$targetaddress = esc_url( add_query_arg( $argumentarray ) );
+
+					$paginationoutput .= '<a href="' . $targetaddress . '" >' . __('Next', 'link-library') . '</a>';
+				}
+
+			}
+
+			$paginationoutput .= '</span>';
+		} else {
+			$paginationoutput .= '<span class="previousnextinactive">' . __('Next', 'link-library') . '</span>';
+		}
+
+		$paginationoutput .= '</div><!-- Div Pagination -->';
+	}
+
+	if ( 'AJAX' == $showonecatmode ) {
+		$nonce = wp_create_nonce( 'link_library_ajax_refresh' );
+
+		$paginationoutput .= "<SCRIPT LANGUAGE=\"JavaScript\">\n";
+		$paginationoutput .= "var ajaxobject;\n";
+		$paginationoutput .= "if(typeof showLinkCat" . $settings . " !== 'function'){\n";
+		$paginationoutput .= "window.showLinkCat" . $settings . " = function ( _incomingID, _settingsID, _pagenumber ) {\n";
+		$paginationoutput .= "if (typeof(ajaxobject) != \"undefined\") { ajaxobject.abort(); }\n";
+
+		$paginationoutput .= "\tjQuery('#contentLoading" . $settings . "').toggle();" .
+		                     "jQuery.ajax( {" .
+		                     "    type: 'POST', " .
+		                     "    url: '" . admin_url( 'admin-ajax.php' ) . "', " .
+		                     "    data: { action: 'link_library_ajax_update', " .
+		                     "            _ajax_nonce: '" . $nonce . "', " .
+		                     "            id : _incomingID, " .
+		                     "            settings : _settingsID, " .
+		                     "            ajaxupdate : true, " .
+		                     "            linkresultpage: _pagenumber }, " .
+		                     "    success: function( data ){ " .
+		                     "            jQuery('#linklist" . $settings. "').html( data ); " .
+		                     "            jQuery('#contentLoading" . $settings . "').toggle();\n" .
+		                     "            } } ); ";
+		$paginationoutput .= "}\n";
+		$paginationoutput .= "}\n";
+
+		$paginationoutput .= "</SCRIPT>\n\n";
+	}
+
+	return $paginationoutput;
+}
+
+/**
+ *
+ * Render the output of the link-library shortcode
+ *
+ * @param $LLPluginClass    Link Library main plugin class
+ * @param $generaloptions   General Plugin Settings
+ * @param $libraryoptions   Selected library settings array
+ * @param $settings         Settings ID
+ * @return                  List of categories output for browser
+ */
+
+function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount = 'false', $parent_cat_id = 0, $level = 0, $display_children = true, $hide_children_cat_links = false ) {
+
+	$showonecatonly = '';
+	$showonecatmode = '';
+	$AJAXcatid = '';
+
+	$generaloptions = wp_parse_args( $generaloptions, ll_reset_gen_settings( 'return' ) );
+	extract( $generaloptions );
+
+	$libraryoptions = wp_parse_args( $libraryoptions, ll_reset_options( 1, 'list', 'return' ) );
+	extract( $libraryoptions );
+
+	global $wp_query;
+
+	if ( $level == 0 && ( ( isset( $_GET['cat_name'] ) && !empty( $_GET['cat_name'] ) ) || ( isset( $wp_query->query_vars['cat_name'] ) && !empty( $wp_query->query_vars['cat_name'] ) ) ) ) {
+		if ( !empty( $_GET['cat_name'] ) ) {
+			$category_entry = get_term_by( 'slug', $_GET['cat_name'], 'link_library_category', OBJECT );
+		} elseif ( !empty( $wp_query->query_vars['cat_name'] ) ) {
+			$last_slash_pos = strripos( $wp_query->query_vars['cat_name'], '/' );
+			if ( $last_slash_pos != 0 ) {
+				$cat_string = substr( $wp_query->query_vars['cat_name'], $last_slash_pos );
+			} else {
+				$cat_string = $wp_query->query_vars['cat_name'];
+			}
+
+			$category_entry = get_term_by( 'slug', $cat_string, 'link_library_category', OBJECT );
+		}
+
+		if ( !empty( $category_entry ) ) {
+			$AJAXcatid = $category_entry->term_id;
+			$parent_cat_id = $AJAXcatid;
+		}
+	}
+
+	if ( 0 == $parent_cat_id && $hidechildcatlinks ) {
+		$hide_children_cat_links = $hidechildcatlinks;
+	}
+
+	if ( 0 == $parent_cat_id && $hidechildcattop ) {
+		$display_children = false;
+	}
+
+	/* This case will only happen if the user entered bad data in the admin page or if someone is trying to inject bad data in SQL query */
+	if ( !empty( $categorylist_cpt ) ) {
+		$categorylistarray = explode( ',', $categorylist_cpt );
+
+		if ( true === array_filter( $categorylistarray, 'is_int' ) ) {
+			return 'List of requested categories is invalid. Please go back to Link Library admin panel to correct.';
+		}
+	}
+
+	if ( !empty( $excludecategorylist_cpt ) ) {
+		$excludecategorylistarray = explode( ',', $excludecategorylist_cpt );
+
+		if ( true === array_filter( $excludecategorylistarray, 'is_int' ) ) {
+			return 'List of requested excluded categories is invalid. Please go back to Link Library admin panel to correct.';
+		}
+	}
+
+	$validdirections = array( 'ASC', 'DESC' );
+
+	$linkeditoruser = current_user_can( 'manage_links' );
+
+	if ( $level == 0 ) {
+		$output = "\n<!-- Beginning of Link Library Output -->\n\n";
+	} else {
+		$output = '';
+	}
+
+	$currentcategory = 1;
+	$pagenumber = 1;
+	$currentcatletter = '';
+	$number_of_pages = 1;
+	$categoryname = '';
+	$mode = 'normal';
+
+	$AJAXnocatset = false;
+	if ( $showonecatonly && 'AJAX' == $showonecatmode && isset( $AJAXcatid ) && empty( $AJAXcatid ) ) {
+		$AJAXnocatset = true;
+	}
+
+	$GETnocatset = false;
+	if ( $showonecatonly && ( 'HTMLGET' == $showonecatmode || 'HTMLGETSLUG' == $showonecatmode || 'HTMLGETCATNAME' == $showonecatmode ) ) {
+		if ( 'HTMLGET' == $showonecatmode && ( !isset( $_GET['cat_id'] ) || ( isset( $_GET['cat_id'] ) && empty( $_GET['cat_id'] ) ) ) ) {
+			$GETnocatset = true;
+		} elseif ( 'HTMLGETSLUG' == $showonecatmode && ( !isset( $_GET['cat'] ) || ( isset( $_GET['cat'] ) && empty( $_GET['cat'] ) ) ) ) {
+			$GETnocatset = true;
+		} elseif ( 'HTMLGETCATNAME' == $showonecatmode && ( !isset( $_GET['catname'] ) || ( isset( $_GET['catname'] ) && empty( $_GET['catname'] ) ) ) ) {
+			$GETnocatset = true;
+		}
+
+	}
+
+	if ( $showonecatonly && 'AJAX' == $showonecatmode && isset( $AJAXcatid ) && !empty( $AJAXcatid ) && ( !isset( $_GET['searchll'] ) || empty( $_GET['searchll'] ) ) ) {
+		$categorylist_cpt = $AJAXcatid;
+	} elseif ($showonecatonly && 'HTMLGET' == $showonecatmode && isset( $_GET['cat_id'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+		$categorylist_cpt = intval( $_GET['cat_id'] );
+		$AJAXcatid = $categorylist_cpt;
+	} elseif ($showonecatonly && 'HTMLGETSLUG' == $showonecatmode && isset( $_GET['cat'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+		$categorysluglist = $_GET['cat'];
+	} elseif ($showonecatonly && 'HTMLGETCATNAME' == $showonecatmode && isset( $_GET['catname'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+		$categorynamelist = $_GET['catname'];
+	}elseif ( $showonecatonly && 'HTMLGETPERM' == $showonecatmode && empty( $_GET['searchll'] ) ) {
+		global $wp_query;
+
+		$categoryname = $wp_query->query_vars['cat_name'];
+		$AJAXcatid = $categoryname;
+		$categorysluglist = '';
+		if ( isset( $_GET['cat'] ) ) {
+			$categorysluglist = $_GET['cat'];
+		}
+	} elseif ( $showonecatonly && ( !isset( $AJAXcatid ) || empty( $AJAXcatid ) ) && !empty( $defaultsinglecat_cpt ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+		$categorylist_cpt = $defaultsinglecat_cpt;
+		$AJAXcatid = $categorylist_cpt;
+	} elseif ( $showonecatonly && ( !isset( $AJAXcatid ) || empty( $AJAXcatid ) ) && isset( $_GET['cat_id'] ) && !empty( $_GET['cat_id'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+		$categorylist_cpt = intval( $_GET['cat_id'] );
+		$AJAXcatid = $categorylist_cpt;
+		$defaultsinglecat = $AJAXcatid;
+	} elseif ( $showonecatonly && ( !isset( $AJAXcatid ) || empty( $AJAXcatid ) ) && empty( $defaultsinglecat_cpt ) && empty( $_GET['searchll'] ) ) {
+
+		$show_one_cat_query_args = array( );
+
+		if ( $hide_if_empty ) {
+			$show_one_cat_query_args['hide_empty'] = true;
+		} else {
+			$show_one_cat_query_args['hide_empty'] = false;
+		}
+
+		if ( !$showuserlinks && !$showinvisible && !$showinvisibleadmin ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_only_publish', 10, 3 );
+		} elseif ( $showuserlinks && !$showinvisible && !$showinvisibleadmin ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_publish_pending', 10, 3 );
+		} elseif ( !$showuserlinks && ( $showinvisible || ( $showinvisibleadmin && $linkeditoruser ) ) ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft', 10, 3 );
+		} elseif ( $showuserlinks && ( $showinvisible || ( $showinvisibleadmin && $linkeditoruser ) ) ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending', 10, 3 );
+		}
+
+		if ( !empty( $categorylist_cpt ) ) {
+			$show_one_cat_query_args['include'] = explode( ',', $categorylist_cpt );
+		}
+
+		if ( !empty( $excludecategorylist_cpt ) ) {
+			$show_one_cat_query_args['exclude'] = explode( ',', $excludecategorylist_cpt );
+		}
+
+		if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) ) {
+			$show_one_cat_query_args['slug'] = explode( ',', $categorysluglist );
+		}
+
+		if ( isset( $categoryname ) && !empty( $categoryname ) && 'HTMLGETPERM' == $showonecatmode && empty( $singlelinkid ) ) {
+			$show_one_cat_query_args['slug'] = $categoryname;
+		}
+
+		if ( ( !empty( $categorynamelist ) || isset( $_GET['catname'] ) ) && empty( $singlelinkid ) ) {
+			$show_one_cat_query_args['name'] = explode( ',', urldecode( $categorynamelist ) );
+		}
+
+		if ( 'name' == $order ) {
+			$show_one_cat_query_args['orderby'] = 'name';
+			$show_one_cat_query_args['order'] = in_array( $direction, $validdirections ) ? $direction : 'ASC';
+		} elseif ( 'id' == $order ) {
+			$show_one_cat_query_args['orderby'] = 'id';
+			$show_one_cat_query_args['order'] = in_array( $direction, $validdirections ) ? $direction : 'ASC';
+		}
+
+		$show_one_cat_query_args['taxonomy'] = 'link_library_category';
+
+		$show_one_cat_link_categories = get_terms( $show_one_cat_query_args );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_only_publish' );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_pending' );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft' );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending' );
+
+		//var_dump( $show_one_cat_link_categories );
+
+		$mode = 'normal';
+
+		if ( $debugmode ) {
+			$output .= "\n<!-- AJAX Default Category Query: " . print_r( $show_one_cat_query_args, TRUE ) . "-->\n\n";
+			$output .= "\n<!-- AJAX Default Category Results: " . print_r( $show_one_cat_link_categories, TRUE ) . "-->\n\n";
+		}
+
+		if ( $show_one_cat_link_categories ) {
+			$categorylist_cpt = $show_one_cat_link_categories[0]->term_id;
+			$AJAXcatid = $categorylist_cpt;
+		}
+	}
+
+	$searchterms = '';
+
+	if ( isset($_GET['searchll'] ) && !empty( $_GET['searchll'] ) && empty( $singlelinkid ) ) {
+		$searchstring = $_GET['searchll'];		
+		$searchstringcopy = $searchstring;
+		$searchterms  = array();
+
+		$offset = 0;
+		while ( false !== strpos( $searchstringcopy, '"', $offset ) ) {
+			if ( 0 == $offset ) {
+				$offset = strpos( $searchstringcopy, '"' );
+			} else {
+				$endpos        = strpos( $searchstringcopy, '"', $offset + 1 );
+				$searchterms[] = substr( $searchstringcopy, $offset + 1, $endpos - $offset - 2 );
+				$strlength     = ( $endpos + 1 ) - ( $offset + 1 );
+				$searchstringcopy  = substr_replace( $searchstringcopy, '', $offset - 1, $endpos + 2 - ( $offset ) );
+				$offset        = 0;
+			}
+		}
+
+		if ( ! empty( $searchstringcopy ) ) {
+			$searchterms = array_merge( $searchterms, explode( " ", $searchstringcopy ) );
+		}
+		
+		if ( !empty( $searchstring ) ) {
+			$mode = 'search';
+			$showlinksonclick = false;
+		}
+	}
+
+	$link_count = wp_count_posts( 'link_library_links' );
+
+	if ( isset( $link_count ) && !empty( (array) $link_count ) && ( $link_count->publish > 0 || ( $showinvisible && $link_count->private > 0 ) || ( $showuserlinks && $link_count->pending ) ) ) {
+		$currentcatletter = '';
+
+		if ( $level == 0 && $cat_letter_filter != 'no' ) {
+			require_once plugin_dir_path( __FILE__ ) . 'render-link-library-alpha-filter.php';
+			$result = RenderLinkLibraryAlphaFilter( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $mode );
+
+			$currentcatletter = $result['currentcatletter'];
+
+			if ( 'beforelinks' == $cat_letter_filter || 'beforecatsandlinks' == $cat_letter_filter ) {
+				$output .= $result['output'];
+			}
+		}
+
+		$link_categories_query_args = array( );
+
+		if ( $hide_if_empty ) {
+			$link_categories_query_args['hide_empty'] = true;
+		} else {
+			$link_categories_query_args['hide_empty'] = false;
+		}
+
+		if ( !$showuserlinks && !$showinvisible && !$showinvisibleadmin ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_only_publish', 10, 3 );
+		} elseif ( $showuserlinks && !$showinvisible && !$showinvisibleadmin ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_publish_pending', 10, 3 );
+		} elseif ( !$showuserlinks && ( $showinvisible || ( $showinvisibleadmin && $linkeditoruser ) ) ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft', 10, 3 );
+		} elseif ( $showuserlinks && ( $showinvisible || ( $showinvisibleadmin && $linkeditoruser ) ) ) {
+			add_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending', 10, 3 );
+		}
+
+		if ( ( !empty( $categorylist_cpt ) || isset( $_GET['cat_id'] ) ) && empty( $singlelinkid ) && $level == 0 ) {
+			$link_categories_query_args['include'] = explode( ',', $categorylist_cpt );
+		}
+
+		if ( !empty( $excludecategorylist_cpt ) && empty( $singlelinkid ) ) {
+			$link_categories_query_args['exclude'] = explode( ',', $excludecategorylist_cpt );
+		}
+
+		if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) ) {
+			$link_categories_query_args['slug'] = explode( ',', $categorysluglist );
+		}
+
+		if ( isset( $categoryname ) && !empty( $categoryname ) && 'HTMLGETPERM' == $showonecatmode && empty( $singlelinkid ) ) {
+			$link_categories_query_args['slug'] = $categoryname;
+		}
+
+		if ( ( !empty( $categorynamelist ) || isset( $_GET['catname'] ) ) && empty( $singlelinkid ) ) {
+			$link_categories_query_args['name'] = explode( ',', urldecode( $categorynamelist ) );
+		}
+
+		if ( 'name' == $order ) {
+			$link_categories_query_args['orderby'] = 'name';
+			$link_categories_query_args['order'] = in_array( $direction, $validdirections ) ? $direction : 'ASC';
+		} elseif ( 'id' == $order ) {
+			$link_categories_query_args['orderby'] = 'id';
+			$link_categories_query_args['order'] = in_array( $direction, $validdirections ) ? $direction : 'ASC';
+		}
+
+		if ( isset( $AJAXcatid ) && !empty( $AJAXcatid ) ) {
+			$link_categories_query_args['include'] = $AJAXcatid;
+		} else {
+			$link_categories_query_args['parent'] = $parent_cat_id;
+		}
+
+		$link_categories = get_terms( 'link_library_category', $link_categories_query_args );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter' );
+
+		if ( 'catlist' == $order ) {
+			$temp_link_categories = $link_categories;
+			$link_categories = array();
+			foreach ( $link_categories_query_args['include'] as $sort_link_category_id ) {
+				foreach ( $temp_link_categories as $temp_link_cat ) {
+					if ( $sort_link_category_id == $temp_link_cat->term_id ) {
+						$link_categories[] = $temp_link_cat;
+						continue;
+					}
+				}
+			}
+		}
+
+		if ( !empty( $currentcatletter ) && $cat_letter_filter != 'no' ) {
+			foreach ( $link_categories as $index => $link_category ) {
+				if ( substr( $link_category->name, 0, 1) != $currentcatletter ) {
+					unset( $link_categories[$index] );
+				}
+			}
+		}
+
+		if ( $pagination && 'search' != $mode && !$onlycount) {
+			if ($linksperpage == 0 || empty( $linksperpage ) ) {
+				$linksperpage = 5;
+			}
+
+			$number_of_links = 0;
+			foreach ( $link_categories as $link_category ) {
+				$number_of_links += $link_category->count;
+			}
+
+			if ( $number_of_links > $linksperpage ) {
+				$nextpage = true;
+			} else {
+				$nextpage = false;
+			}
+
+			if ( isset( $number_of_links ) ) {
+				$preroundpages = $number_of_links / $linksperpage;
+				$number_of_pages = ceil( $preroundpages * 1 ) / 1;
+			}
+
+			if ( isset( $_POST['linkresultpage'] ) || isset( $_GET['linkresultpage'] ) ) {
+
+				if ( isset( $_POST['linkresultpage'] ) ) {
+					$pagenumber = $_POST['linkresultpage'];
+				} elseif ( isset( $_GET['linkresultpage'] ) ) {
+					$pagenumber = $_GET['linkresultpage'];
+				}
+				$startingitem = ( $pagenumber - 1 ) * $linksperpage + 1;
+			} else {
+				$pagenumber = 1;
+				$startingitem = 1;
+			}
+		}
+
+		if ( $level == 0 ) {
+			$output .= "<div id='linklist" . $settings . "' class='linklist'><!-- Div Linklist -->\n";
+		}
+
+		if ( $level == 0 && $pagination && $mode != "search" && 'BEFORE' == $paginationposition ) {
+			$previouspagenumber = $pagenumber - 1;
+			$nextpagenumber = $pagenumber + 1;
+
+			$pageID = get_queried_object_id();
+
+			if ( empty( $AJAXcatid ) && !empty( $categorysluglist ) ) {
+				$AJAXcatid = $categorysluglist;
+			}
+			if ( empty( $AJAXcatid ) && !empty( $categorynamelist ) ) {
+				$AJAXcatid = $categorynamelist;
+			}
+
+			$output .= link_library_display_pagination( $previouspagenumber, $nextpagenumber, $number_of_pages, $pagenumber, $showonecatonly, $showonecatmode, $AJAXcatid, $settings, $pageID, $currentcatletter );
+		}
+
+		if ( $level == 0 && 'search' == $mode ) {
+			$output .= '<div class="resulttitle">' . __('Search Results for', 'link-library') . ' "' . esc_html( stripslashes( $_GET['searchll'] ) ) . '"</div><!-- Div search results title -->';
+		}
+
+		if ( $enablerewrite && !empty( $toppagetext ) && $parent_cat_id == 0 ) {
+			$output .= '<div class="toppagetext">' . nl2br( $toppagetext ) . '</div>';
+		}
+
+		$xpath = $LLPluginClass->relativePath( dirname( __FILE__ ), ABSPATH );
+
+		$linkcount = 1;
+
+		if ( !empty( $link_categories ) ) {
+			foreach ( $link_categories as $link_category ) {
+				if ( $enablerewrite && $showbreadcrumbspermalinks && $parent_cat_id != 0 && $level == 0) {
+					$breadcrumb = '<div class="breadcrumb">' . link_library_get_breadcrumb_path( $link_category->slug, $rewritepage ) . '</div>';
+					$output .= $breadcrumb;
+				}
+
+				if ( $pagination && 'search' != $mode ) {
+					if ( $linkcount + $link_category->count - 1 < $startingitem || $linkcount > $startingitem + $linksperpage - 1 ) {
+						$linkcount = $linkcount + $link_category->count;
+						continue;
+					}
+				}
+
+				if ( !empty( $singlelinkid ) && intval( $singlelinkid ) && $linkcount > 1 ) {
+					break;
+				}
+
+				$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
+
+				if ( !$combineresults ) {
+					$link_query_args['tax_query'][] =
+						array(
+							'taxonomy' => 'link_library_category',
+							'field'    => 'term_id',
+							'terms'    => $link_category->term_id,
+							'include_children' => false
+
+						);
+					if ( sizeof( $link_query_args['tax_query'] > 1 ) ) {
+						$link_query_args['tax_query']['relation'] = 'AND';
+					}
+				}
+
+				if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
+					$tag_array = explode( '.', $_GET['link_tags'] );
+
+					// YL: Make this an option
+					if ( !empty( $tag_array ) ) {
+						$showlinksonclick = false;
+					}
+					$link_query_args['tax_query'][] = array(
+						'taxonomy' => 'link_library_tags',
+						'field' => 'slug',
+						'terms' => $tag_array,
+					);
+					if ( sizeof( $link_query_args['tax_query'] > 1 ) ) {
+						$link_query_args['tax_query']['relation'] = 'AND';
+					}
+				}
+
+				if ( !empty( $singlelinkid ) && intval( $singlelinkid ) ) {
+					$link_query_args['p'] = $singlelinkid;
+				}
+
+				$link_query_args['post_status'] = array( 'publish' );
+
+				if ( $showuserlinks ) {
+					$link_query_args['post_status'][] = 'pending';
+				}
+
+				if ( $showinvisible || ( $showinvisibleadmin && $linkeditoruser ) ) {
+					$link_query_args['post_status'][] = 'draft';
+				}
+
+				if ( !empty( $searchstring ) ) {
+					$link_query_args['s'] = $searchstring;
+				}
+
+				if ( isset( $_GET['linkname'] ) && in_array( $_GET['linkname'], array( 'ASC', 'DESC' ) ) ) {
+					$linkorder = 'name';
+					$linkdirection = $_GET['linkname'];
+				} elseif ( isset( $_GET['linkprice'] ) && in_array( $_GET['linkprice'], array( 'ASC', 'DESC' ) ) ) {
+					$linkorder = 'price';
+					$linkdirection = $_GET['linkprice'];
+				}
+
+				if ( 'name' == $linkorder ) {
+					$link_query_args['orderby'] = 'title';
+					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( 'id' == $linkorder ) {
+					$link_query_args['orderby'] = 'ID';
+					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( 'date' == $linkorder ) {
+					$link_query_args['orderby'] = 'meta_value_num';
+					$link_query_args['meta_key'] = 'link_updated';
+					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( 'price' == $linkorder ) {
+					$link_query_args['orderby'] = 'meta_value_num';
+					$link_query_args['meta_key'] = 'link_price';
+					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( 'random' == $linkorder ) {
+					$link_query_args['orderby'] = 'rand';
+				} elseif ( 'hits' == $linkorder ) {
+					$link_query_args['orderby'] = 'meta_value_num';
+					$link_query_args['meta_key'] = 'link_visits';
+					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				}
+
+				if ( $featuredfirst && 'random' != $linkorder && 'price' != $linkorder ) {
+					if ( $link_query_args['orderby'] == 'title' ) {
+						$link_query_args['orderby'] = 'meta_value title';
+					} elseif ( $link_query_args['orderby'] == 'id' ) {
+						$link_query_args['orderby'] = 'meta_value ID';
+					} elseif ( $link_query_args['orderby'] == 'date' ) {
+						$link_query_args['orderby'] = 'link_featured link_updated';
+					}
+
+					$link_query_args['meta_key'] = 'link_featured';
+				}
+
+				if ( $current_user_links ) {
+					$user_data = wp_get_current_user();
+					$name_field_value = $user_data->display_name;
+
+					$link_query_args['meta_query'][] =
+						array(
+							'key'     => 'link_submitter',
+							'value'   => $name_field_value,
+							'compare' => '=',
+						);
+					if ( sizeof( $link_query_args['meta_query'] > 1 ) ) {
+						$link_query_args['meta_query']['relation'] = 'AND';
+					}
+				}
+
+				if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
+					$link_query_args['meta_query'][] =
+						array(
+							'key'     => 'link_price',
+							'value'   => floatval( 0.0 ),
+							'compare' => '=',
+						);
+					if ( count( $link_query_args['meta_query'] > 1 ) ) {
+						$link_query_args['meta_query']['relation'] = 'AND';
+					}
+				}
+
+				if ( true == $debugmode ) {
+					$linkquerystarttime = microtime ( true );
+				}
+
+				$the_link_query = new WP_Query( $link_query_args );
+
+				if ( $debugmode ) {
+					$output .= "\n<!-- Link Query: " . print_r( $link_query_args, TRUE ) . "-->\n\n";
+					$output .= "\n<!-- Link Results: " . print_r( $the_link_query, TRUE ) . "-->\n\n";
+					$output .= "\n<!-- Link Query Execution Time: " . ( microtime( true ) - $linkquerystarttime ) . "-->\n\n";
+				}
+
+				if ( $debugmode ) {
+					echo '<!-- showonecatmode: ' . $showonecatonly . ', AJAXnocatset: ' . $AJAXnocatset . ', nocatonstartup: ' . $nocatonstartup . '-->';
+				}
+
+				$childcategories = get_terms( array( 'taxonomy' => 'link_library_category', 'child_of' => $link_category->term_id ) );
+
+				$cat_has_children = false;
+				if ( !is_wp_error( $childcategories ) && !empty( $childcategories ) ) {
+					$cat_has_children = true;
+				}
+
+				// Display links
+				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && !isset( $_GET['searchll'] ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $_GET['searchll'] ) ) ) {
+					$output .= "<div id='linklist" . $settings . "' class='linklist'>\n";
+					$output .= '</div><!-- Div empty list -->';
+				} elseif ( $the_link_query->found_posts && $onlycount ) {
+					return $the_link_query->found_posts;
+				} elseif ( ( $the_link_query->found_posts || !$hide_if_empty || $cat_has_children ) && !$onlycount ) {
+					if ( $the_link_query->have_posts() || !$hide_if_empty || $cat_has_children ) {
+						if ( ! $combineresults ) {
+							$currentcategoryid = $link_category->term_id;
+							$output .= '<div class="LinkLibraryCat LinkLibraryCat' . $currentcategoryid . ( $level == 0 ? '' : ' childlevel'). ' level' . $level .'"><!-- Div Category -->';
+
+							$catlink = '';
+							$cattext = '';
+							$catenddiv = '';
+
+							if ( 1 == $catlistwrappers && !empty( $beforecastlist1 ) ) {
+								$output .= '<div class="' . $beforecatlist1 . '">';
+							} else if ( $catlistwrappers == 2 && !empty( $beforecatlist2 ) && !empty( $beforecatlist1 ) ) {
+								$remainder = $currentcategory % $catlistwrappers;
+								switch ( $remainder ) {
+
+									case 0:
+										$output .= '<div class="' . $beforecatlist2 . '">';
+										break;
+
+									case 1:
+										$output .= '<div class="' . $beforecatlist1 . '">';
+										break;
+								}
+							} else if ( 3 == $catlistwrappers && !empty( $beforecatlist3 ) && !empty( $beforecatlist2 ) && !empty( $beforecatlist1 )) {
+								$remainder = $currentcategory % $catlistwrappers;
+								switch ( $remainder ) {
+
+									case 0:
+										$output .= '<div class="' . $beforecatlist3 . '">';
+										break;
+
+									case 2:
+										$output .= '<div class="' . $beforecatlist2 . '">';
+										break;
+
+									case 1:
+										$output .= '<div class="' . $beforecatlist1 . '">';
+										break;
+								}
+							}
+
+							// Display the category name
+							if ( !$hidecategorynames || empty( $hidecategorynames ) ) {
+								$caturl = get_term_meta( $link_category->term_id, 'linkcaturl', true );
+
+								if ( $catanchor ) {
+									$cattext = '<div id="' . $link_category->slug . '"><!-- Div Category Name -->';
+								} else {
+									$cattext = '';
+								}
+
+								if ( !$divorheader ) {
+									if ( 'search' == $mode ) {
+										foreach ( $searchterms as $searchterm ) {
+											$link_category->name = link_library_highlight_phrase( $link_category->name, $searchterm, '<span class="highlight_word">', '</span>' );
+										}
+									}
+
+									$catlink = '<div class="' . $catnameoutput . '"><!-- Div Cat Name -->';
+
+									if ( 'right' == $catdescpos || empty( $catdescpos ) ) {
+										if ( !empty( $caturl ) ) {
+											$catlink .= '<a href="' . link_library_add_http( $caturl ) . '" ';
+
+											if ( !empty( $linktarget ) )
+												$catlink .= ' target="' . $linktarget . '"';
+
+											$catlink .= '>';
+										} elseif ( $catlinkspermalinksmode ) {
+											var_dump( 'Generating cat link' );
+										}
+										$catlink .= $link_category->name;
+										if ( !empty( $caturl ) ) {
+											$catlink .= '</a>';
+										}
+									}
+
+									if ( $showcategorydesclinks ) {
+										$catlink .= '<span class="linklistcatnamedesc">';
+										$linkitem['description'] = str_replace( '[', '<', $link_category->description );
+										$linkitem['description'] = str_replace( ']', '>', $linkitem['description'] );
+										$catlink .= $linkitem['description'];
+										$catlink .= '</span>';
+									}
+
+									if ( 'left' == $catdescpos ) {
+										if ( !empty( $caturl ) ) {
+											$catlink .= '<a href="' . link_library_add_http( $caturl ) . '" ';
+
+											if ( !empty( $linktarget ) )
+												$catlink .= ' target="' . $linktarget . '"';
+
+											$catlink .= '>';
+										}
+										$catlink .= $link_category->name;
+										if ( !empty( $caturl ) ) {
+											$catlink .= '</a>';
+										}
+									}
+
+									if ( $showlinksonclick && $the_link_query->found_posts > 0 ) {
+										$catlink .= '<span class="expandlinks" id="LinksInCat' . $link_category->term_id . '">';
+										$catlink .= '<img class="arrow-down" src="';
+
+										if ( !empty( $expandiconpath ) ) {
+											$catlink .= $expandiconpath;
+										} else {
+											$catlink .= plugins_url( 'icons/expand-32.png', __FILE__ );
+										}
+
+										$catlink .= '" />';
+										$catlink .= '<img class="arrow-up" src="';
+
+										if ( !empty( $expandiconpath ) ) {
+											$catlink .= $expandiconpath;
+										} else {
+											$catlink .= plugins_url( 'icons/collapse-32.png', __FILE__ );
+										}
+
+										$catlink .= '" />';
+										$catlink .= '</span>';
+									}
+
+									$catlink .= '</div><!-- DivOrHeader -->';
+								} else if ( $divorheader ) {
+									if ( 'search' == $mode ) {
+										foreach ( $searchterms as $searchterm ) {
+											$link_category->name = link_library_highlight_phrase( $link_category->name, $searchterm, '<span class="highlight_word">', '</span>' );
+										}
+									}
+
+									$catlink = '<'. $catnameoutput . '>';
+
+									if ( 'right' == $catdescpos || 'aftercatname' == $catdescpos || 'aftertoplevelcatname' == $catdescpos || empty( $catdescpos ) ) {
+										if ( !empty( $caturl ) ) {
+											$catlink .= '<a href="' . link_library_add_http( $caturl ). '" ';
+
+											if ( !empty( $linktarget ) )
+												$catlink .= ' target="' . $linktarget . '"';
+
+											$catlink .= '>';
+										} elseif ( $catlinkspermalinksmode && !empty( $rewritepage ) ) {
+											$cat_path = link_library_get_category_path( $link_category->slug );
+
+											if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
+												$cat_path = add_query_arg( 'link_tags', $_GET['link_tags'], $cat_path );
+											}
+
+											if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
+												$cat_path = add_query_arg( 'link_price', $_GET['link_price'], $cat_path );
+											}
+
+											$catlink .= '<a href="' . site_url() . '/' . $rewritepage . $cat_path . '">';
+										}
+										$catlink .= $link_category->name;
+										if ( !empty( $caturl ) || ( $catlinkspermalinksmode && !empty( $rewritepage ) ) ) {
+											$catlink .= '</a>';
+										}
+									}
+
+									if ( $showcategorydesclinks && ( 'left' == $catdescpos || 'right' == $catdescpos ) ) {
+										$catlink .= '<span class="linklistcatnamedesc">';
+										$linkitem['description'] = str_replace( '[', '<', $link_category->description );
+										$linkitem['description'] = str_replace(']', '>', $linkitem['description'] );
+										$catlink .= $linkitem['description'];
+										$catlink .= '</span>';
+									}
+
+									if ( 'left' == $catdescpos ) {
+										if ( !empty( $caturl ) ) {
+											$catlink .= '<a href="' . link_library_add_http( $caturl ) . '" ';
+
+											if ( !empty( $linktarget ) )
+												$catlink .= ' target="' . $linktarget . '"';
+
+											$catlink .= '>';
+										}
+										$catlink .= $link_category->name;
+										if ( !empty( $caturl ) ) {
+											$catlink .= '</a>';
+										}
+									}
+
+									if ( $showlinksonclick && $the_link_query->found_posts > 0 ) {
+										$catlink .= '<span class="expandlinks" id="LinksInCat' . $link_category->term_id . '">';
+										$catlink .= '<img class="arrow-down" src="';
+
+										if ( !empty( $expandiconpath ) ) {
+											$catlink .= $expandiconpath;
+										} else {
+											$catlink .= plugins_url( 'icons/expand-32.png', __FILE__ );
+										}
+
+										$catlink .= '" />';
+
+										$catlink .= '<img class="arrow-up" src="';
+
+										if ( !empty( $expandiconpath ) ) {
+											$catlink .= $expandiconpath;
+										} else {
+											$catlink .= plugins_url( 'icons/collapse-32.png', __FILE__ );
+										}
+
+										$catlink .= '" />';
+										$catlink .= '</span>';
+									}
+
+									$catlink .= '</' . $catnameoutput . '>';
+								}
+
+								if ($catanchor) {
+									$catenddiv = '</div><!-- Div Category Name -->';
+								} else {
+									$catenddiv = '';
+								}
+							}
+
+							$output .= $cattext . $catlink . $catenddiv;
+
+							// YL: Add option to control this
+							//		if ( 0 != $parent_cat_id ) {
+							if ( $showcategorydesclinks && ( 'aftercatname' == $catdescpos || ( 'aftertoplevelcatname' == $catdescpos && $level == 0 ) ) ) {
+								$output .= '<div class="parentcatdesc">' . nl2br( $link_category->description ) . '</div>';
+							}
+							//	}
+
+							if ( $showlinksonclick ) {
+								$output .= '<div class="LinksInCat' . $currentcategoryid . ' LinksInCat"><!-- Div show links on click -->';
+							}
+						}
+
+						if ( !empty( $beforefirstlink ) && $the_link_query->found_posts > 0 ) {
+							$output .= stripslashes( $beforefirstlink );
+						}
+
+						if ( ( ( is_bool( $displayastable ) && $displayastable ) || 'true' == $displayastable ) && ( ! $combineresults || ( $combineresults && $linkcount == 0 ) ) ) {
+							$catstartlist = "\n\t<table class='linklisttable'>\n";
+							if ( $showcolumnheaders ) {
+								if ( !empty( $columnheaderoverride ) && !$allowcolumnsorting ) {
+									$catstartlist .= '<div class="linklisttableheaders"><tr>';
+
+									$columnheaderarray = explode( ',', $columnheaderoverride );
+									foreach( $columnheaderarray as $columnheader ) {
+										if ( !empty( $columnheader ) ) {
+											$catstartlist .= '<th><div class="linklistcolumnheader">' . $columnheader . '</div></th>';
+										}
+									}
+
+									$catstartlist .= "</tr></div>\n";
+								} elseif ( $allowcolumnsorting ) {
+									$sorting_labels = array( 2 => 'linkname', 16 => 'linkprice' );
+									$settings_sort_label = array( 2 => 'name' );
+									$activation_variables = array( 1 => 'show_images', 2 => 'showname', 3 => 'showdate', 4 => 'showdescription',
+									                               5 => 'shownotes', 6 => 'show_rss', 7 => 'displayweblink', 8 => 'showtelephone',
+									                               9 => 'showemail', 10 => 'showlinkhits', 11 => 'showrating', 12 => 'showlargedescription',
+									                               13 => 'showsubmittername', 14 => 'showcatdesc', 15 => 'showlinktags', 16 => 'showlinkprice' );
+
+									$default_labels = array( 1 => __( 'Image', 'link-library' ), 2 => __( 'Name', 'link-library' ),
+									                         3 => __( 'Date', 'link-library' ), 4 => __( 'Description', 'link-library'),
+									                         5 => __( 'Notes', 'link-library'), 6 => __( 'RSS', 'link-library' ),
+									                         7 => __( 'Web Link', 'link-library' ), 8 => __( 'Telephone', 'link-library'),
+									                         9 => __( 'E-mail', 'link-library' ), 10 => __( 'Hits', 'link-library' ),
+									                         11 => __( 'Rating', 'link-library' ), 12 => __( 'Large Description', 'link-library' ),
+									                         13 => __( 'Submitter Name', 'link-library' ), 14 => __( 'Category Description', 'link-library' ),
+									                         15 => __( 'Tags', 'link-library' ), 16 => __( 'Price', 'link-library') );
+
+									if ( empty( $dragndroporder ) ) {
+										$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16';
+									}
+
+									$dragndroparray = explode( ',', $dragndroporder );
+
+									$new_entries = array( '13', '14', '15', '16' );
+
+									foreach ( $new_entries as $new_entry ) {
+										if ( !in_array( $new_entry, $dragndroparray ) ) {
+											$dragndroparray[] = $new_entry;
+										}
+									}
+
+									$catstartlist .= '<div class="linklisttableheaders"><tr>';
+									$columnheaderarray = explode( ',', $columnheaderoverride );
+
+									$actual_column = 0;
+
+									foreach ( $dragndroparray as $index => $display_item ) {
+										$can_sort = false;
+										$sort_label = '';
+										$column_label = '';
+										$show_column_header = false;
+
+										if ( isset( $columnheaderarray[$actual_column] ) ) {
+											$column_label = $columnheaderarray[$actual_column];
+										}
+
+										if ( isset( $sorting_labels[$display_item] ) ) {
+											$can_sort = true;
+											$sort_label = $sorting_labels[$display_item];
+										}
+
+										if ( isset( $activation_variables[$display_item] ) && $$activation_variables[$display_item] ) {
+											if ( !in_array( $display_item, array( 7, 8, 9 ) ) || ( in_array( $display_item, array( 7, 8, 9 ) ) && $$activation_variables[$display_item] != 'false' ) ) {
+												if ( empty( $column_label ) ) {
+													$column_label = $default_labels[$display_item];
+												}
+
+												$show_column_header = true;
+												$actual_column++;
+											}
+										}
+
+										if ( $show_column_header ) {
+											$catstartlist .= '<th><div class="linklistcolumnheader">';
+											if ( $can_sort ) {
+												$sort_direction = 'ASC';
+												if ( ( isset( $_GET[$sorting_labels[$display_item]] ) && 'ASC' == $_GET[$sorting_labels[$display_item]] ) ||
+												     ( isset( $settings_sort_label[$display_item] ) && $linkorder = $settings_sort_label[$display_item] && $linkdirection == 'ASC' ) ) {
+													$sort_direction = 'DESC';
+												}
+												$sort_url = add_query_arg( $sorting_labels[$display_item], $sort_direction, '' );
+												if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
+													$sort_url = add_query_arg( 'link_tags', $_GET['link_tags'], $sort_url );
+												}
+
+												if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
+													$sort_url = add_query_arg( 'link_price', $_GET['link_price'], $sort_url );
+												}
+
+												$catstartlist .= '<a href="' . $sort_url . '">';
+											}
+
+											$catstartlist .= $column_label;
+											if ( $can_sort ) {
+												$catstartlist .= '</a>';
+											}
+											$catstartlist .= '</div></th>';
+										}
+									}
+
+									$catstartlist .= "</tr></div>\n";
+								}
+							} else {
+								$catstartlist .= '';
+							}
+						} elseif ( ! $combineresults || ( $combineresults && $linkcount == 0 ) ) {
+							$catstartlist = "\n\t<ul>\n";
+						} else {
+							$catstartlist = '';
+						}
+
+						if ( 0 == $the_link_query->found_posts && !$cat_has_children && !$hide_children_cat_links ) {
+							$output .= __('No links found', 'link-library');
+						} elseif ( !$hide_children_cat_links ) {
+							if ( $the_link_query->found_posts > 0 ) {
+								$output .= $catstartlist;
+							}
+
+							while ( $the_link_query->have_posts() ) {
+								$the_link_query->the_post();
+
+								if ( $pagination && 'search' != $mode ) {
+									if ( $linkcount > $pagenumber * $linksperpage || $linkcount < $startingitem ) {
+										$linkcount++;
+										continue;
+									}
+								}
+
+								$linkitem['term_id'] = $link_category->term_id;
+								$linkitem['link_name'] = get_the_title();
+								$linkitem['link_permalink'] = get_the_permalink( get_the_ID() );
+								$link_meta = get_metadata( 'post', get_the_ID() );
+
+								if ( isset( $link_meta['link_url'] ) ) {
+									$linkitem['link_url'] = esc_html ( $link_meta['link_url'][0] );
+								} else {
+									$linkitem['link_url'] = '';
+								}
+
+								$linkitem['proper_link_id'] = get_the_ID();
+
+								if ( isset( $link_meta['link_description'] ) ) {
+									$linkitem['link_description'] = esc_html( $link_meta['link_description'][0] );
+								} else {
+									$linkitem['link_description'] = '';
+								}
+
+								if ( isset( $link_meta['link_notes'] ) ) {
+									$linkitem['link_notes'] = esc_html( $link_meta['link_notes'][0] );
+								} else {
+									$linkitem['link_notes'] = '';
+								}
+
+								if ( isset( $link_meta['link_second_url'] ) ) {
+									$linkitem['link_second_url'] = esc_url( $link_meta['link_second_url'][0] );
+								} else {
+									$linkitem['link_second_url'] = '';
+								}
+
+								if ( isset( $link_meta['link_no_follow'] ) ) {
+									$linkitem['link_no_follow'] = esc_html( $link_meta['link_no_follow'][0] );
+								} else {
+									$linkitem['link_no_follow'] = '';
+								}
+
+								if ( isset( $link_meta['link_textfield'] ) ) {
+									$linkitem['link_textfield'] = esc_html( $link_meta['link_textfield'][0] );
+								} else {
+									$linkitem['link_textfield'] = '';
+								}
+
+								if ( isset( $link_meta['link_target'] ) ) {
+									$linkitem['link_target'] = esc_html( $link_meta['link_target'][0] );
+								} else {
+									$linkitem['link_target'] = '';
+								}
+
+								if ( isset( $link_meta['link_image'] ) ) {
+									$linkitem['link_image'] = esc_url( $link_meta['link_image'][0] );
+								} else {
+									$linkitem['link_image'] = '';
+								}
+
+								if ( isset( $link_meta['link_featured'] ) ) {
+									$linkitem['link_featured'] = esc_html( $link_meta['link_featured'][0] );
+								} else {
+									$linkitem['link_featured'] = '';
+								}
+
+								if ( isset( $link_meta['link_rss'] ) ) {
+									$linkitem['link_rss'] = esc_url( $link_meta['link_rss'][0] );
+								} else {
+									$linkitem['link_rss'] = '';
+								}
+
+								if ( isset( $link_meta['link_telephone'] ) ) {
+									$linkitem['link_telephone'] = esc_html( $link_meta['link_telephone'][0] );
+								} else {
+									$linkitem['link_telephone'] = '';
+								}
+
+								if ( isset( $link_meta['link_email'] ) ) {
+									$linkitem['link_email'] = esc_html( $link_meta['link_email'][0] );
+								} else {
+									$linkitem['link_email'] = '';
+								}
+
+								if ( isset( $link_meta['link_reciprocal'] ) ) {
+									$linkitem['link_reciprocal'] = esc_url( $link_meta['link_reciprocal'][0] );
+								} else {
+									$linkitem['link_reciprocal'] = '';
+								}
+
+								if ( isset( $link_meta['link_rel'] ) ) {
+									$linkitem['link_rel'] = esc_html( $link_meta['link_rel'][0] );
+								} else {
+									$linkitem['link_rel'] = '';
+								}
+
+								if ( isset( $link_meta['link_submitter'][0] ) ) {
+									$linkitem['link_submitter'] = esc_html( $link_meta['link_submitter'][0] );
+								} else {
+									$linkitem['link_submitter'] = '';
+								}
+
+								if ( isset( $link_meta['link_submitter_name'][0] ) ) {
+									$linkitem['link_submitter_name'] = esc_html( $link_meta['link_submitter_name'][0] );
+								} else {
+									$linkitem['link_submitter_name'] = '';
+								}
+
+								if ( isset( $link_meta['link_submitter_email'][0] ) ) {
+									$linkitem['link_submitter_email'] = esc_html( $link_meta['link_submitter_email'][0] );
+								} else {
+									$linkitem['link_submitter_email'] = '';
+								}
+
+								$linkitem['link_price'] = floatval( get_post_meta( get_the_ID(), 'link_price', true ) );
+
+								if ( isset( $link_meta['link_visits'][0] ) ) {
+									$linkitem['link_visits'] = esc_html( $link_meta['link_visits'][0] );
+								} else {
+									$linkitem['link_visits'] = '';
+								}
+
+								if ( isset( $link_meta['link_rating'][0] ) ) {
+									$linkitem['link_rating'] = esc_html( $link_meta['link_rating'][0] );
+								} else {
+									$linkitem['link_rating'] = '';
+								}
+
+								$updated_time = new DateTime;
+								$updated_time->setTimestamp( $link_meta['link_updated'][0] );
+								$current_time = new DateTime();
+								$date_diff = $current_time->diff( $updated_time, true);
+
+								if ( $date_diff->days <= 7 ) {
+									$linkitem['recently_updated'] = true;
+								} else {
+									$linkitem['recently_updated'] = false;
+								}
+
+								$linkitem['link_updated'] = $link_meta['link_updated'][0];
+
+								if ( true == $debugmode ) {
+									$linkstarttime = microtime ( true );
+								}
+
+								$between = "\n";
+
+								if ( $rssfeedinline ) {
+									include_once( ABSPATH . WPINC . '/feed.php' );
+
+									if ( true == $debugmode ) {
+										$starttimerssfeed = microtime ( true );
+									}
+
+									$rss = fetch_feed( $linkitem['link_rss'] );
+									if ( !is_wp_error( $rss ) ) {
+										$maxitems = $rss->get_item_quantity( $rssfeedinlinecount );
+
+										$rss_items = $rss->get_items( 0, $maxitems );
+
+										if ( $rss_items && !empty( $rssfeedinlinedayspublished ) && $rssfeedinlinedayspublished != 0 ) {
+											foreach ( $rss_items as $index => $item ) {
+												$diff_published = current_time( 'timestamp' ) - strtotime( $item->get_date( 'j F o' ) );
+												if ( $diff_published > 60 * 60 * 24 * intval( $rssfeedinlinedayspublished ) ) {
+													unset( $rss_items[$index] );
+												}
+											}
+
+											if ( empty( $rss_items ) && $rssfeedinlineskipempty ) {
+												continue;
+											}
+										}
+									}
+
+									if ( true == $debugmode ) {
+										$output .= "\n<!-- Time to render RSS Feed section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerssfeed ) . " --> \n";
+									}
+								}
+
+								if ( $linkaddfrequency > 0 ) {
+									if ( ( $linkcount - 1 ) % $linkaddfrequency == 0 ) {
+										$output .= stripslashes( $addbeforelink );
+									}
+								}
+
+								if ( !isset( $linkitem['recently_updated'] ) ) {
+									$linkitem['recently_updated'] = false;
+								}
+
+								$output .= stripslashes( $beforeitem );
+
+								if ( $showupdated && $linkitem['recently_updated'] && 'before' == $showupdatedpos ) {
+									$output .= '<span class="recently_updated">' . $updatedlabel . '</span>';
+								}
+
+								$the_link = '#';
+								if ( !empty( $linkitem['link_url'] ) ) {
+									$the_link = esc_html( $linkitem['link_url'] );
+								}
+
+								if ( !empty( $extraquerystring ) ) {
+									parse_str( $extraquerystring, $expanded_query_string );
+									if ( !empty( $expanded_query_string ) ) {
+										$the_link = add_query_arg( $expanded_query_string, $the_link );
+									}
+								}
+
+								$cat_extra_query_string = get_metadata( 'linkcategory', $linkitem['term_id'], 'linkextraquerystring', true );
+								if ( !empty( $cat_extra_query_string ) ) {
+									parse_str( $cat_extra_query_string, $cat_expanded_query_string );
+									if ( !empty( $cat_expanded_query_string ) ) {
+										$the_link = add_query_arg( $cat_expanded_query_string, $the_link );
+									}
+								}
+
+								$the_second_link = '#';
+								if ( !empty( $linkitem['link_second_url'] ) ) {
+									$the_second_link = esc_html( stripslashes( $linkitem['link_second_url'] ) );
+								}
+
+								$the_permalink = '#';
+								if ( !empty( $linkitem['link_permalink'] ) ) {
+									$the_permalink = $linkitem['link_permalink'];
+								}
+
+								if ( empty( $linkitem['link_rel'] ) && ( $nofollow || $linkitem['link_no_follow'] ) ) {
+									$linkitem['link_rel'] = ' rel="nofollow ' . $linkitem['link_rel'] . '"';
+								} else {
+									$linkitem['link_rel'] = ' rel="' . $linkitem['link_rel'] . '"';
+								}
+
+								if ( $use_html_tags ) {
+									$descnotes = $linkitem['link_notes'];
+									$descnotes = str_replace( '[', '<', $descnotes );
+									$descnotes = str_replace( ']', '>', $descnotes );
+									$desc = $linkitem['link_description'];
+									$desc = str_replace("[", "<", $desc);
+									$desc = str_replace("]", ">", $desc);
+									$textfield = stripslashes( $linkitem['link_textfield'] );
+									$textfield = str_replace( '[', '<', $textfield );
+									$textfield = str_replace( ']', '>', $textfield );
+								} else {
+									$descnotes = esc_html( $linkitem['link_notes'], ENT_QUOTES );
+									$desc = esc_html($linkitem['link_description'], ENT_QUOTES);
+									$textfield = stripslashes( $linkitem['link_textfield'] );
+								}
+
+								$cleandesc = $desc;
+								$cleanname = esc_html( $linkitem['link_name'], ENT_QUOTES );
+
+								if ( 'search' == $mode ) {
+									foreach ( $searchterms as $searchterm ) {
+										$descnotes = link_library_highlight_phrase( $descnotes, $searchterm, '<span class="highlight_word">', '</span>' );
+										$desc = link_library_highlight_phrase( $desc, $searchterm, '<span class="highlight_word">', '</span>' );
+										$name = link_library_highlight_phrase( $linkitem['link_name'], $searchterm, '<span class="highlight_word">', '</span>' );
+										$textfield = link_library_highlight_phrase( $textfield, $searchterm, '<span class="highlight_word">', '</span>' );
+									}
+								} else {
+									$name = $cleanname;
+								}
+
+								if ( 'linkname' == $linktitlecontent ) {
+									$title = $cleanname;
+								} elseif ( 'linkdesc' == $linktitlecontent ) {
+									$title = $cleandesc;
+								}
+
+								if ( $showupdated ) {
+									$date_format_string = get_option( 'date_format' );
+									$cleandate = date_i18n( $date_format_string, intval( $linkitem['link_updated'] ) );
+									if ( substr( $cleandate, 0, 2 ) != '00' ) {
+										$title .= ' ('.__('Last updated', 'link-library') . '  ' . date_i18n(get_option('links_updated_date_format'), intval( $linkitem['link_updated'] ) ) .')';
+									}
+								}
+
+								if ( !empty( $title ) ) {
+									$title = ' title="' . $title . '"';
+								}
+
+								$alt = ' alt="' . $cleanname . '"';
+
+								$target = $linkitem['link_target'];
+								if ( !empty( $target ) ) {
+									$target = ' target="' . $target . '"';
+								} else {
+									$target = $linktarget;
+									if ( !empty( $target ) ) {
+										$target = ' target="' . $target . '"';
+									}
+								}
+
+								if ( empty( $dragndroporder ) ) {
+									$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16';
+								}
+
+								$dragndroparray = explode( ',', $dragndroporder );
+
+								$new_entries = array( '13', '14', '15', '16' );
+
+								foreach ( $new_entries as $new_entry ) {
+									if ( !in_array( $new_entry, $dragndroparray ) ) {
+										$dragndroparray[] = $new_entry;
+									}
+								}
+
+								if ( $dragndroparray ) {
+									foreach ( $dragndroparray as $arrayelements ) {
+										switch ( $arrayelements ) {
+
+											case 1: 	//------------------ Image Output --------------------
+												$imageoutput = '';
+
+												if ( ( $show_images && !$shownameifnoimage && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_image'] ) ) ) ) || ( $show_images && $shownameifnoimage && !empty( $linkitem['link_image'] ) && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_image'] ) ) ) || $usethumbshotsforimages ) ) {
+													$imageoutput .= stripslashes( $beforeimage );
+
+													if ( !empty( $linkitem['link_image'] ) || $usethumbshotsforimages ) {
+														if ( true == $debugmode ) {
+															$starttimeimage = microtime ( true );
+														}
+
+														$imageoutput .= '<a href="';
+
+														if ( !$enable_link_popup ) {
+															if ( 'primary' == $sourceimage || empty( $sourceimage ) ) {
+																$imageoutput .= $the_link;
+															} elseif ( 'secondary' == $sourceimage ) {
+																$imageoutput .= $the_second_link;
+															}
+														} else {
+															$imageoutput .= admin_url( 'admin-ajax.php' . '?action=link_library_popup_content&linkid=' . $linkitem['proper_link_id'] . '&settings=' . $settings . '&height=' . ( empty( $popup_height ) ? 300 : $popup_height ) . '&width=' . ( empty( $popup_width ) ? 400 : $popup_width ) . '&xpath=' . $xpath );
+														}
+
+														$imageoutput .= '" id="link-' . $linkitem['proper_link_id'] . '" class="' . ( $enable_link_popup ? 'thickbox' : 'track_this_link' ) . ' ' . ( $linkitem['link_featured'] ? 'featured' : '' ). '" ' . $linkitem['link_rel'] . $title . $target. '>';
+
+														if ( $usethumbshotsforimages && ( !$uselocalimagesoverthumbshots || empty( $uselocalimagesoverthumbshots ) || ( $uselocalimagesoverthumbshots && empty( $linkitem['link_image'] ) ) ) ) {
+															if ( $thumbnailgenerator == 'robothumb' ) {
+																$imageoutput .= '<img src="http://www.robothumb.com/src/?url=' . $the_link . '&size=' . $generaloptions['thumbnailsize'] . '"';
+															} elseif ( $thumbnailgenerator == 'thumbshots' ) {
+																if ( !empty( $thumbshotscid ) ) {
+																	$imageoutput .= '<img src="http://images.thumbshots.com/image.aspx?cid=' . rawurlencode( $thumbshotscid ) . '&v=1&w=120&url=' . $the_link . '"';
+																}
+															}
+														} else if ( !$usethumbshotsforimages || ( $usethumbshotsforimages && $uselocalimagesoverthumbshots && !empty( $linkitem['link_image'] ) ) ) {
+															if ( strpos( $linkitem['link_image'], 'http' ) !== false ) {
+																$imageoutput .= '<img src="' . $linkitem['link_image'] . '"';
+															} else {
+																// If it's a relative path
+																$imageoutput .= '<img src="' . get_option( 'siteurl' ) . $linkitem['link_image'] . '"';
+															}
+														}
+
+														if ( !$usethumbshotsforimages || ($usethumbshotsforimages && !empty( $thumbshotscid ) ) || ( $usethumbshotsforimages && $uselocalimagesoverthumbshots && !empty( $linkitem['link_image'] ) ) ) {
+
+															$imageoutput .= $alt . $title;
+
+															if ( !empty( $imageclass ) ) {
+																$imageoutput .= ' class="' . $imageclass . '" ';
+															}
+
+															$imageoutput .= '/>';
+
+															$imageoutput .= '</a>';
+														}
+
+														if ( true == $debugmode ) {
+															$output .= '<!-- Time to render image section of link id ' . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimeimage ) . " --> \n";
+														}
+
+													}
+
+													$imageoutput .= stripslashes( $afterimage );
+
+													if ( ( !empty( $imageoutput ) || ( $usethumbshotsforimages && !empty( $thumbshotscid ) ) ) && $show_images ) {
+														$output .= $imageoutput;
+													}
+
+													break;
+												}
+
+											case 2: 	//------------------ Name Output --------------------
+												if ( ( $showname && 2 == $arrayelements && ( !$nooutputempty || ( $nooutputempty && !empty( $name ) ) ) ) ||
+												     ( $show_images && $shownameifnoimage && empty( $linkitem['link_image'] ) && !$usethumbshotsforimages && 1 == $arrayelements && ( !$nooutputempty || ( $nooutputempty && !empty( $name ) ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimename = microtime ( true );
+													}
+
+													$output .= stripslashes( $beforelink );
+
+													if ( ( 'primary' == $sourcename && $the_link != '#') || ( 'secondary' == $sourcename && $the_second_link != '#' ) || ( 'permalink' == $sourcename && $the_permalink != '#' ) ) {
+														$output .= '<a href="';
+
+														if ( !$enable_link_popup ) {
+															if ( 'primary' == $sourcename || empty( $sourcename ) ) {
+																$output .= $the_link;
+															} elseif ( 'secondary' == $sourcename ) {
+																$output .= $the_second_link;
+															} elseif ( 'permalink' == $sourcename ) {
+																$output .= $the_permalink;
+															}
+														} else {
+															$output .= admin_url( 'admin-ajax.php' . '?action=link_library_popup_content&linkid=' . $linkitem['proper_link_id'] . '&settings=' . $settings . '&height=' . ( empty( $popup_height ) ? 300 : $popup_height ) . '&width=' . ( empty( $popup_width ) ? 400 : $popup_width ) . '&xpath=' . $xpath );
+														}
+
+														if ( 'description' == $tooltipname && !empty( $desc ) ) {
+															$title = ' title="' . $desc . '"';
+														}
+
+														$output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="' . ( $enable_link_popup ? 'thickbox' : 'track_this_link' ) . ' ' . ( $linkitem['link_featured'] ? ' featured' : '' ). '" ' . $linkitem['link_rel'] . $title . $target. '>';
+													}
+
+													$output .= $name;
+
+													if ( ( 'primary' == $sourcename && $the_link != '#') || ( 'secondary' == $sourcename && $the_second_link != '#' ) ) {
+														$output .= '</a>';
+													}
+
+													if ( $showadmineditlinks && $linkeditoruser ) {
+														$output .= $between . '<span class="editlink"><a href="' . esc_url( add_query_arg( array(
+																'action' => 'edit', 'post' => $linkitem['proper_link_id'] ),
+																admin_url( 'post.php' ) ) ) . '">(' . __('Edit', 'link-library') . ')</a></span>';
+													}
+
+													if ( $showupdated && $linkitem['recently_updated'] && 'after' == $showupdatedpos ) {
+														$output .= '<span class="recently_updated">' . $updatedlabel . '</span>';
+													}
+
+													$output .= stripslashes( $afterlink );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render name section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimename ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 3: 	//------------------ Date Output --------------------
+
+												if ( $showdate && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_updated'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimedate = microtime ( true );
+													}
+
+													$formatteddate = date_i18n( get_option( 'links_updated_date_format' ), intval( $linkitem['link_updated'] ) );
+
+													$output .= $between . stripslashes( $beforedate ) . $formatteddate . stripslashes( $afterdate );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render date section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedate ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 4: 	//------------------ Description Output --------------------
+
+												if ( $showdescription && ( !$nooutputempty || ( $nooutputempty && !empty( $desc ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimedesc = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforedesc ) . $desc . stripslashes( $afterdesc );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 5: 	//------------------ Notes Output --------------------
+
+												if ( $shownotes && ( !$nooutputempty || ( $nooutputempty && !empty( $descnotes ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimenotes = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforenote ) . $descnotes . stripslashes( $afternote );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render notes section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimenotes ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 6: 	//------------------ RSS Icons Output --------------------
+
+												if ( ( $show_rss || $show_rss_icon || $rsspreview ) && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_rss'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimerssicon = microtime ( true );
+													}
+
+													$output .= stripslashes( $beforerss ) . '<div class="rsselements">';
+
+													if ( $show_rss && !empty( $linkitem['link_rss'] ) ) {
+														$output .= $between . '<a class="rss" href="' . $linkitem['link_rss'] . '">RSS</a>';
+													}
+
+													if ( $show_rss_icon && !empty( $linkitem['link_rss'] ) ) {
+														$output .= $between . '<a class="rssicon" href="' . $linkitem['link_rss'] . '"><img src="' . plugins_url( 'icons/feed-icon-14x14.png', __FILE__ ) . '" /></a>';
+													}
+
+													if ( $rsspreview && !empty( $linkitem['link_rss'] ) ) {
+														$output .= $between . '<a href="' . home_url() . '/?link_library_rss_preview=1&keepThis=true&linkid=' . $linkitem['proper_link_id'] . '&previewcount=' . $rsspreviewcount . 'height=' . ( empty( $rsspreviewwidth ) ?  900 : $rsspreviewwidth ) . '&width=' . ( empty( $rsspreviewheight ) ? 700 : $rsspreviewheight ) . '&xpath=' . urlencode( $xpath ) . '" title="' . __('Preview of RSS feed for', 'link-library') . ' ' . $cleanname . '" class="thickbox"><img src="' . plugins_url( 'icons/preview-16x16.png', __FILE__ ) . '" /></a>';
+													}
+
+													$output .= '</div><!-- Div RSS -->' . stripslashes( $afterrss );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render RSS Icon section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerssicon ) . " --> \n";
+													}
+												}
+
+												if ( $rssfeedinline && $linkitem['link_rss'] ) {
+													if ( $rss_items ) {
+														$output .= '<div id="ll_rss_results">';
+														$date_format_string = get_option( 'date_format' );
+
+														foreach ( $rss_items as $item ) {
+															$output .= '<div class="chunk" style="padding:0 5px 5px;">';
+															$item_timestamp = strtotime( $item->get_date( 'j F Y | g:i a' ) );
+
+															$formatted_date = date_i18n( $date_format_string, $item_timestamp );
+															$output .= '<div class="rsstitle"><a target="feedwindow" href="' . $item->get_permalink() . '">' . $item->get_title() . '</a><span class="rsstimestamp"> - ' . $formatted_date . '</span></div><!-- RSS Feed title -->';
+
+															if ( $rssfeedinlinecontent ) {
+																$output .= '<div class="rsscontent">' . $item->get_description() . '</div><!-- RSS Content -->';
+															}
+
+															$output .= '</div><!-- RSS Chunk -->';
+															$output .= '<br />';
+														}
+
+														$output .= '</div><!-- RSS Results -->';
+													}
+												}
+												break;
+											case 7: 	//------------------ Web Link Output --------------------
+
+												if ( 'false' != $displayweblink &&
+												     ( !$nooutputempty ||
+												       ( $nooutputempty && !empty( $the_link ) && 'label' != $displayweblink && '#' != $the_link && 'primary' == $sourceweblink ) ||
+												       ( $nooutputempty && !empty( $the_second_link ) && 'label' != $displayweblink && '#' != $the_second_link && 'secondary' == $sourceweblink ) ||
+												       ( $nooutputempty && !empty( $weblinklabel ) && 'label' == $displayweblink && !empty( $the_link ) && '#' != $the_link && 'primary' == $sourceweblink ) ||
+												       ( $nooutputempty && !empty( $weblinklabel ) && 'label' == $displayweblink && !empty( $the_second_link ) && '#' != $the_second_link && 'secondary' == $sourceweblink )
+												     ) ) {
+													if ( true == $debugmode ) {
+														$starttimerweblink = microtime ( true );
+													}
+
+													if ( 'addressonly' == $displayweblink ) {
+														$output .= $between . stripslashes( $beforeweblink );
+														$output .= $the_link;
+														$output .= stripslashes( $afterweblink );
+													} else {
+														$output .= $between . stripslashes( $beforeweblink ) . '<a href="';
+
+														if ( 'primary' == $sourceweblink || empty( $sourceweblink ) ) {
+															$output .= $the_link;
+														} elseif ( 'secondary' == $sourceweblink ) {
+															$output .= $the_second_link;
+														}
+
+														if ( !empty( $target ) && !empty( $weblinktarget ) ) {
+															$new_target_string = '="' . $weblinktarget . ' ';
+															$weblinktarget = str_replace( '="', $new_target_string, $target );
+														} elseif ( empty( $target ) && !empty( $weblinktarget ) ) {
+															$weblinktarget = ' target="' . $weblinktarget . '"';
+														}
+
+														$output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="track_this_link" ' . $weblinktarget . '>';
+
+														if ( 'address' == $displayweblink ) {
+															if ( ( 'primary' == $sourceweblink || empty( $sourceweblink ) ) && !empty( $the_link ) ) {
+																$output .= $the_link;
+															} elseif ( 'secondary' == $sourceweblink && !empty( $the_second_link ) ) {
+																$output .= $the_second_link;
+															}
+														} elseif ( 'label' == $displayweblink && !empty( $weblinklabel ) ) {
+															$output .= stripslashes( $weblinklabel );
+														}
+
+														$output .= '</a>' . stripslashes( $afterweblink );
+													}
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render web link section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerweblink ) . " --> \n";
+													}
+												}
+
+												break;
+											case 8: 	//------------------ Telephone Output --------------------
+
+												if ( 'false' != $showtelephone &&
+												     ( !$nooutputempty ||
+												       ( $nooutputempty && !empty( $linkitem['link_telephone'] ) && ( 'link' == $showtelephone || 'plain' == $showtelephone ) ) ||
+												       ( $nooutputempty && !empty( $telephonelabel ) && 'label' == $showtelephone )
+												     )
+												) {
+													if ( true == $debugmode ) {
+														$starttimertelephone = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforetelephone );
+
+													if ( 'plain' != $showtelephone ) {
+														$output .= '<a href="';
+
+														if ( ( 'primary' == $sourcetelephone || empty( $sourcetelephone ) ) && !empty( $the_link ) ) {
+															$output .= $the_link;
+														} elseif ( 'secondary' == $sourcetelephone && !empty( $the_second_link ) ) {
+															$output .= $the_second_link;
+														}
+
+														$output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="track_this_link" >';
+													}
+
+													if ( 'link' == $showtelephone || 'plain' == $showtelephone ) {
+														$output .= $linkitem['link_telephone'];
+													} elseif ( 'label' == $showtelephone ) {
+														$output .= $telephonelabel;
+													}
+
+													if ( 'plain' != $showtelephone ) {
+														$output .= '</a>';
+													}
+
+													$output .= stripslashes( $aftertelephone );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render telephone section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimertelephone ) . " --> \n";
+													}
+												}
+												break;
+											case 9: 	//------------------ E-mail Output --------------------
+
+												if ( 'false' != $showemail && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_email'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimeremail = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforeemail );
+
+													if ( 'plain' != $showemail ) {
+														$output .= '<a href="';
+
+														if ( 'mailto' == $showemail || 'mailtolabel' == $showemail ) {
+															if ( false === strpos( $linkitem['link_email'], '@' ) ) {
+																$output .= esc_url( $linkitem['link_email'] );
+															} else {
+																$output .= 'mailto:' . $linkitem['link_email'];
+															}
+														} elseif ( 'command' == $showemail || 'commandlabel' == $showemail ) {
+															$newcommand = str_replace( '#email', $linkitem['link_email'], $emailcommand );
+															$cleanlinkname = str_replace( ' ', '%20', $linkitem['link_name'] );
+															$newcommand = str_replace( '#company', $cleanlinkname, $newcommand );
+															$output .= $newcommand;
+														}
+
+														$output .= '">';
+													}
+
+													if ( 'plain' == $showemail || 'mailto' == $showemail || 'command' == $showemail ) {
+														$output .= $linkitem['link_email'];
+													} elseif ( 'mailtolabel' == $showemail || 'commandlabel' == $showemail ) {
+														$output .= $emaillabel;
+													}
+
+													if ( 'plain' != $showemail ) {
+														$output .= '</a>';
+													}
+
+													$output .= stripslashes( $afteremail );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render e-mail section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimeremail ) . " --> \n";
+													}
+												}
+
+												break;
+											case 10: 	//------------------ Link Hits Output --------------------
+
+												if ( $showlinkhits && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_visits'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimerhits = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforelinkhits );
+													$output .= $linkitem['link_visits'];
+													$output .= stripslashes( $afterlinkhits );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render link hits section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerhits ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 11: 	//------------------ Link Rating Output --------------------
+
+												if ( $showrating && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_rating'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimerrating = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforelinkrating );
+													$output .= $linkitem['link_rating'];
+													$output .= stripslashes( $afterlinkrating );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render link rating section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerrating ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 12: 	//------------------ Link Large Description Output --------------------
+
+												if ( $showlargedescription && ( !$nooutputempty || ( $nooutputempty && !empty( $textfield ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimerlargedesc = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforelargedescription );
+													$output .= $textfield;
+													$output .= stripslashes( $afterlargedescription );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render link large description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerlargedesc ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 13: 	//------------------ Link Large Description Output --------------------
+
+												if ( $showsubmittername && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_submitter_name'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimersubmittername = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforesubmittername );
+													$output .= $linkitem['link_submitter_name'];
+													$output .= stripslashes( $aftersubmittername );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render link large description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimersubmittername ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 14: 	//------------------ Category Description Output --------------------
+
+												if ( isset( $linkitem['category_description'] ) ) {
+													$linkitem['category_description'] = str_replace( '[', '<', $linkitem['category_description'] );
+													$linkitem['category_description'] = str_replace( ']', '>', $linkitem['category_description'] );
+												} else {
+													$linkitem['category_description'] = '';
+												}
+
+												if ( $showcatdesc && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['category_description'] ) ) ) ) {
+
+													if ( true == $debugmode ) {
+														$starttimedesc = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforecatdesc ) . $linkitem['category_description'] . stripslashes( $aftercatdesc );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render category description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 15: 	//------------------ Link Tags Output --------------------
+
+												$link_tags = wp_get_post_terms( $linkitem['proper_link_id'], 'link_library_tags' );
+
+												if ( $showlinktags && ( !$nooutputempty || ( $nooutputempty && !empty( $link_tags ) ) ) ) {
+
+													if ( true == $debugmode ) {
+														$starttimedesc = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforelinktags );
+
+													$link_tags_array = array();
+													foreach ( $link_tags as $link_tag ) {
+														$link_tags_array[] = $link_tag->name;
+													}
+													$output .= implode( ',', $link_tags_array );
+													$output .= stripslashes( $afterlinktags );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render category description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
+													}
+												}
+
+												break;
+											case 16: 	//------------------ Link Price Output --------------------
+
+												if ( $showlinkprice && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_price'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimersubmittername = microtime ( true );
+													}
+
+													$output .= $between . stripslashes( $beforelinkprice );
+													if ( 'before' == $linkcurrencyplacement && !empty( $linkcurrency ) && $linkitem['link_price'] > 0 ) {
+														$output .= $linkcurrency;
+													}
+
+													$value = number_format((float)$linkitem['link_price'], 2, '.', '');
+													if ( $value == 0 ) {
+														$value = __( 'Free', 'link-library' );
+													}
+													$output .= $value;
+
+													if ( 'after' == $linkcurrencyplacement && !empty( $linkcurrency ) && $linkitem['link_price'] > 0 ) {
+														$output .= $linkcurrency;
+													}
+													$output .= stripslashes( $afterlinkprice );
+
+													if ( true == $debugmode ) {
+														$output .= "\n<!-- Time to render link large description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimersubmittername ) . " --> \n";
+													}
+												}
+
+												break;
+										}
+									}
+								}
+
+								$output .= stripslashes( $afteritem ) . "\n";
+
+								if ( $linkaddfrequency > 0 ) {
+									if ( 0 == $linkcount % $linkaddfrequency ) {
+										$output .= stripslashes( $addafterlink );
+									}
+								}
+
+								if ( true == $debugmode ) {
+									$output .= '<!-- Time to render link id ' . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $linkstarttime ) . " --> \n";
+								}
+
+								$linkcount++;
+
+							}
+
+							// Close the category
+							if ( $the_link_query->found_posts > 0 ) {
+								if ( ( is_bool( $displayastable ) && $displayastable ) || 'true' == $displayastable ) {
+									$output .= "\t</table>\n";
+								} elseif ( ( is_bool( $displayastable ) && ! $displayastable ) || 'false' == $displayastable ) {
+									$output .= "\t</ul>\n";
+								}
+							}
+						}
+
+						if ( !empty( $catlistwrappers ) && !empty( $beforecastlist1 ) ) {
+							$output .= '</div><!-- Div cat list wrappers -->';
+						}
+
+						if ( !empty( $afterlastlink ) && $the_link_query->found_posts > 0 ) {
+							$output .= stripslashes( $afterlastlink );
+						}
+
+						if ( $showlinksonclick ) {
+							$output .= '</div><!-- Div Show Links on click -->';
+						}
+
+						$currentcategory = $currentcategory + 1;
+
+						if ( $display_children && $cat_has_children ) {
+							$output .= RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount, $link_category->term_id, $level + 1, $display_children, $hidechildcatlinks );
+						}
+
+						if ( $combineresults ) {
+							break;
+						} else {
+							$output .= "</div><!-- Div End Category -->\n";
+						}
+					}
+				}
+			}
+		} else {
+			$output .= __( 'All of your links must be assigned at least to one category to be displayed', 'link-library');
+
+			if ( isset( $_GET['searchll'] ) ) {
+				$output .= $searchnoresultstext . "\n";
+			}
+		}
+
+		if ( $usethumbshotsforimages ) {
+			if ( $thumbnailgenerator == 'robothumb' ) {
+				$output .= '<div class="llthumbshotsnotice"><a href="http://www.robothumb.com">Screenshots par Robothumb</a></div>';
+			} elseif ( $thumbnailgenerator == 'thumbshots' ) {
+				$output .= '<div class="llthumbshotsnotice"><a href="http://www.thumbshots.com" target="_blank" title="Thumbnails Screenshots by Thumbshots">Thumbnail Screenshots by Thumbshots</a></div>';
+			}
+		}
+	} else {
+		$output .= __( 'No links found', 'link-library' );
+	}
+
+	if ( $level == 0 && $pagination && 'search' != $mode && ( 'AFTER' == $paginationposition || empty( $pagination ) ) ) {
+		$previouspagenumber = $pagenumber - 1;
+		$nextpagenumber = $pagenumber + 1;
+		$pageID = get_queried_object_id();
+
+		$output .= link_library_display_pagination( $previouspagenumber, $nextpagenumber, $number_of_pages, $pagenumber, $showonecatonly, $showonecatmode, $AJAXcatid, $settings, $pageID, $currentcatletter );
+	}
+
+	if ( $level == 0 ) {
+		$xpath = $LLPluginClass->relativePath( dirname( __FILE__ ), ABSPATH );
+		$nonce = wp_create_nonce( 'll_tracker' );
+
+		$output .= "<script type='text/javascript'>\n";
+		$output .= "jQuery(document).ready(function()\n";
+		$output .= "{\n";
+		$output .= "jQuery('.arrow-up').hide();\n";
+		$output .= "jQuery('#linklist" . $settings . " a.track_this_link').click(function() {\n";
+		$output .= "linkid = this.id;\n";
+		$output .= "linkid = linkid.substring(5);\n";
+		$output .= "path = '" . $xpath . "';\n";
+		$output .= "jQuery.ajax( {" .
+				   "    type: 'POST'," .
+				   "    url: '" . admin_url( 'admin-ajax.php' ) . "', " .
+				   "    data: { action: 'link_library_tracker', " .
+				   "            _ajax_nonce: '" . $nonce . "', " .
+				   "            id:linkid, xpath:path } " .
+				   "    });\n";
+		$output .= "return true;\n";
+		$output .= "});\n";
+		$output .= "jQuery('#linklist" . $settings . " .expandlinks').click(function() {\n";
+		$output .= "target = '.' + jQuery(this).attr('id');\n";
+		$output .= "if ( jQuery( target ).is(':visible') ) {\n";
+		$output .= "jQuery(target).slideUp();\n";
+		$output .= "jQuery(this).children('img').attr('src', '";
+
+		if ( !empty( $expandiconpath ) ) {
+			$output .= $expandiconpath;
+		} else {
+			$output .= plugins_url( 'icons/expand-32.png', __FILE__ );
+		}
+
+		$output .= "');\n";
+		$output .= "} else {\n";
+		$output .= "jQuery(target).slideDown();\n";
+		$output .= "jQuery(this).children('img').attr('src', '";
+
+		if ( !empty( $collapseiconpath ) ) {
+			$output .= $collapseiconpath;
+		} else {
+			$output .= plugins_url( 'icons/collapse-32.png', __FILE__ );
+		}
+
+		$output .= "');\n";
+		$output .= "}\n";
+		$output .= "});\n";
+		$output .= "});\n";
+		$output .= "</script>";
+		unset( $xpath );
+	}
+
+	$currentcategory = $currentcategory + 1;
+
+	if ( $level == 0 ) {
+		$output .= '</div><!-- Div Linklist -->';
+
+		$output .= "\n<!-- End of Link Library Output -->\n\n";
+	}
+
+	return do_shortcode( $output );
+}
