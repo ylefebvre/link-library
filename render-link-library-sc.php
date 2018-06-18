@@ -687,7 +687,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							'include_children' => false
 
 						);
-					if ( sizeof( $link_query_args['tax_query'] > 1 ) ) {
+					if ( sizeof( $link_query_args['tax_query'] ) > 1 ) {
 						$link_query_args['tax_query']['relation'] = 'AND';
 					}
 				}

@@ -245,12 +245,35 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             $output .= ' type="text" name="link_rss" id="link_rss" value="' . ( isset( $_GET['addlinkrss'] ) ? esc_html( stripslashes( $_GET['addlinkrss'] ), '1') : '' ) . "\" /></td></tr>\n";
         }
 
-		$include_links_array = explode( ',', $categorylist_cpt );
-		$excluded_links_array = explode( ',', $excludecategorylist_cpt );
+	    $include_links_array = array();
+        if ( !empty( $categorylist_cpt ) ) {
+	        $include_links_array = explode( ',', $categorylist_cpt );
+        }
+
+	    if ( !empty( $excludecategorylist_cpt ) ) {
+		    $excluded_links_array = explode( ',', $excludecategorylist_cpt );
+	    }
+
 	    $link_categories_query_args = array( 'hide_empty' => false );
-	    $link_categories_query_args['include'] = $include_links_array;
-	    $link_categories_query_args['exclude'] = $excluded_links_array;
+	    if ( !empty( $include_links_array ) ) {
+		    $link_categories_query_args['include'] = $include_links_array;
+	    }
+
+	    if ( !empty( $excluded_links_array ) ) {
+		    $link_categories_query_args['exclude'] = $excluded_links_array;
+	    }
+
 	    $linkcats = get_terms( 'link_library_category', $link_categories_query_args );
+
+	    if ( !empty( $include_links_array ) && !empty( $excluded_links_array ) ) {
+			foreach( $linkcats as $link_key => $linkcat ) {
+				foreach( $excluded_links_array as $excludedcat ) {
+					if ( $linkcat->term_id == $excludedcat ) {
+						unset( $linkcats[$link_key] );
+					}
+				}
+			}
+	    }
 
         if ( $debugmode ) {
             $output .= "\n<!-- Category query for add link form:" . print_r($linkcatquery, TRUE) . "-->\n\n";

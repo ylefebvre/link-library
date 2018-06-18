@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.2 =
+* Correct warning with sizeof function when combining search results
+* Fix for category exclusions in link submission form
+
 = 6.0.1 =
 * Re-written link importer to avoid duplicate entries
 * Fix for Large Description HTML tags not being displayed correctly
