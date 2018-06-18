@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.1 =
+* Re-written link importer to avoid duplicate entries
+* Fix for Large Description HTML tags not being displayed correctly
+
 = 6.0 =
 * Official release of Link Library 6.0
 

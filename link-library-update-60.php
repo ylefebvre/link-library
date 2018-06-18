@@ -2,6 +2,13 @@
 
 function link_library_60_update( $plugin_class ) {
 	global $wpdb;
+	$prefix = '';
+
+	if ( method_exists( $wpdb, 'get_blog_prefix' ) ) {
+		$prefix = $wpdb->get_blog_prefix();
+	} else {
+		$prefix = $wpdb->prefix;
+	}
 
 	$link_query = 'select count(*) from ' . $plugin_class->db_prefix() . 'links';
 	$link_count = $wpdb->get_var( $link_query );
@@ -34,104 +41,108 @@ function link_library_60_update( $plugin_class ) {
 			}
 		}
 
-		$links_import_query = 'SELECT distinct *, l.link_id as import_link_id ';
-		$links_import_query .= 'FROM ' . $plugin_class->db_prefix() . 'links l ';
-		$links_import_query .= 'LEFT JOIN ' . $plugin_class->db_prefix() . 'links_extrainfo le ON (l.link_id = le.link_id) ';
+		$links_import_query = "SELECT distinct l.link_id as import_link_id, l.link_name, l.link_url, l.link_rss, l.link_description, l.link_notes, ";
+		$links_import_query .= "GROUP_CONCAT( t.name ) as cat_name, l.link_visible, le.link_second_url, le.link_telephone, le.link_email, le.link_reciprocal, ";
+		$links_import_query .= "l.link_image, le.link_textfield, le.link_no_follow, l.link_rating, l.link_target, l.link_updated, le.link_visits, ";
+		$links_import_query .= "le.link_submitter, le.link_submitter_name, le.link_submitter_email, le.link_addl_rel, le.link_featured, le.link_manual_updated, l.link_owner ";
+		$links_import_query .= "FROM " . $prefix . "terms t ";
+		$links_import_query .= "LEFT JOIN " . $prefix . "term_taxonomy tt ON (t.term_id = tt.term_id) ";
+		$links_import_query .= "LEFT JOIN " . $prefix . "term_relationships tr ON (tt.term_taxonomy_id = tr.term_taxonomy_id) ";
+		$links_import_query .= "LEFT JOIN " . $prefix . "links l ON (tr.object_id = l.link_id) ";
+		$links_import_query .= "LEFT JOIN " . $prefix . "links_extrainfo le ON (l.link_id = le.link_id) ";
+		$links_import_query .= "WHERE tt.taxonomy = 'link_category' ";
+		$links_import_query .= "GROUP BY l.link_name, l.link_url ";
 
 		$links_to_import = $wpdb->get_results( $links_import_query );
 
 		foreach ( $links_to_import as $link_to_import ) {
-			$link_cats_query = 'SELECT t.name ';
-			$link_cats_query .= 'FROM ' . $plugin_class->db_prefix() . 'terms t ';
-			$link_cats_query .= 'LEFT JOIN ' . $plugin_class->db_prefix() . 'term_taxonomy tt ON (t.term_id = tt.term_id) ';
-			$link_cats_query .= 'LEFT JOIN ' . $plugin_class->db_prefix() . 'term_relationships tr ON (tt.term_taxonomy_id = tr.term_taxonomy_id) ';
-			$link_cats_query .= 'WHERE tt.taxonomy = "link_category" ';
-			$link_cats_query .= 'AND tr.object_id = ' . $link_to_import->import_link_id . ' ';
+			if ( !empty( $link_to_import->link_name ) ) {
+				$matched_link_cats = array();
+				if ( !empty( $link_to_import->cat_name ) ) {
+					$link_cats = explode( ',', $link_to_import->cat_name );
 
-			$link_cats = $wpdb->get_results( $link_cats_query );
+					foreach ( $link_cats as $link_cat ) {
+						$cat_string = $link_cat;
 
-			$matched_link_cats = array();
+						$cat_matched_term = get_term_by( 'name', $cat_string, 'link_library_category' );
 
-			foreach ( $link_cats as $link_cat ) {
-				$cat_string = $link_cat->name;
-
-				$cat_matched_term = get_term_by( 'name', $cat_string, 'link_library_category' );
-
-				if ( false !== $cat_matched_term ) {
-					$matched_link_cats[] = $cat_matched_term->term_id;
-				}
-			}
-
-			$new_link_data = array(
-				'post_type' => 'link_library_links',
-				'post_content' => '',
-				'post_title' => $link_to_import->link_name,
-				'tax_input' => array( 'link_library_category' => $matched_link_cats ),
-				'post_author' => $link_to_import->link_owner,
-			);
-
-			if ( 'N' == $link_to_import->link_visible ) {
-				if ( false !== strpos( $link_to_import->link_description, '(LinkLibrary:AwaitingModeration:RemoveTextToApprove)' ) ) {
-					$new_link_data['post_status'] = 'pending';
-					$link_to_import->link_description = str_replace( '(LinkLibrary:AwaitingModeration:RemoveTextToApprove)', '', $link_to_import->link_description );
-				} else {
-					$new_link_data['post_status'] = 'private';
-				}
-			} elseif ( 'Y' == $link_to_import->link_visible ) {
-				$new_link_data['post_status'] = 'publish';
-			}
-
-			$new_link_ID = wp_insert_post( $new_link_data );
-
-			if ( !empty( $new_link_ID ) ) {
-				update_post_meta( $new_link_ID, 'legacy_link_id', $link_to_import->import_link_id );
-				update_post_meta( $new_link_ID, 'link_url', $link_to_import->link_url );
-				update_post_meta( $new_link_ID, 'link_image', $link_to_import->link_image );
-				update_post_meta( $new_link_ID, 'link_target', $link_to_import->link_target );
-				update_post_meta( $new_link_ID, 'link_description', $link_to_import->link_description );
-				update_post_meta( $new_link_ID, 'link_rating', $link_to_import->link_rating );
-
-				if ( '0000-00-00 00:00:00' ==  $link_to_import->link_updated ) {
-					update_post_meta( $new_link_ID, 'link_updated', current_time( 'timestamp' ) );
-				} else {
-					update_post_meta( $new_link_ID, 'link_updated', strtotime( $link_to_import->link_updated ) );
+						if ( false !== $cat_matched_term ) {
+							$matched_link_cats[] = $cat_matched_term->term_id;
+						}
+					}
 				}
 
-				update_post_meta( $new_link_ID, 'link_notes', $link_to_import->link_notes );
-				update_post_meta( $new_link_ID, 'link_rss', $link_to_import->link_rss );
-				update_post_meta( $new_link_ID, 'link_second_url', $link_to_import->link_second_url );
-				update_post_meta( $new_link_ID, 'link_telephone', $link_to_import->link_telephone );
-				update_post_meta( $new_link_ID, 'link_email', $link_to_import->link_email );
+				$new_link_data = array(
+					'post_type' => 'link_library_links',
+					'post_content' => '',
+					'post_title' => $link_to_import->link_name,
+					'tax_input' => array( 'link_library_category' => $matched_link_cats ),
+					'post_author' => $link_to_import->link_owner,
+				);
 
-				if ( empty( $link_to_import->link_visits ) ) {
-					update_post_meta( $new_link_ID, 'link_visits', 0 );
-				} else {
-					update_post_meta( $new_link_ID, 'link_visits', $link_to_import->link_visits );
+				if ( 'N' == $link_to_import->link_visible ) {
+					if ( false !== strpos( $link_to_import->link_description, '(LinkLibrary:AwaitingModeration:RemoveTextToApprove)' ) ) {
+						$new_link_data['post_status'] = 'pending';
+						$link_to_import->link_description = str_replace( '(LinkLibrary:AwaitingModeration:RemoveTextToApprove)', '', $link_to_import->link_description );
+					} else {
+						$new_link_data['post_status'] = 'private';
+					}
+				} elseif ( 'Y' == $link_to_import->link_visible ) {
+					$new_link_data['post_status'] = 'publish';
 				}
 
-				update_post_meta( $new_link_ID, 'link_reciprocal', $link_to_import->link_reciprocal );
-				update_post_meta( $new_link_ID, 'link_submitter', $link_to_import->link_submitter );
-				update_post_meta( $new_link_ID, 'link_submitter_name', $link_to_import->link_submitter_name );
-				update_post_meta( $new_link_ID, 'link_submitter_email', $link_to_import->link_submitter_email );
-				update_post_meta( $new_link_ID, 'link_textfield', $link_to_import->link_textfield );
-				update_post_meta( $new_link_ID, 'link_rel', $link_to_import->link_addl_rel );
+				$new_link_ID = wp_insert_post( $new_link_data );
 
-				if ( '1' == $link_to_import->link_no_follow ) {
-					update_post_meta( $new_link_ID, 'link_no_follow', true );
-				} else {
-					update_post_meta( $new_link_ID, 'link_no_follow', false );
-				}
+				if ( !empty( $new_link_ID ) ) {
+					update_post_meta( $new_link_ID, 'legacy_link_id', $link_to_import->import_link_id );
+					update_post_meta( $new_link_ID, 'link_url', $link_to_import->link_url );
+					update_post_meta( $new_link_ID, 'link_image', $link_to_import->link_image );
+					update_post_meta( $new_link_ID, 'link_target', $link_to_import->link_target );
+					update_post_meta( $new_link_ID, 'link_description', $link_to_import->link_description );
+					update_post_meta( $new_link_ID, 'link_rating', $link_to_import->link_rating );
 
-				if ( '1' == $link_to_import->link_featured ) {
-					update_post_meta( $new_link_ID, 'link_featured', 1 );
-				} else {
-					update_post_meta( $new_link_ID, 'link_featured', 0 );
-				}
+					if ( '0000-00-00 00:00:00' ==  $link_to_import->link_updated ) {
+						update_post_meta( $new_link_ID, 'link_updated', current_time( 'timestamp' ) );
+					} else {
+						update_post_meta( $new_link_ID, 'link_updated', strtotime( $link_to_import->link_updated ) );
+					}
 
-				if ( 'Y' == $link_to_import->link_manual_updated ) {
-					update_post_meta( $new_link_ID, 'link_updated_manual', true );
-				} elseif ( 'N' == $link_to_import->link_manual_updated ) {
-					update_post_meta( $new_link_ID, 'link_updated_manual', false );
+					update_post_meta( $new_link_ID, 'link_notes', $link_to_import->link_notes );
+					update_post_meta( $new_link_ID, 'link_rss', $link_to_import->link_rss );
+					update_post_meta( $new_link_ID, 'link_second_url', $link_to_import->link_second_url );
+					update_post_meta( $new_link_ID, 'link_telephone', $link_to_import->link_telephone );
+					update_post_meta( $new_link_ID, 'link_email', $link_to_import->link_email );
+
+					if ( empty( $link_to_import->link_visits ) ) {
+						update_post_meta( $new_link_ID, 'link_visits', 0 );
+					} else {
+						update_post_meta( $new_link_ID, 'link_visits', $link_to_import->link_visits );
+					}
+
+					update_post_meta( $new_link_ID, 'link_reciprocal', $link_to_import->link_reciprocal );
+					update_post_meta( $new_link_ID, 'link_submitter', $link_to_import->link_submitter );
+					update_post_meta( $new_link_ID, 'link_submitter_name', $link_to_import->link_submitter_name );
+					update_post_meta( $new_link_ID, 'link_submitter_email', $link_to_import->link_submitter_email );
+					update_post_meta( $new_link_ID, 'link_textfield', $link_to_import->link_textfield );
+					update_post_meta( $new_link_ID, 'link_rel', $link_to_import->link_addl_rel );
+
+					if ( '1' == $link_to_import->link_no_follow ) {
+						update_post_meta( $new_link_ID, 'link_no_follow', true );
+					} else {
+						update_post_meta( $new_link_ID, 'link_no_follow', false );
+					}
+
+					if ( '1' == $link_to_import->link_featured ) {
+						update_post_meta( $new_link_ID, 'link_featured', 1 );
+					} else {
+						update_post_meta( $new_link_ID, 'link_featured', 0 );
+					}
+
+					if ( 'Y' == $link_to_import->link_manual_updated ) {
+						update_post_meta( $new_link_ID, 'link_updated_manual', true );
+					} elseif ( 'N' == $link_to_import->link_manual_updated ) {
+						update_post_meta( $new_link_ID, 'link_updated_manual', false );
+					}
 				}
 			}
 		}

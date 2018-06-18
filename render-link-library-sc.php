@@ -1231,7 +1231,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								if ( isset( $link_meta['link_textfield'] ) ) {
-									$linkitem['link_textfield'] = esc_html( $link_meta['link_textfield'][0] );
+									$linkitem['link_textfield'] = $link_meta['link_textfield'][0];
 								} else {
 									$linkitem['link_textfield'] = '';
 								}
