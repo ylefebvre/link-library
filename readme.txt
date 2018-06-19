@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.4 =
+* Additional fixed to update routine to avoid duplicate entries
+
 = 6.0.3 =
 * Fix for parse error on older versions of PHP
 * Small fix to update function

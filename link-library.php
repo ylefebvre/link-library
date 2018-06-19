@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.3
+Version: 6.0.4
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -193,6 +193,8 @@ class link_library_plugin {
 		register_deactivation_hook( __FILE__, array( $this, 'll_uninstall' ) );
 
 		add_action( 'init', array( $this, 'll_init' ) );
+		add_action( 'wp', array( $this, 'll_update_60' ) );
+		add_action( 'admin_init', array( $this, 'll_update_60' ) );
 
 		$newoptions = get_option( 'LinkLibraryPP1', '' );
 
@@ -325,13 +327,36 @@ class link_library_plugin {
 		);
 
 		add_feed( 'linklibraryfeed', 'link_library_generate_rss_feed' );
+	}
+	
+	function ll_update_60() {
+		if ( isset( $_POST['ll60reupdate'] ) ) {
+			global $wpdb;
 
-		$link_library_60_update = get_option( 'LinkLibrary60Update' );
-		$genoptions = get_option( 'LinkLibraryGeneral' );
-		if ( false == $link_library_60_update && !empty( $genoptions ) ) {
+			$wpdb->get_results ( 'DELETE a,b,c
+    								FROM wp_posts a
+    								LEFT JOIN wp_term_relationships b
+        								ON (a.ID = b.object_id)
+    								LEFT JOIN wp_postmeta c
+        								ON (a.ID = c.post_id)
+    								WHERE a.post_type = \'link_library_links\';' );
+
+			$link_category_terms = get_terms( 'link_library_category', array( 'fields' => 'ids', 'hide_empty' => false ) );
+			foreach ( $link_category_terms as $value ) {
+				wp_delete_term( $value, 'link_library_category' );
+			}
+
+			delete_option( 'LinkLibrary60Update' );
 			require plugin_dir_path( __FILE__ ) . 'link-library-update-60.php';
 			link_library_60_update( $this );
-		}
+		} else {
+			$link_library_60_update = get_option( 'LinkLibrary60Update' );
+			$genoptions = get_option( 'LinkLibraryGeneral' );
+			if ( false == $link_library_60_update && !empty( $genoptions ) ) {
+				require plugin_dir_path( __FILE__ ) . 'link-library-update-60.php';
+				link_library_60_update( $this );
+			}	
+		}		
 	}
 
 	function permalink_structure( $post_link, $post, $leavename, $sample ) {

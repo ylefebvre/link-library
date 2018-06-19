@@ -1225,24 +1225,7 @@ class link_library_plugin_admin {
 		$successfulimport = 0;
 		$successfulupdate = 0;
 		
-		if ( isset( $_POST['ll60reupdate'] ) ) {
-			global $wpdb;
-
-			$wpdb->get_results ( 'DELETE a,b,c
-    								FROM wp_posts a
-    								LEFT JOIN wp_term_relationships b
-        								ON (a.ID = b.object_id)
-    								LEFT JOIN wp_postmeta c
-        								ON (a.ID = c.post_id)
-    								WHERE a.post_type = \'link_library_links\';' );
-
-			$link_category_terms = get_terms( 'link_library_category', array( 'fields' => 'ids', 'hide_empty' => false ) );
-			foreach ( $link_category_terms as $value ) {
-				wp_delete_term( $value, 'link_library_category' );
-			}
-
-			delete_option( 'LinkLibrary60Update' );
-		} elseif ( isset( $_POST['importlinks'] ) ) {
+		if ( isset( $_POST['importlinks'] ) ) {
 			wp_defer_term_counting( true );
 			wp_defer_comment_counting( true );
 			wp_suspend_cache_addition( true );
