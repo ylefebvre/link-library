@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.6 =
+* Automate re-import process so that sites that automatically updated to 6.0 don't need to manually re-import links
+
 = 6.0.5 =
 * Added line to disable link manager option for legacy installations
 * Additional fixes to update routine to avoid duplicate entries

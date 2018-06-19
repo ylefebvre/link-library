@@ -198,4 +198,5 @@ function link_library_60_update( $plugin_class ) {
 	}
 
 	update_option( 'LinkLibrary60Update', true );
+	update_option( 'LinkLibrary60PostUpdate', true );
 }
