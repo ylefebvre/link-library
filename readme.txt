@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.8 =
+* Removed automatic re-import mechanism
+
 = 6.0.7 =
 * Fine-tune automatic re-import process
 
