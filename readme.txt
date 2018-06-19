@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.3 =
+* Fix for parse error on older versions of PHP
+* Small fix to update function
+
 = 6.0.2 =
 * Correct warning with sizeof function when combining search results
 * Fix for category exclusions in link submission form

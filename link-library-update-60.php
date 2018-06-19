@@ -51,7 +51,7 @@ function link_library_60_update( $plugin_class ) {
 		$links_import_query .= "LEFT JOIN " . $prefix . "links l ON (tr.object_id = l.link_id) ";
 		$links_import_query .= "LEFT JOIN " . $prefix . "links_extrainfo le ON (l.link_id = le.link_id) ";
 		$links_import_query .= "WHERE tt.taxonomy = 'link_category' ";
-		$links_import_query .= "GROUP BY l.link_name, l.link_url ";
+		$links_import_query .= "GROUP BY l.link_id ";
 
 		$links_to_import = $wpdb->get_results( $links_import_query );
 

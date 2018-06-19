@@ -501,7 +501,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 	$link_count = wp_count_posts( 'link_library_links' );
 
-	if ( isset( $link_count ) && !empty( (array) $link_count ) && ( $link_count->publish > 0 || ( $showinvisible && $link_count->private > 0 ) || ( $showuserlinks && $link_count->pending ) ) ) {
+	if ( isset( $link_count ) && !empty( $link_count ) && ( $link_count->publish > 0 || ( $showinvisible && $link_count->private > 0 ) || ( $showuserlinks && $link_count->pending ) ) ) {
 		$currentcatletter = '';
 
 		if ( $level == 0 && $cat_letter_filter != 'no' ) {
