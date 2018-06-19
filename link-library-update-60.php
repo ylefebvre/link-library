@@ -90,8 +90,10 @@ function link_library_60_update( $plugin_class ) {
 				} elseif ( 'Y' == $link_to_import->link_visible ) {
 					$new_link_data['post_status'] = 'publish';
 				}
-
-				$new_link_ID = wp_insert_post( $new_link_data );
+				
+				if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ){
+					$new_link_ID = wp_insert_post( $new_link_data );
+				}
 
 				if ( !empty( $new_link_ID ) ) {
 					update_post_meta( $new_link_ID, 'legacy_link_id', $link_to_import->import_link_id );

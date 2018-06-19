@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.5 =
+* Added line to disable link manager option for legacy installations
+* Additional fixes to update routine to avoid duplicate entries
+
 = 6.0.4 =
 * Additional fixed to update routine to avoid duplicate entries
 
