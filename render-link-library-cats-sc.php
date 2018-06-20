@@ -203,7 +203,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 $cattext = '';
                 $catitem = '';
 
-	            $link_query_args = array( 'post_type' => 'link_library_links' );
+	            $link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
 	            $link_query_args['post_status'] = array( 'publish' );
 
 	            $link_query_args['tax_query'][] =

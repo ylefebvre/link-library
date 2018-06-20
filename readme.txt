@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.9 =
+* Fix for number of links per category when showing list of categories as a drop-down
+
 = 6.0.8 =
 * Removed automatic re-import mechanism
 
