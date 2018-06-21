@@ -341,7 +341,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 	$validdirections = array( 'ASC', 'DESC' );
 
-	$linkeditoruser = current_user_can( 'manage_links' );
+	$linkeditoruser = current_user_can( 'manage_options' );
 
 	if ( $level == 0 ) {
 		$output = "\n<!-- Beginning of Link Library Output -->\n\n";

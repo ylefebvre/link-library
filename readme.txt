@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.13 =
+* Fixed Edit links not appearing for links since 6.0
+
 = 6.0.12 =
 * Improvements to update mechanism to avoid duplicate entries
 
