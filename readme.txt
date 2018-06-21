@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.12 =
+* Improvements to update mechanism to avoid duplicate entries
+
 = 6.0.11 =
 * Fixed issue with user submitted links not having a category assigned to them
 

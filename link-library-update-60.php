@@ -1,6 +1,8 @@
 <?php
 
 function link_library_60_update( $plugin_class ) {
+	update_option( 'LinkLibrary60Update', true );
+
 	global $wpdb;
 	$prefix = '';
 
@@ -76,7 +78,6 @@ function link_library_60_update( $plugin_class ) {
 					'post_type' => 'link_library_links',
 					'post_content' => '',
 					'post_title' => $link_to_import->link_name,
-					'tax_input' => array( 'link_library_category' => $matched_link_cats ),
 					'post_author' => $link_to_import->link_owner,
 				);
 
@@ -96,6 +97,8 @@ function link_library_60_update( $plugin_class ) {
 				}
 
 				if ( !empty( $new_link_ID ) ) {
+					wp_set_post_terms( $new_link_ID, $matched_link_cats, 'link_library_category', false );
+
 					update_post_meta( $new_link_ID, 'legacy_link_id', $link_to_import->import_link_id );
 					update_post_meta( $new_link_ID, 'link_url', $link_to_import->link_url );
 					update_post_meta( $new_link_ID, 'link_image', $link_to_import->link_image );
@@ -196,7 +199,4 @@ function link_library_60_update( $plugin_class ) {
 			}
 		}
 	}
-
-	update_option( 'LinkLibrary60Update', true );
-	update_option( 'LinkLibrary60PostUpdate', true );
 }

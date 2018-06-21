@@ -254,9 +254,10 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 					$new_link_ID = wp_insert_post( $new_link_data );
 
-					wp_set_post_terms( $new_link_ID, $newlinkcat, 'link_library_category', false );
-
 					if ( !empty( $new_link_ID ) ) {
+
+						wp_set_post_terms( $new_link_ID, $newlinkcat, 'link_library_category', false );
+
 						update_post_meta( $new_link_ID, 'link_url', esc_url( stripslashes( $captureddata['link_url'] ) ) );
 						update_post_meta( $new_link_ID, 'link_target', $options['linktarget'] );
 						update_post_meta( $new_link_ID, 'link_description', esc_html( stripslashes( $newlinkdesc ) ) );
