@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.11 =
+* Fixed issue with user submitted links not having a category assigned to them
+
 = 6.0.10 =
 * Fixes to link ordering methods
 * Fixes to bring back featured links to be displayed at top of each category

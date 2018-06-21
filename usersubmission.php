@@ -249,11 +249,12 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						'post_type' => 'link_library_links',
 						'post_content' => '',
 						'post_title' => esc_html( stripslashes( $captureddata['link_name'] ) ),
-						'tax_input' => array( 'link_library_category' => $newlinkcat ),
 						'post_status' => $newlinkvisibility
 					);
 
 					$new_link_ID = wp_insert_post( $new_link_data );
+
+					wp_set_post_terms( $new_link_ID, $newlinkcat, 'link_library_category', false );
 
 					if ( !empty( $new_link_ID ) ) {
 						update_post_meta( $new_link_ID, 'link_url', esc_url( stripslashes( $captureddata['link_url'] ) ) );
