@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.9
+Version: 6.0.10
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -710,11 +710,11 @@ class link_library_plugin {
         $options = get_option( $settingsname );
 
         if ( !empty( $categorylistoverride ) ) {
-            $options['categorylist'] = $categorylistoverride;
+            $options['categorylist_cpt'] = $categorylistoverride;
         }
 
 		if ( !empty( $excludecategoryoverride ) ) {
-            $options['excludecategorylist'] = $excludecategoryoverride;
+            $options['excludecategorylist_cpt'] = $excludecategoryoverride;
         }
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
@@ -776,13 +776,13 @@ class link_library_plugin {
         $genoptions = get_option('LinkLibraryGeneral');
 				
 		if ( !empty( $categorylistoverride ) ) {
-            $options['categorylist'] = $categorylistoverride;
+            $options['categorylist_cpt'] = $categorylistoverride;
         } elseif ( !empty( $options['addlinkcatlistoverride'] ) ) {
-            $options['categorylist'] = $options['addlinkcatlistoverride'];
+            $options['categorylist_cpt'] = $options['addlinkcatlistoverride'];
         }
 
 		if ( !empty( $excludecategoryoverride ) ) {
-            $options['excludecategorylist'] = $excludecategoryoverride;
+            $options['excludecategorylist_cpt'] = $excludecategoryoverride;
         }
 
         require_once plugin_dir_path( __FILE__ ) . 'render-link-library-addlink-sc.php';
@@ -807,11 +807,11 @@ class link_library_plugin {
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 
 		if ( !empty( $categorylistoverride ) ) {
-			$options['categorylist'] = $categorylistoverride;
+			$options['categorylist_cpt'] = $categorylistoverride;
 		}
 
 		if ( !empty( $excludecategoryoverride ) ) {
-			$options['excludecategorylist'] = $excludecategoryoverride;
+			$options['excludecategorylist_cpt'] = $excludecategoryoverride;
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-sc.php';

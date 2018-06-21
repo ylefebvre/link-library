@@ -735,53 +735,40 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$linkdirection = $_GET['linkprice'];
 				}
 
+				$link_query_args['meta_query']['relation'] = 'AND';
+
+				if ( $featuredfirst && 'random' != $linkorder ) {
+					$link_query_args['meta_query']['link_featured_clause'] = array( 'key' => 'link_featured' );
+					$link_query_args['orderby']['link_featured_clause'] = 'DESC';
+				}
+
 				if ( 'name' == $linkorder ) {
-					$link_query_args['orderby'] = 'title';
-					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+					$link_query_args['orderby']['title'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'id' == $linkorder ) {
-					$link_query_args['orderby'] = 'ID';
-					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+					$link_query_args['orderby']['ID'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'date' == $linkorder ) {
-					$link_query_args['orderby'] = 'meta_value_num';
-					$link_query_args['meta_key'] = 'link_updated';
-					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+					$link_query_args['meta_query']['link_updated_clause'] = array( 'key' => 'link_updated' );
+					$link_query_args['orderby']['link_updated_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'price' == $linkorder ) {
-					$link_query_args['orderby'] = 'meta_value_num';
-					$link_query_args['meta_key'] = 'link_price';
-					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+					$link_query_args['meta_query']['link_price_clause'] = array( 'key' => 'link_price' );
+					$link_query_args['orderby']['link_price_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'random' == $linkorder ) {
 					$link_query_args['orderby'] = 'rand';
 				} elseif ( 'hits' == $linkorder ) {
-					$link_query_args['orderby'] = 'meta_value_num';
-					$link_query_args['meta_key'] = 'link_visits';
-					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
-				}
-
-				if ( $featuredfirst && 'random' != $linkorder && 'price' != $linkorder ) {
-					if ( $link_query_args['orderby'] == 'title' ) {
-						$link_query_args['orderby'] = 'meta_value title';
-					} elseif ( $link_query_args['orderby'] == 'id' ) {
-						$link_query_args['orderby'] = 'meta_value ID';
-					} elseif ( $link_query_args['orderby'] == 'date' ) {
-						$link_query_args['orderby'] = 'link_featured link_updated';
-					}
-
-					$link_query_args['meta_key'] = 'link_featured';
+					$link_query_args['meta_query']['link_visits_clause'] = array( 'key' => 'link_visits' );
+					$link_query_args['orderby']['link_visits_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				}
 
 				if ( $current_user_links ) {
 					$user_data = wp_get_current_user();
 					$name_field_value = $user_data->display_name;
 
-					$link_query_args['meta_query'][] =
+					$link_query_args['meta_query']['link_submitter_clause'] =
 						array(
 							'key'     => 'link_submitter',
 							'value'   => $name_field_value,
 							'compare' => '=',
 						);
-					if ( sizeof( $link_query_args['meta_query'] > 1 ) ) {
-						$link_query_args['meta_query']['relation'] = 'AND';
-					}
 				}
 
 				if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
@@ -791,9 +778,6 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							'value'   => floatval( 0.0 ),
 							'compare' => '=',
 						);
-					if ( count( $link_query_args['meta_query'] > 1 ) ) {
-						$link_query_args['meta_query']['relation'] = 'AND';
-					}
 				}
 
 				if ( true == $debugmode ) {

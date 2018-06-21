@@ -59,6 +59,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.10 =
+* Fixes to link ordering methods
+* Fixes to bring back featured links to be displayed at top of each category
+* Fix to bring back support for link category override selection list in user submission tab
+* Added extra column to category list to make it easier to find category IDs
+
 = 6.0.9 =
 * Fix for number of links per category when showing list of categories as a drop-down
 
