@@ -1045,7 +1045,15 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							$output .= stripslashes( $beforefirstlink );
 						}
 
-						if ( ( ( is_bool( $displayastable ) && $displayastable ) || 'true' == $displayastable ) && ( ! $combineresults || ( $combineresults && $linkcount == 0 ) ) ) {
+						if ( is_bool( $displayastable ) && $displayastable ) {
+							$display_as_table = 'true';
+						} elseif( is_bool( $displayastable ) && !$displayastable ) {
+							$display_as_table = 'false';
+						} elseif ( in_array( $displayastable, array( 'true', 'false', 'nosurroundingtags' ) ) ) {
+							$display_as_table = $displayastable;
+						}
+
+						if ( $display_as_table === 'true' && ( ! $combineresults || ( $combineresults && $linkcount > 0 ) ) ) {
 							$catstartlist = "\n\t<table class='linklisttable'>\n";
 							if ( $showcolumnheaders ) {
 								if ( !empty( $columnheaderoverride ) && !$allowcolumnsorting ) {
@@ -1154,7 +1162,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							} else {
 								$catstartlist .= '';
 							}
-						} elseif ( ! $combineresults || ( $combineresults && $linkcount == 0 ) ) {
+						} elseif ( ! $combineresults || ( $combineresults && $linkcount > 0 ) ) {
 							$catstartlist = "\n\t<ul>\n";
 						} else {
 							$catstartlist = '';
@@ -2024,9 +2032,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 							// Close the category
 							if ( $the_link_query->found_posts > 0 ) {
-								if ( ( is_bool( $displayastable ) && $displayastable ) || 'true' == $displayastable ) {
+								if ( 'true' == $display_as_table ) {
 									$output .= "\t</table>\n";
-								} elseif ( ( is_bool( $displayastable ) && ! $displayastable ) || 'false' == $displayastable ) {
+								} elseif ( 'false' == $display_as_table ) {
 									$output .= "\t</ul>\n";
 								}
 							}

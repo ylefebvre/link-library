@@ -16,7 +16,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 		$options['afteritem']         = '</li>';
 		$options['beforedesc']        = '';
 		$options['afterdesc']         = '';
-		$options['displayastable']    = false;
+		$options['displayastable']    = 'false';
 		$options['beforelink']        = '';
 		$options['afterlink']         = '';
 		$options['showcolumnheaders'] = false;
@@ -45,7 +45,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 		$options['afteritem']         = '</tr>';
 		$options['beforedesc']        = '<td>';
 		$options['afterdesc']         = '</td>';
-		$options['displayastable']    = true;
+		$options['displayastable']    = 'true';
 		$options['beforelink']        = '<td>';
 		$options['afterlink']         = '</td>';
 		$options['showcolumnheaders'] = true;

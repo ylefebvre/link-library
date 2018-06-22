@@ -3264,7 +3264,6 @@ class link_library_plugin_admin {
 							<?php if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) { ?>
 								<option value="catlist"<?php selected( $options['order'] == 'catlist' ); ?>><?php _e( 'Order of categories based on included category list', 'link-library' ); ?></option>
 							<?php } ?>
-							<option value="order"<?php selected( $options['order'] == 'order' ); ?>><?php _e( 'Order by', 'link-library' ); ?> 'My Link Order' <?php _e( 'Wordpress Plugin', 'link-library' ); ?></option>
 						</select>
 					</td>
 					<td style='width:100px'></td>
@@ -3293,10 +3292,10 @@ class link_library_plugin_admin {
 						<input type="checkbox" id="showcatonsearchresults" name="showcatonsearchresults" <?php checked( $options['showcatonsearchresults'] ); ?>/></td>
 				</tr>
 				<tr>
-					<td class="lltooltip" title="<?php _e( 'This setting does not apply when selecting My Link Order for the order', 'link-library' ); ?>">
+					<td class="lltooltip">
 						<?php _e( 'Direction', 'link-library' ); ?>
 					</td>
-					<td class="lltooltip" title="<?php _e( 'This setting does not apply when selecting My Link Order for the order', 'link-library' ); ?>">
+					<td class="lltooltip">
 						<select name="direction" id="direction" style="width:100px;">
 							<option value="ASC"<?php selected( $options['direction'] == 'ASC' ); ?>><?php _e( 'Ascending', 'link-library' ); ?></option>
 							<option value="DESC"<?php selected( $options['direction'] == 'DESC' ); ?>><?php _e( 'Descending', 'link-library' ); ?></option>
@@ -3412,7 +3411,6 @@ class link_library_plugin_admin {
 					<select name="linkorder" id="linkorder" style="width:250px;">
 						<option value="name"<?php selected( $options['linkorder'] == 'name' ); ?>><?php _e( 'Order by Name', 'link-library' ); ?></option>
 						<option value="id"<?php selected ( $options['linkorder'] == 'id' ); ?>><?php _e( 'Order by ID', 'link-library' ); ?></option>
-						<option value="order"<?php selected ( $options['linkorder'] == 'order' ); ?>><?php _e( 'Order set by ', 'link-library' ); ?>'My Link Order' <?php _e( 'Wordpress Plugin', 'link-library' ); ?></option>
 						<option value="random"<?php selected( $options['linkorder'] == 'random' ); ?>><?php _e( 'Order randomly', 'link-library' ); ?></option>
 						<option value="date"<?php selected( $options['linkorder'] == 'date' ); ?>><?php _e( 'Order by updated date', 'link-library' ); ?></option>
 						<option value="hits"<?php selected( $options['linkorder'] == 'hits' ); ?>><?php _e( 'Order by number of link visits', 'link-library' ); ?></option>
@@ -3464,10 +3462,10 @@ class link_library_plugin_admin {
 				</td>
 			</tr>
 			<tr>
-				<td class="lltooltip" title='<?php _e( 'Except for My Link Order mode', 'link-library' ); ?>'>
+				<td class="lltooltip">
 					<?php _e( 'Direction', 'link-library' ); ?>
 				</td>
-				<td class="lltooltip" title='<?php _e( 'Except for My Link Order mode', 'link-library' ); ?>'>
+				<td class="lltooltip">
 					<select name="linkdirection" id="linkdirection" style="width:200px;">
 						<option value="ASC"<?php selected( $options['linkdirection'] == 'ASC' ); ?>><?php _e( 'Ascending', 'link-library' ); ?></option>
 						<option value="DESC"<?php selected( $options['linkdirection'] == 'DESC' ); ?>><?php _e( 'Descending', 'link-library' ); ?></option>
@@ -3490,13 +3488,23 @@ class link_library_plugin_admin {
 				</td>
 				<td></td>
 				<td>
-					<?php _e( 'Link Display Format', 'link-library' ); ?>
+					<?php
+						_e( 'Link Display Format', 'link-library' );
+
+						if ( is_bool( $options['displayastable'] ) && $options['displayastable'] ) {
+							$display_as_table = 'true';
+						} elseif( is_bool( $options['displayastable'] ) && !$options['displayastable'] ) {
+							$display_as_table = 'false';
+						} elseif ( in_array( $options['displayastable'], array( 'true', 'false', 'nosurroundingtags' ) ) ) {
+							$display_as_table = $options['displayastable'];
+						}
+					?>
 				</td>
 				<td>
 					<select name="displayastable" id="displayastable" style="width:200px;">
-						<option value="true"<?php selected( $options['displayastable'], 'true' ); ?>><?php _e( 'Table', 'link-library' ); ?></option>
-						<option value="false"<?php selected( !$options['displayastable'], 'false' ); ?>><?php _e( 'Unordered List', 'link-library' ); ?></option>
-						<option value="nosurroundingtags"<?php selected( $options['displayastable'], 'nosurroundingtags' ); ?>><?php _e( 'No surrounding tags', 'link-library' ); ?></option>
+						<option value="true"<?php selected( $display_as_table === 'true' ); ?>><?php _e( 'Table', 'link-library' ); ?></option>
+						<option value="false"<?php selected( $display_as_table === 'false' ); ?>><?php _e( 'Unordered List', 'link-library' ); ?></option>
+						<option value="nosurroundingtags"<?php selected( $display_as_table, 'nosurroundingtags' ); ?>><?php _e( 'No surrounding tags', 'link-library' ); ?></option>
 					</select>
 				</td>
 			</tr>

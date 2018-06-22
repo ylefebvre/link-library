@@ -59,6 +59,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.14 =
+* Fixes for link display format selector
+* Fixes for table layout when using combined results option
+* Removed references to My Link Order plugin since it is no longer supported
+
 = 6.0.13 =
 * Fixed Edit links not appearing for links since 6.0
 
