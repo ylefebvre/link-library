@@ -810,7 +810,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				} elseif ( $the_link_query->found_posts && $onlycount ) {
 					return $the_link_query->found_posts;
 				} elseif ( ( $the_link_query->found_posts || !$hide_if_empty || $cat_has_children ) && !$onlycount ) {
-					if ( $the_link_query->have_posts() || !$hide_if_empty || $cat_has_children ) {
+					if ( ( $the_link_query->have_posts() || !$hide_if_empty || $cat_has_children ) && ( empty( $maxlinks ) || 0 == $maxlinks | $linkcount <= $maxlinks ) ) {
 						if ( ! $combineresults ) {
 							$currentcategoryid = $link_category->term_id;
 							$output .= '<div class="LinkLibraryCat LinkLibraryCat' . $currentcategoryid . ( $level == 0 ? '' : ' childlevel'). ' level' . $level .'"><!-- Div Category -->';
@@ -2029,6 +2029,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								$linkcount++;
+
+								if ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) {
+									break;
+								}
 
 							}
 
