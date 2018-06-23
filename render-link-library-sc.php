@@ -1045,6 +1045,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							$output .= stripslashes( $beforefirstlink );
 						}
 
+						$display_as_table = 'false';
+
 						if ( is_bool( $displayastable ) && $displayastable ) {
 							$display_as_table = 'true';
 						} elseif( is_bool( $displayastable ) && !$displayastable ) {

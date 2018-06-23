@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.15 =
+* Fix to prevent warning in some configurations of 6.0.14
+
 = 6.0.14 =
 * Fixes for link display format selector
 * Fixes for table layout when using combined results option

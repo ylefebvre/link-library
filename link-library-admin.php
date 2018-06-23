@@ -3491,6 +3491,8 @@ class link_library_plugin_admin {
 					<?php
 						_e( 'Link Display Format', 'link-library' );
 
+						$display_as_table = 'false';
+
 						if ( is_bool( $options['displayastable'] ) && $options['displayastable'] ) {
 							$display_as_table = 'true';
 						} elseif( is_bool( $options['displayastable'] ) && !$options['displayastable'] ) {
