@@ -538,7 +538,7 @@ class link_library_plugin_admin {
 
 	function ll_60_welcome() {
 		echo "
-        <div id='ll-warning' class='updated fade'><p><strong>" . __( 'Welcome to Link Library 6.0', 'link-library' ) . "</strong></p> <p>" . __( 'After many months of beta testing, Link Library 6.0 has finally been released. I hope you will appreciate the new version. If you run into any issues, please use the official plugin forum to ask questions. If you have major issues that prevents your site from working correctly, you can revert back to the previous version until a solution for your issue is available. A link to the previous version is provided below. Here are some of the most commonly asked questions after the upgrade:<br /><br /><strong>FAQ</strong><br /><br />Q: My links have been duplicated one or more times. My links no longer have categories assigned to them.<br />A: Go to the <strong>General Options</strong> section of Link Library and press the <strong>Re-import links</strong> button<br /><br />Q: I can see my links in admin, but they no longer appear on site.<br />A: You are probably using some options with your <strong>[link-library]</strong> shortcode to determine which categories will be displayed. The category IDs have changed when your links were imported into the new version of Link Library. You will need to get the new IDs from the <strong>Categories</strong> page and update your shortcodes.<br /><br />Q: Where did my Links widget go?!?<br />A: The Links widget that you were using was actually not part of Link Library, but part of the core WordPress Link Manager, which Link Library was previously based on. As such, Link Library is no longer compatible with that widget. To create a widget displaying links, you can install a plugin to enable shortcodes in text widgets, then use the Link Library shortcode in a text widget. If you need your links to look different from your main list of links, go to General Options to increase your number of libraries, then configure your new library and use the shortcode to display it in a widget.', 'link-library' ) . "<br /><br /><a target='_blank' href='https://wordpress.org/support/plugin/link-library'>" . __( 'Link Library Support Forum', 'link-library' ) . "</a><br /><a target='_blank' href='https://downloads.wordpress.org/plugin/link-library.LinkLibrary_5.9.15.8.zip'>" . __( 'Download previous version of Link Library', 'link-library' ) . "</a><br /><br /><a class='button' href='" . esc_url( add_query_arg( array( 'post_type' => 'link_library_links', 'dismiss_ll_60_welcome' => 1 ), admin_url( 'edit.php' ) ) ) . "'>Dismiss this message</a></p></div>";
+        <div id='ll-warning' class='updated fade'><p><strong>" . __( 'Welcome to Link Library 6.0', 'link-library' ) . "</strong></p> <p>" . __( 'After many months of beta testing, Link Library 6.0 has finally been released. I hope you will appreciate the new version. If you run into any issues, please use the official plugin forum to ask questions. If you have major issues that prevents your site from working correctly, you can revert back to the previous version until a solution for your issue is available. A link to the previous version is provided below. Here are some of the most commonly asked questions after the upgrade:<br /><br /><strong>FAQ</strong><br /><br />Q: My links have been duplicated one or more times. My links no longer have categories assigned to them.<br />A: Go to the <strong>General Options</strong> section of Link Library and press the <strong>Re-import links</strong> button<br /><br />Q: I can see my links in admin, but they no longer appear on site.<br />A: You are probably using some options with your <strong>[link-library]</strong> shortcode to determine which categories will be displayed. The category IDs have changed when your links were imported into the new version of Link Library. You will need to get the new IDs from the <strong>Categories</strong> page and update your shortcodes.<br /><br />Q: Where did my Links widget go?!?<br />A: The Links widget that you were using was actually not part of Link Library, but part of the core WordPress Link Manager, which Link Library was previously based on. As such, Link Library is no longer compatible with that widget. To create a widget displaying links, you can use the new Link Library widget and select one of your library configurations. If you need your links in the widget to look different from your main list of links, go to General Options to increase your number of libraries, then configure your new library and select it in the widget configuration.', 'link-library' ) . "<br /><br /><a target='_blank' href='https://wordpress.org/support/plugin/link-library'>" . __( 'Link Library Support Forum', 'link-library' ) . "</a><br /><a target='_blank' href='https://downloads.wordpress.org/plugin/link-library.LinkLibrary_5.9.15.8.zip'>" . __( 'Download previous version of Link Library', 'link-library' ) . "</a><br /><br /><a class='button' href='" . esc_url( add_query_arg( array( 'post_type' => 'link_library_links', 'dismiss_ll_60_welcome' => 1 ), admin_url( 'edit.php' ) ) ) . "'>Dismiss this message</a></p></div>";
 	}
 
 	function ll_missing_categories() {
@@ -2575,6 +2575,7 @@ class link_library_plugin_admin {
 		$genoptions  = $data['genoptions'];
 		?>
 		<div style='padding-top:15px' id="ll-singleitem" class="content-section">
+			<p>This section allows you to specify a template for individual link pages. These individual pages will be shown to visitors if you set the Link Source to Dedicated Page under the Advanced settings of Library Configurations and allow users to create a more complete internal page describing an external link, before visitors go to this external page.</p>
 			<?php
 			$editorsettings = array( 'media_buttons' => false,
 			                         'textarea_rows' => 15,
@@ -2582,6 +2583,49 @@ class link_library_plugin_admin {
 			                         'wpautop' => false );
 
 			wp_editor( isset( $genoptions['single_link_layout'] ) ? stripslashes( $genoptions['single_link_layout'] ) : '', 'single_link_layout', $editorsettings ); ?>
+			<p>The codes that are available to put in this layout template are:</p>
+			<table>
+				<tr>
+					<th>Tag Name</th>
+					<th>Description</th>
+				</tr>
+				<tr>
+					<td>[the_content]</td>
+					<td>Text added in the new full-page content field of the link editor</td>
+				</tr>
+				<tr>
+					<td>[link_title]</td>
+					<td>The name of the link, text only</td>
+				</tr>
+				<tr>
+					<td>[link]</td>
+					<td>Link title, with link tag and link url</td>
+				</tr>
+				<tr>
+					<td>[link_address]</td>
+					<td>Link URL only, without link tag</td>
+				</tr>
+				<tr>
+					<td>[link_description]</td>
+					<td>The link description</td>
+				</tr>
+				<tr>
+					<td>[link_large_description]</td>
+					<td>The link large description</td>
+				</tr>
+				<tr>
+					<td>[link_image]</td>
+					<td>Link image URL. You need to add img src tag or other code to display image.</td>
+				</tr>
+				<tr>
+					<td>[link_price]</td>
+					<td>Link item price</td>
+				</tr>
+				<tr>
+					<td>[link_price_or_free]</td>
+					<td>Display link price, or the word Free if the price is 0</td>
+				</tr>
+			</table>
 		</div>
 		<?php
 	}
@@ -5553,6 +5597,7 @@ class link_library_plugin_admin {
 	}
 
 	function ll_add_columns( $columns ) {
+		$columns['link_library_updated'] = 'Updated';
 		$columns['link_library_url'] = 'URL';
 		$columns['link_library_categories'] = 'Categories';
 		$columns['link_library_rating'] = 'Rating';
@@ -5563,7 +5608,20 @@ class link_library_plugin_admin {
 	}
 
 	function ll_populate_columns( $column ) {
-		if ( 'link_library_url' == $column ) {
+		if ( 'link_library_updated' == $column ) {
+			$link_updated = get_post_meta( get_the_ID(), 'link_updated', true );
+
+			$updated_time = new DateTime;
+			$updated_time->setTimestamp( $link_updated );
+			$current_time = new DateTime();
+			$date_diff = $current_time->diff( $updated_time, true);
+
+			if ( $date_diff->days <= 7 ) {
+				echo '<strong>** RECENTLY UPDATED **</strong><br />';
+			}
+
+			echo date( "Y-m-d H:i", $link_updated );
+		} elseif ( 'link_library_url' == $column ) {
 			$link_url = esc_url( get_post_meta( get_the_ID(), 'link_url', true ) );
 			echo '<a href="' . $link_url . '">' . $link_url . '</a>';
 		} elseif ( 'link_library_categories' == $column ) {

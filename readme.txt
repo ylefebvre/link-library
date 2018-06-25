@@ -59,6 +59,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.20 =
+* Added new column in Link Library admin list to show updated date and display text when links have been recently updated
+* Added information about single item layout, along with list of fields that can be used in template
+* Introduced new widget. Users only need to select a display configuration
+
 = 6.0.19 =
 * Fix user-submitted links with user-submitted categories missing category
 

@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.19
+Version: 6.0.20
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -1247,3 +1247,75 @@ if ( is_admin() ) {
 		$my_link_library_plugin_admin = new link_library_plugin_admin();
 	}
 }
+
+add_action( 'widgets_init', 'll_create_widgets' );
+
+function ll_create_widgets() {
+	register_widget( 'Link_Library_Widget' );
+}
+
+class Link_Library_Widget extends WP_Widget {
+	// Construction function
+	function __construct () {
+		parent::__construct( 'link_library', 'Link Library',
+			array( 'description' =>
+				       'Displays links as configured under Link Library configurations' ) );
+	}
+
+	function form( $instance ) {
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+		$selected_library = ( !empty( $instance['selected_library'] ) ? $instance['selected_library'] : 1 );
+		$widget_title = ( !empty( $instance['widget_title'] ) ? esc_attr( $instance['widget_title'] ) : 'Links' );
+		?>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'widget_title' ); ?>">
+				<?php echo 'Widget Title:'; ?>
+				<input type="text"
+				       id="<?php echo $this->get_field_id( 'widget_title' );?>"
+				       name="<?php echo $this->get_field_name( 'widget_title' ); ?>"
+				       value="<?php echo $widget_title; ?>" />
+			</label>
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'nb_book_reviews' ); ?>">
+				<?php echo 'Select library configuration to display:'; ?>
+				<select id="<?php echo $this->get_field_id( 'selected_library' ); ?>"
+				        name="<?php echo $this->get_field_name( 'selected_library' ); ?>">
+					<?php if ( empty( $genoptions['numberstylesets'] ) ) {
+							$numberofsets = 1;
+						} else {
+							$numberofsets = $genoptions['numberstylesets'];
+						}
+
+						for ( $counter = 1; $counter <= $numberofsets; $counter ++ ) {
+							$tempoptionname = "LinkLibraryPP" . $counter;
+							$tempoptions          = get_option( $tempoptionname );
+
+							echo '<option value="' . $counter . '" ' . selected( $selected_library, $counter ) . '>' . $tempoptions['settingssetname'] . '</option>';
+						}
+						?>
+				</select>
+			</label>
+		</p>
+	<?php }
+
+	function widget( $args, $instance ) {
+		// Extract members of args array as individual variables
+		extract( $args );
+		// Retrieve widget configuration options
+		$selected_library = ( !empty( $instance['selected_library'] ) ? $instance['selected_library'] : 1 );
+		$widget_title = ( !empty( $instance['widget_title'] ) ? esc_attr( $instance['widget_title'] ) : 'Links' );
+
+		// Display widget title
+		echo $before_widget . $before_title;
+		echo apply_filters( 'widget_title', $widget_title );
+		echo $after_title;
+
+		echo do_shortcode( '[link-library settings="' . $selected_library . '"]');
+
+		echo $after_widget;
+	}
+}
+
