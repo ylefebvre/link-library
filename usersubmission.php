@@ -198,7 +198,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 					if ( empty( $existingcat ) ) {
 						$newlinkcat = wp_insert_term( $captureddata['link_user_category'], 'link_library_category', array( 'description' => '', 'slug' => sanitize_text_field( $captureddata['link_user_category'] ) ) );
 
-						$newlinkcat = array( $newlinkcat );
+						$newlinkcat = array( $newlinkcat['term_id'] );
 					} else {
 						$newlinkcat = array( $existingcat->term_id );
 					}
@@ -293,7 +293,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 						$link_category_name = '';
 
-						if ( $captureddata['link_category'] == 'new' && $captureddata['link_user_category'] != '' ) {
+						if ( $captureddata['link_category'] == 'new' && !empty( $captureddata['link_user_category'] ) ) {
 							$link_category_name = $captureddata['link_user_category'];
 						} elseif ( is_int( intval( $captureddata['link_category'] ) ) && 0 != intval( $captureddata['link_category'] ) ) {
 							$existingcat = get_term_by( 'id', $captureddata['link_category'], 'link_library_category' );

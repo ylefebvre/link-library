@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.19 =
+* Fix user-submitted links with user-submitted categories missing category
+
 = 6.0.18 =
 * Added tool in Global Options to export list of category ID mappings between version 5.9 and 6.0
 
