@@ -1741,6 +1741,78 @@ class link_library_plugin_admin {
 			} else {
 				$message = '3';
 			}
+		} elseif ( isset( $_POST['ll60catmapping'] ) ) {
+			$upload_dir = wp_upload_dir();
+
+			if ( is_writable( $upload_dir['path'] ) ) {
+				$myFile = $upload_dir['path'] . "/LinkLibraryCatMapping.csv";
+				$fh = fopen( $myFile, 'w' ) or die( "can't open file" );
+
+				global $wpdb;
+
+				$all_link_cats_query = 'SELECT distinct t.name, t.term_id, tt.description ';
+				$all_link_cats_query .= 'FROM ' . $this->db_prefix() . 'terms t ';
+				$all_link_cats_query .= 'LEFT JOIN ' . $this->db_prefix() . 'term_taxonomy tt ON (t.term_id = tt.term_id) ';
+				$all_link_cats_query .= 'LEFT JOIN ' . $this->db_prefix() . 'term_relationships tr ON (tt.term_taxonomy_id = tr.term_taxonomy_id) ';
+				$all_link_cats_query .= 'WHERE tt.taxonomy = "link_category" ';
+				$all_link_cats_query .= 'ORDER by t.term_id ASC ';
+
+				$all_link_cats = $wpdb->get_results( $all_link_cats_query );
+
+				if ( !empty( $all_link_cats ) ) {
+					$link_cat_items = array();
+					foreach ( $all_link_cats as $link_cat ) {
+						$link_cat_object = array();
+						$link_cat_object['Category Name'] = $link_cat->name;
+						$link_cat_object['Version 5.9 Category ID'] = $link_cat->term_id;
+
+						$cat_string = $link_cat->name;
+						$cat_matched_term = get_term_by( 'name', $cat_string, 'link_library_category' );
+
+						if ( false !== $cat_matched_term ) {
+							$link_cat_object['Version 6.0 Category ID'] = $cat_matched_term->term_id;
+						}
+
+						$link_cat_items[] = $link_cat_object;
+					}
+				}
+
+				if ( $link_cat_items ) {
+					$headerrow = array();
+
+					foreach ( $link_cat_items[0] as $key => $option ) {
+						$headerrow[] = '"' . $key . '"';
+					}
+
+					$headerdata = join( ',', $headerrow ) . "\n";
+					fwrite( $fh, $headerdata );
+
+					foreach ( $link_cat_items as $link_cat_item ) {
+						$datarow = array();
+						foreach ( $link_cat_item as $key => $value ) {
+							$datarow[] = '"' . $value . '"';
+						}
+						$data = join( ',', $datarow ) . "\n";
+						fwrite( $fh, $data );
+					}
+
+					fclose( $fh );
+
+					if ( file_exists( $myFile ) ) {
+						header( 'Content-Description: File Transfer' );
+						header( 'Content-Type: application/octet-stream' );
+						header( 'Content-Disposition: attachment; filename=' . basename( $myFile ) );
+						header( 'Expires: 0' );
+						header( 'Cache-Control: must-revalidate' );
+						header( 'Pragma: public' );
+						header( 'Content-Length: ' . filesize( $myFile ) );
+						readfile( $myFile );
+						exit;
+					}
+				}
+			} else {
+				$message = '3';
+			}
 		} else {
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 
@@ -2273,8 +2345,18 @@ class link_library_plugin_admin {
 					<input type='hidden' value='<?php echo $genoptions['schemaversion']; ?>' name='schemaversion' id='schemaversion' />
 					<table>
 						<tr>
-							<td><?php _e( 'Link Library 6.0 Beta', 'link-library' ); ?></td>
+							<td colspan="2"><h4>Link Library 6.0 Upgrade Tools</h4></td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Re-import', 'link-library' ); ?></td>
 							<td><input type="submit" id="ll60reupdate" name="ll60reupdate" value="<?php _e( 'Re-import links', 'link-library' ); ?>" /></td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Category mapping table', 'link-library' ); ?></td>
+							<td><input type="submit" id="ll60catmapping" name="ll60catmapping" value="<?php _e( 'Export category mapping', 'link-library' ); ?>" /></td>
+						</tr>
+						<tr>
+							<td colspan="2"><h4>General Options</h4></td>
 						</tr>
 						<?php if ( !is_multisite() ) { ?>
 						<tr>
