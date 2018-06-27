@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.24 =
+* Fixed to RSS Feed generation to properly filter links based on category inclusion or exclusion
+
 = 6.0.23 =
 * Correction for extra UL tag displayed when Link Display Format is set to No surrounding tags
 

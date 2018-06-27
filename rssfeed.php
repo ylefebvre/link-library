@@ -42,18 +42,34 @@ function link_library_generate_rss_feed () {
     );
 
     $link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => $options['numberofrssitems'], 'post_status' => 'publish',
-                              'orderby' => 'meta_value', 'meta_key' => 'link_updated', 'order' => 'DESC' );
+                              'orderby' => 'meta_value_num', 'meta_key' => 'link_updated', 'order' => 'DESC' );
 
-    if ( $options['showinvisible'] == false ) {
+    if ( $options['showinvisible'] == true ) {
         $link_query_args['post_status'] = array( 'publish', 'private' );
     }
 
     if ( !empty( $options['categorylist_cpt'] ) ) {
-        $show_one_cat_query_args['include'] = explode( ',', $options['categorylist_cpt'] );
+	    $link_query_args['tax_query'] = array(
+		    array(
+			    'taxonomy' => 'link_library_category',
+			    'field'    => 'term_id',
+			    'terms'    => explode( ',', $options['categorylist_cpt'] ),
+			    'operator'    => 'IN',
+		    ),
+	    );
     }
 
     if ( !empty( $options['excludecategorylist_cpt'] ) ) {
-        $show_one_cat_query_args['exclude'] = explode( ',', $options['excludecategorylist_cpt'] );
+	    if ( !empty( $options['categorylist_cpt'] ) ) {
+		    $link_query_args['tax_query']['relation'] = 'AND';
+	    }
+
+	    $link_query_args['tax_query'][] = array(
+		    'taxonomy' => 'link_library_category',
+		    'field'    => 'term_id',
+		    'terms'    => explode( ',', $options['excludecategorylist_cpt'] ),
+		    'operator'    => 'NOT IN',
+	    );
     }
 
     $the_link_query = new WP_Query( $link_query_args );
