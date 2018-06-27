@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.20
+Version: 6.0.21
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -258,6 +258,41 @@ class link_library_plugin {
 		add_filter( 'wp_feed_cache_transient_lifetime' , array( $this, 'feed_cache_filter_handler' ) );
 
 		add_filter( 'post_type_link', array( $this, 'permalink_structure' ), 10, 4 );
+
+		add_action('auth_redirect', array( $this, 'add_pending_count_filter') ); // modify esc_attr on auth_redirect
+		add_action('admin_menu', array( $this, 'esc_attr_restore' ) ); // restore on admin_menu (very soon)
+	}
+
+	function add_pending_count_filter() {
+		add_filter('attribute_escape', array( $this, 'remove_esc_attr_and_count' ), 20, 2);
+	}
+
+	function esc_attr_restore() {
+		remove_filter('attribute_escape', array( $this, 'remove_esc_attr_and_count' ), 20, 2);
+	}
+
+	function remove_esc_attr_and_count( $safe_text = '', $text = '' ) {
+		if ( substr_count($text, '%%PENDING_COUNT%%') ) {
+			$text = trim( str_replace('%%PENDING_COUNT%%', '', $text) );
+			// run only once!
+			remove_filter('attribute_escape', 'remove_esc_attr_and_count', 20, 2);
+			$safe_text = esc_attr($text);
+			// remember to set the right cpt name below
+			$linkmoderatecount = 0;
+
+			$args = array(
+				'numberposts'   => -1,
+				'post_type'     => 'link_library_links',
+				'post_status'   => array( 'pending' )
+			);
+			$linkmoderatecount = count( get_posts( $args ) );
+			if ( $linkmoderatecount > 0 ) {
+				// we have pending, add the count
+				$text = esc_attr($text) . '<span class="awaiting-mod count-' . $linkmoderatecount . '"><span class="pending-count">' . $linkmoderatecount . '</span></span>';
+				return $text;
+			}
+		}
+		return $safe_text;
 	}
 
 	function feed_cache_filter_handler( $seconds ) {
@@ -285,7 +320,8 @@ class link_library_plugin {
                     'not_found_in_trash' =>
                         'No Links found in Trash',
                     'parent' => 'Parent Link',
-	                'all_items' => 'All Links'
+	                'all_items' => 'All Links',
+					'menu_name' => _x('Link Library %%PENDING_COUNT%%', 'Link Library', 'link-library'),
                 ),
                 'public' => true,
                 'menu_position' => 10,
@@ -353,7 +389,10 @@ class link_library_plugin {
 
 			require plugin_dir_path( __FILE__ ) . 'link-library-update-60.php';
 			link_library_60_update( $this );
-		} else {			
+		} elseif ( isset( $_GET['continue60update'] ) ) {
+			require plugin_dir_path( __FILE__ ) . 'link-library-update-60.php';
+			link_library_60_update( $this, true );
+		} else {
 			if ( ( false == $link_library_60_update && !empty( $genoptions ) ) ) {
 				require plugin_dir_path( __FILE__ ) . 'link-library-update-60.php';
 				link_library_60_update( $this );

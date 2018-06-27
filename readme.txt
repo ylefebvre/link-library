@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.21 =
+* Brought back the moderation link submission notification icon to the top-level Link Library menu
+
 = 6.0.20 =
 * Added new column in Link Library admin list to show updated date and display text when links have been recently updated
 * Added information about single item layout, along with list of fields that can be used in template

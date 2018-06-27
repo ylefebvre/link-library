@@ -1,16 +1,9 @@
 <?php
 
-function link_library_60_update( $plugin_class ) {
+function link_library_60_update( $plugin_class, $continue = false ) {
 	update_option( 'LinkLibrary60Update', true );
 
 	global $wpdb;
-	$prefix = '';
-
-	if ( method_exists( $wpdb, 'get_blog_prefix' ) ) {
-		$prefix = $wpdb->get_blog_prefix();
-	} else {
-		$prefix = $wpdb->prefix;
-	}
 
 	$link_query = 'select count(*) from ' . $plugin_class->db_prefix() . 'links';
 	$link_count = $wpdb->get_var( $link_query );
@@ -47,17 +40,29 @@ function link_library_60_update( $plugin_class ) {
 		$links_import_query .= "GROUP_CONCAT( t.name ) as cat_name, l.link_visible, le.link_second_url, le.link_telephone, le.link_email, le.link_reciprocal, ";
 		$links_import_query .= "l.link_image, le.link_textfield, le.link_no_follow, l.link_rating, l.link_target, l.link_updated, le.link_visits, ";
 		$links_import_query .= "le.link_submitter, le.link_submitter_name, le.link_submitter_email, le.link_addl_rel, le.link_featured, le.link_manual_updated, l.link_owner ";
-		$links_import_query .= "FROM " . $prefix . "terms t ";
-		$links_import_query .= "LEFT JOIN " . $prefix . "term_taxonomy tt ON (t.term_id = tt.term_id) ";
-		$links_import_query .= "LEFT JOIN " . $prefix . "term_relationships tr ON (tt.term_taxonomy_id = tr.term_taxonomy_id) ";
-		$links_import_query .= "LEFT JOIN " . $prefix . "links l ON (tr.object_id = l.link_id) ";
-		$links_import_query .= "LEFT JOIN " . $prefix . "links_extrainfo le ON (l.link_id = le.link_id) ";
+		$links_import_query .= "FROM " . $plugin_class->db_prefix() . "terms t ";
+		$links_import_query .= "LEFT JOIN " . $plugin_class->db_prefix() . "term_taxonomy tt ON (t.term_id = tt.term_id) ";
+		$links_import_query .= "LEFT JOIN " . $plugin_class->db_prefix() . "term_relationships tr ON (tt.term_taxonomy_id = tr.term_taxonomy_id) ";
+		$links_import_query .= "LEFT JOIN " . $plugin_class->db_prefix() . "links l ON (tr.object_id = l.link_id) ";
+		$links_import_query .= "LEFT JOIN " . $plugin_class->db_prefix() . "links_extrainfo le ON (l.link_id = le.link_id) ";
 		$links_import_query .= "WHERE tt.taxonomy = 'link_category' ";
 		$links_import_query .= "GROUP BY l.link_id ";
 
 		$links_to_import = $wpdb->get_results( $links_import_query );
 
 		foreach ( $links_to_import as $link_to_import ) {
+
+			global $wpdb;
+
+			if ( $continue ) {
+				$query = 'SELECT ID FROM ' . $wpdb->posts . ' p, ' . $wpdb->postmeta . ' pm WHERE post_title = "' . $link_to_import->link_name. '" AND post_type = \'link_library_links\' AND p.ID = pm.post_ID and pm.meta_key = "link_url" and pm.meta_value = "' . $link_to_import->link_url . '"';
+				$wpdb->query( $query );
+
+				if ( $wpdb->num_rows ) {
+					continue;
+				}
+			}
+
 			if ( !empty( $link_to_import->link_name ) ) {
 				$matched_link_cats = array();
 				if ( !empty( $link_to_import->cat_name ) ) {
