@@ -304,6 +304,7 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['recaptchasecretkey']           = '';
 	$genoptions['rolelevel']                    = 'Administrator';
 	$genoptions['editlevel']                    = 'Administrator';
+	$genoptions['cptslug']                      = 'links';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

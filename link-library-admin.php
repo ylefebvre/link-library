@@ -1821,7 +1821,7 @@ class link_library_plugin_admin {
 					'numberstylesets', 'includescriptcss', 'pagetitleprefix', 'pagetitlesuffix', 'schemaversion', 'thumbshotscid', 'approvalemailtitle',
 					'moderatorname', 'moderatoremail', 'rejectedemailtitle', 'approvalemailbody', 'rejectedemailbody', 'moderationnotificationtitle',
 					'linksubmissionthankyouurl', 'recipcheckaddress', 'imagefilepath', 'catselectmethod', 'expandiconpath', 'collapseiconpath', 'updatechannel',
-					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel'
+					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2376,10 +2376,14 @@ class link_library_plugin_admin {
 						<tr>
 							<td><?php _e( 'Number of Libraries', 'link-library' ); ?></td>
 							<td>
-								<input type="text" id="numberstylesets" name="numberstylesets" size="5" value="<?php if ( empty( $genoptions['numberstylesets'] ) ) {
-									echo '1';
-								}
-								echo $genoptions['numberstylesets']; ?>" /></td>
+								<input type="text" id="numberstylesets" name="numberstylesets" size="5" value="<?php echo $genoptions['numberstylesets']; ?>" />
+							</td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Link Library Post Slug', 'link-library' ); ?></td>
+							<td>
+								<input type="text" id="cptslug" name="cptslug" size="20" value="<?php echo $genoptions['cptslug']; ?>" />
+							</td>
 						</tr>
 						<tr>
 							<td>Minimum role for Link Library configuration</td>

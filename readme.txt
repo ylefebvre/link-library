@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.22 =
+* Added new general option to be able to change Link Library post slug from default "links"
+
 = 6.0.21 =
 * Brought back the moderation link submission notification icon to the top-level Link Library menu
 
