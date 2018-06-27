@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.23 =
+* Correction for extra UL tag displayed when Link Display Format is set to No surrounding tags
+
 = 6.0.22 =
 * Added new general option to be able to change Link Library post slug from default "links"
 

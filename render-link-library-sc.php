@@ -1164,7 +1164,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							} else {
 								$catstartlist .= '';
 							}
-						} elseif ( ! $combineresults || ( $combineresults && $linkcount > 0 ) ) {
+						} elseif ( $display_as_table === 'false' && ( ! $combineresults || ( $combineresults && $linkcount > 0 ) ) ) {
 							$catstartlist = "\n\t<ul>\n";
 						} else {
 							$catstartlist = '';
