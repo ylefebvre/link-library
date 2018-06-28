@@ -59,6 +59,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.25 =
+* Added button in general option to delete all links in old format
+* Converted new lines from editor to line breaks in single item layout
+* Added [link-category] as tag for single item layout
+
 = 6.0.24 =
 * Fixed to RSS Feed generation to properly filter links based on category inclusion or exclusion
 

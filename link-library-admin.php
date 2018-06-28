@@ -1813,6 +1813,11 @@ class link_library_plugin_admin {
 			} else {
 				$message = '3';
 			}
+		} elseif ( isset( $_POST['deletell59links'] ) ) {
+			global $wpdb;
+
+			$delete_links_query = 'DELETE FROM ' . $this->db_prefix() . 'links ';
+			$wpdb->get_results( $delete_links_query );
 		} else {
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 
@@ -2356,6 +2361,10 @@ class link_library_plugin_admin {
 							<td><input type="submit" id="ll60catmapping" name="ll60catmapping" value="<?php _e( 'Export category mapping', 'link-library' ); ?>" /></td>
 						</tr>
 						<tr>
+							<td><?php _e( 'Delete old Link Library 5.9 Links', 'link-library' ); ?></td>
+							<td><input type="submit" id="deletell59links" name="deletell59links" value="<?php _e( 'Delete old links', 'link-library' ); ?>" /></td>
+						</tr>
+						<tr>
 							<td colspan="2"><h4>General Options</h4></td>
 						</tr>
 						<?php if ( !is_multisite() ) { ?>
@@ -2594,7 +2603,7 @@ class link_library_plugin_admin {
 					<th>Description</th>
 				</tr>
 				<tr>
-					<td>[the_content]</td>
+					<td>[link_content]</td>
 					<td>Text added in the new full-page content field of the link editor</td>
 				</tr>
 				<tr>
@@ -2616,6 +2625,10 @@ class link_library_plugin_admin {
 				<tr>
 					<td>[link_large_description]</td>
 					<td>The link large description</td>
+				</tr>
+				<tr>
+					<td>[link_category]</td>
+					<td>Category or categories that are assigned to link, listed in alphabetical order and separated with commas</td>
 				</tr>
 				<tr>
 					<td>[link_image]</td>

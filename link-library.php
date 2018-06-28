@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.24
+Version: 6.0.25
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -1209,8 +1209,20 @@ class link_library_plugin {
 				$link_large_description = get_post_meta( get_the_ID(), 'link_textfield', true );
 				$link_image = esc_url( get_post_meta( get_the_ID(), 'link_image', true ) );
 				$link_price = number_format( floatval( get_post_meta( get_the_ID(), 'link_price', true ) ), 2 );
-				$link_price_currency = $this->ll_get_string_between( $content, '[currency]', '[/currency]' );				
-				$link_price_currency_or_free = $this->ll_get_string_between( $content, '[currency_or_free]', '[/currency_or_free]' );				
+				$link_price_currency = $this->ll_get_string_between( $content, '[currency]', '[/currency]' );
+				$link_price_currency_or_free = $this->ll_get_string_between( $content, '[currency_or_free]', '[/currency_or_free]' );
+				$link_terms = wp_get_post_terms( get_the_ID(), 'link_library_category' );
+				$link_terms_list = '';
+				$link_terms_array = array();
+				if ( is_array( $link_terms ) ) {
+					foreach( $link_terms as $link_term ) {
+						$link_terms_array[] = $link_term->name;
+					}
+
+					if ( !empty( $link_terms_array ) ) {
+						$link_terms_list = implode( ', ', $link_terms_array );
+					}
+				}
 
 				$content = str_replace( '[link_title]', $link->post_title, $content );
 				$content = str_replace( '[link_content]', $link->post_content, $content );
@@ -1231,10 +1243,11 @@ class link_library_plugin {
 
 				$content = str_replace( '[link_address]', $link_url, $content );
 				$content = str_replace( '[link]', '<a href="' . $link_url . '">' . $link->post_title . '</a>', $content );
+				$content = str_replace( '[link_category]', $link_terms_list, $content );
 			}
 		}
 
-		return $content;
+		return nl2br( $content );
 	}
 
     function link_library_ajax_tracker() {
