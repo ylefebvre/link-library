@@ -154,7 +154,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			$reciprocal_domain = $parsed_new_reciprocal['host'];
 
 			$reciprocal_links = array('');
-			$reciprocal_query = new WP_Query( 'post_type=link_library_links' );
+			$reciprocal_query = new WP_Query( array( 'post_type' => 'link_library_links', 'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ) ) );
 			if ( $reciprocal_query->have_posts() ) {
 				while ( $reciprocal_query->have_posts() ) {
 					$reciprocal_query->the_post();
@@ -163,6 +163,8 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 					array_push( $reciprocal_links, $the_answer );
 				}
 			}
+
+			wp_reset_postdata();
 			$reciprocal_links = array_unique( $reciprocal_links );
 			$reciprocal_links = sort( $reciprocal_links );
 

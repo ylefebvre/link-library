@@ -594,6 +594,7 @@ class link_library_plugin_admin {
 		if ( !empty( $pending_links_query ) ) {
 			$linkmoderatecount = $pending_links_query->found_posts;
 		}
+		wp_reset_postdata();
 
 		echo '<strong>' . $linkmoderatecount . '</strong> ';
 		_e( 'Links to moderate', 'link-library' );
@@ -759,7 +760,7 @@ class link_library_plugin_admin {
 					$genmode = 'favicon';
 				}
 
-				$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
+				$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1, 'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ) );
 
 				if ( $options['categorylist_cpt'] != "" && !isset( $_GET['genthumbsingle'] ) && !isset( $_GET['genfaviconsingle'] ) ) {
 					$link_query_args['tax_query'] = array(
@@ -789,6 +790,8 @@ class link_library_plugin_admin {
 						}
 						$linkname = get_the_title();
 					}
+
+					wp_reset_postdata();
 
 					if ( isset( $_GET['genthumbs'] ) ) {
 						echo "<div id='message' class='updated fade'><p><strong>" . __( 'Thumbnails successfully generated!', 'link-library' ) . "</strong></p></div>";
@@ -1660,7 +1663,7 @@ class link_library_plugin_admin {
 				$myFile = $upload_dir['path'] . "/LinksExport.csv";
 				$fh = fopen( $myFile, 'w' ) or die( "can't open file" );
 
-				$links_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
+				$links_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1, 'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ) );
 
 				$links_to_export = new WP_Query( $links_query_args );
 
@@ -1704,6 +1707,8 @@ class link_library_plugin_admin {
 						$link_items[] = $link_object;
 					}
 				}
+
+				wp_reset_postdata();
 
 				if ( $link_items ) {
 					$headerrow = array();
@@ -2923,7 +2928,10 @@ class link_library_plugin_admin {
 					<td></td>
 					<td></td>
 				</tr>
-			<?php } ?>
+			<?php }
+
+			wp_reset_postdata();
+			?>
 
 		</table><br />
 		<input type="button" id="CheckAll" value="<?php _e( 'Check All', 'link-library' ); ?>">
@@ -5819,9 +5827,9 @@ class link_library_plugin_admin {
 		echo "<strong>" . __( 'Duplicate URLs', 'link-library' ) . "</strong><br /><br />";
 		$linkquery = "SELECT p.ID, p.post_title, pm.meta_value FROM " . $ll_admin_class->db_prefix() . "posts p, " . $ll_admin_class->db_prefix() . "postmeta pm INNER JOIN";
 		$linkquery .= "(SELECT trim( TRAILING '/' FROM meta_value ) as trim_link_url ";
-		$linkquery .= "FROM " . $ll_admin_class->db_prefix() . "posts p, " . $ll_admin_class->db_prefix() . "postmeta pm where pm.post_id = p.ID and pm.meta_key = 'link_url' and p.post_type = 'link_library_links' GROUP BY meta_value HAVING count(p.ID) > 1) dup ";
+		$linkquery .= "FROM " . $ll_admin_class->db_prefix() . "posts p, " . $ll_admin_class->db_prefix() . "postmeta pm where pm.post_id = p.ID and pm.meta_key = 'link_url' and p.post_type = 'link_library_links' and p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) GROUP BY meta_value HAVING count(p.ID) > 1) dup ";
 		$linkquery .= "ON pm.meta_value = dup.trim_link_url ";
-		$linkquery .= "WHERE p.ID = pm.post_id and p.post_type = 'link_library_links' and pm.meta_key = 'link_url' ";
+		$linkquery .= "WHERE p.ID = pm.post_id and p.post_type = 'link_library_links' and pm.meta_key = 'link_url' and p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' )";
 
 		$links  = $wpdb->get_results( $linkquery );
 
@@ -5837,9 +5845,9 @@ class link_library_plugin_admin {
 
 		$linkquery = "SELECT p.ID, p.post_title FROM " . $ll_admin_class->db_prefix() . "posts p INNER JOIN";
 		$linkquery .= "(SELECT trim( TRAILING '/' FROM post_title ) as trim_post_title ";
-		$linkquery .= "FROM " . $ll_admin_class->db_prefix() . "posts p GROUP BY post_title HAVING count(p.ID) > 1) dup ";
+		$linkquery .= "FROM " . $ll_admin_class->db_prefix() . "posts p WHERE p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) GROUP BY post_title HAVING count(p.ID) > 1) dup ";
 		$linkquery .= "ON p.post_title = dup.trim_post_title ";
-		$linkquery .= "WHERE p.post_type = 'link_library_links' ";
+		$linkquery .= "WHERE p.post_type = 'link_library_links' AND p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) ";
 
 		$links  = $wpdb->get_results( $linkquery );
 
@@ -5861,13 +5869,13 @@ function link_library_reciprocal_link_checker( $ll_admin_class, $RecipCheckAddre
 	if ( ! empty( $RecipCheckAddress ) || ( empty( $RecipCheckAddress ) && 'reciprocal' != $check_type ) ) {
 		$args = array(
 			'post_type' => 'link_library_links',
+			'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ),
 			'orderby' => 'post_title',
 			'order' => 'ASC',
 			'meta_value' => ' ',
 			'meta_compare' => '!=',
 			'posts_per_page' => -1
 		);
-
 
 		if ( 'reciprocal' == $check_type ) {
 			$args['meta_key'] = 'link_reciprocal';
@@ -5918,6 +5926,8 @@ function link_library_reciprocal_link_checker( $ll_admin_class, $RecipCheckAddre
 		} else {
 			echo __( 'There are no links with reciprocal links associated with them', 'link-library' ) . ".<br />";
 		}
+
+		wp_reset_postdata();
 	}
 }
 

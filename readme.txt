@@ -59,6 +59,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.27 =
+* Fixes to tools such as duplicate checker and thumbnail generator so they no longer consider trashed links
+
+= 6.0.26 =
+* Added calls to wp_reset_post data. In some circumstances, not calling this caused some strange behaviour on some sites
+
 = 6.0.25 =
 * Added button in general option to delete all links in old format
 * Converted new lines from editor to line breaks in single item layout

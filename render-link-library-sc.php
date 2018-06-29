@@ -2159,5 +2159,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$output .= "\n<!-- End of Link Library Output -->\n\n";
 	}
 
+	wp_reset_postdata();
+
 	return do_shortcode( $output );
 }

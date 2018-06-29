@@ -246,6 +246,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
 	            $the_link_query = new WP_Query( $link_query_args );
 	            $linkcount = $the_link_query->post_count;
+	            wp_reset_postdata();
 
                 // Display the category name
                 $countcat += 1;
