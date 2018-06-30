@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.28 =
+* Fix to category drop-down list so that it does not show excluded categories when showing one category at a time
+
 = 6.0.27 =
 * Fixes to tools such as duplicate checker and thumbnail generator so they no longer consider trashed links
 

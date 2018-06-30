@@ -123,7 +123,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
             add_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending', 10, 3 );
         }
 
-        if ( ( !empty( $categorylist_cpt ) || isset( $_GET['cat_id'] ) ) && empty( $singlelinkid ) ) {
+        if ( !empty( $categorylist_cpt ) && empty( $singlelinkid ) ) {
             $link_categories_query_args['include'] = explode( ',', $categorylist_cpt );
         }
 
@@ -155,6 +155,16 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
         $link_categories = get_terms( 'link_library_category', $link_categories_query_args );
         remove_filter( 'get_terms', 'link_library_get_terms_filter' );
+
+	    if ( !empty( $link_categories_query_args['include'] ) && !empty( $link_categories_query_args['exclude'] ) ) {
+		    foreach( $link_categories as $link_key => $linkcat ) {
+			    foreach( $link_categories_query_args['exclude'] as $excludedcat ) {
+				    if ( $linkcat->term_id == $excludedcat ) {
+					    unset( $link_categories[$link_key] );
+				    }
+			    }
+		    }
+	    }
 
         if ( 'catlist' == $order ) {
             $temp_link_categories = $link_categories;
