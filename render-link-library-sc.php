@@ -570,7 +570,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$link_categories = get_terms( 'link_library_category', $link_categories_query_args );
 		remove_filter( 'get_terms', 'link_library_get_terms_filter' );
 
-		if ( 'catlist' == $order ) {
+		if ( 'catlist' == $order && is_array( $link_categories ) && !empty( $link_categories_query_args['include'] ) ) {
 			$temp_link_categories = $link_categories;
 			$link_categories = array();
 			foreach ( $link_categories_query_args['include'] as $sort_link_category_id ) {

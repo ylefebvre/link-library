@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.29 =
+* Fix for PHP warning if categories are set to be displayed in list order and no included categories are specified
+
 = 6.0.28 =
 * Fix to category drop-down list so that it does not show excluded categories when showing one category at a time
 
