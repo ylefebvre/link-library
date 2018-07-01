@@ -2040,7 +2040,8 @@ class link_library_plugin_admin {
 					'showaddlinksubmitteremail', 'showlinksubmittercomment', 'showuserlargedescription', 'cat_letter_filter', 'beforefirstlink', 'afterlastlink',
 					'searchfieldtext', 'catfilterlabel', 'searchnoresultstext', 'addlinkdefaultcat', 'beforesubmittername', 'aftersubmittername',
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
-					'toppagetext', 'updatedlabel', 'weblinktarget'
+					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
+					'addlinkcustomtag', 'linkcustomtaglistentry'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2881,6 +2882,7 @@ class link_library_plugin_admin {
 				<th style='width: 30px'></th>
 				<th style='width: 200px'><?php _e( 'Link Name', 'link-library' ); ?></th>
 				<th style='width: 200px'><?php _e( 'Link Category', 'link-library' ); ?></th>
+				<th style='width: 200px'><?php _e( 'Link Tags', 'link-library' ); ?></th>
 				<th style='width: 300px'><?php _e( 'Link URL', 'link-library' ); ?></th>
 				<th><?php _e( 'Link Description', 'link-library' ); ?></th>
 			</tr>
@@ -2897,14 +2899,27 @@ class link_library_plugin_admin {
 					$link_description = esc_html( get_post_meta( get_the_ID(), 'link_description', true ) );
 					$link_categories = wp_get_post_terms( get_the_ID(), 'link_library_category' );
 					$link_cat_string = '';
-					if ( $link_categories ) {
-						$countcats = 0;
+					if ( !empty( $link_categories ) ) {
+						$link_cat_array = array();
 						foreach ( $link_categories as $link_category ) {
-							if ( $countcats >= 1 ) {
-								$link_cat_string .= ', ';
-							}
-							$link_cat_string .= $link_category->name;
-							$countcats++;
+							$link_cat_array[] = $link_category->name;
+						}
+						if ( !empty( $link_cat_array ) ) {
+							$link_cat_string = implode( ', ', $link_cat_array );
+						}
+					} else {
+						echo 'None Assigned';
+					}
+
+					$link_tags = wp_get_post_terms( get_the_ID(), 'link_library_tags' );
+					$link_tags_string = '';
+					if ( !empty( $link_tags ) ) {
+						$link_tags_array = array();
+						foreach ( $link_tags as $link_tag ) {
+							$link_tags_array[] = $link_tag->name;
+						}
+						if ( !empty( $link_tags_array ) ) {
+							$link_tags_string = implode( ', ', $link_tags_array );
 						}
 					} else {
 						echo 'None Assigned';
@@ -2915,6 +2930,7 @@ class link_library_plugin_admin {
 						<td><input type="checkbox" name="links[]" value="<?php echo get_the_ID(); ?>" /></td>
 						<td><?php echo "<a title='Edit Link: " . get_the_title() . "' href='" . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => get_the_ID() ), admin_url( 'post.php' ) ) ) . "'>" . get_the_title() . "</a>"; ?></td>
 						<td><?php echo $link_cat_string; ?></td>
+						<td><?php echo $link_tags_string; ?></td>
 						<td><?php echo "<a href='" . $link_url . "'>" . $link_url . "</a>"; ?></td>
 						<td><?php echo $link_description; ?></td>
 					</tr>
@@ -4854,6 +4870,50 @@ class link_library_plugin_admin {
 			} ?>
 			<td colspan=3>
 				<input type="text" id="linkcustomcatlistentry" name="linkcustomcatlistentry" size="50" value="<?php echo $options['linkcustomcatlistentry']; ?>" />
+			</td>
+			<td style='width:200px'></td>
+		</tr>
+		<tr>
+			<td style='width:200px'><?php _e( 'Tags label', 'link-library' ); ?></td>
+			<?php if ( empty( $options['linktagslabel'] ) ) {
+				$options['linktagslabel'] = __( 'Link Tags', 'link-library' );
+			} ?>
+			<td>
+				<input type="text" id="linktagslabel" name="linktagslabel" size="30" value="<?php echo $options['linktagslabel']; ?>" />
+			</td>
+			<td>
+				<select name="showaddlinktags" id="showaddlinktags" style="width:60px;">
+					<option value="hide"<?php selected( $options['showaddlinktags'] == 'hide' ); ?>><?php _e( 'Hide', 'link-library' ); ?></option>
+					<option value="show"<?php selected( $options['showaddlinktags'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
+				</select>
+			</td>
+			<td style='width: 20px'></td>
+			<td style='width:200px' class='lltooltip' title='<?php _e( 'Comma-seperated list of tag IDs to be displayed in category selection box (e.g. 1,5,4) instead of displaying all tags', 'link-library' ); ?>'><?php _e( 'Link tags override selection list', 'link-library' ); ?></td>
+			<td colspan=3 class='lltooltip' title='<?php _e( 'Comma-seperated list of tag IDs to be displayed in category selection box (e.g. 1,5,4)', 'link-library' ); ?>'>
+				<input type="text" id="addlinktaglistoverride" name="addlinktaglistoverride" size="50" value="<?php echo $options['addlinktaglistoverride']; ?>" />
+			<td style='width:200px'></td>
+		</tr>
+		<tr>
+			<td style='width:200px'><?php _e( 'User-submitted tags label', 'link-library' ); ?></td>
+			<?php if ( $options['linkcustomtaglabel'] == "" ) {
+				$options['linkcustomtaglabel'] = __( 'User-submitted tags', 'link-library' );
+			} ?>
+			<td>
+				<input type="text" id="linkcustomtaglabel" name="linkcustomtaglabel" size="30" value="<?php echo $options['linkcustomtaglabel']; ?>" />
+			</td>
+			<td>
+				<select name="addlinkcustomtag" id="addlinkcustomtag" style="width:60px;">
+					<option value="hide"<?php selected( $options['addlinkcustomtag'] == 'hide' ); ?>><?php _e( 'No', 'link-library' ); ?></option>
+					<option value="show"<?php selected( $options['addlinkcustomtag'] == 'show' ); ?>><?php _e( 'Allow', 'link-library' ); ?></option>
+				</select>
+			</td>
+			<td></td>
+			<td style='width:200px'><?php _e( 'User-submitted tags prompt', 'link-library' ); ?></td>
+			<?php if ( $options['linkcustomtaglistentry'] == "" ) {
+				$options['linkcustomtaglistentry'] = __( 'User-submitted tag (define below)', 'link-library' );
+			} ?>
+			<td colspan=3>
+				<input type="text" id="linkcustomtaglistentry" name="linkcustomtaglistentry" size="50" value="<?php echo $options['linkcustomtaglistentry']; ?>" />
 			</td>
 			<td style='width:200px'></td>
 		</tr>

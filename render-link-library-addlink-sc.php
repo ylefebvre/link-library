@@ -345,9 +345,80 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             }
 
             if ( 'show' == $addlinkcustomcat ) {
-                $output .= '<tr class="customcatrow" style="display:none"><th>' .  $linkcustomcatlabel . '</th><td><input type="text" name="link_user_category" id="link_user_category" value="' . ( isset( $_GET['addlinkusercat'] ) ? esc_html( stripslashes( $_GET['addlinkusercat'] ), '1' ) : '') . "\" /></td></tr>\n";
+                $output .= '<tr class="customcatrow" ';
+                if ( !isset( $_GET['addlinkusercat'] ) || empty( $_GET['addlinkusercat'] ) ) {
+                	echo 'style="display: none;"';
+                }
+
+                $output .= '><th>' .  $linkcustomcatlabel . '</th><td><input type="text" name="link_user_category" id="link_user_category" value="' . ( isset( $_GET['addlinkusercat'] ) ? esc_html( stripslashes( $_GET['addlinkusercat'] ), '1' ) : '') . "\" /></td></tr>\n";
             }
         }
+
+	    $link_tags_query_args = array( 'hide_empty' => false );
+	    if ( !empty( $include_links_array ) ) {
+		    $link_tags_query_args['include'] = explode( ',', $libraryoptions['addlinktaglistoverride'] );
+	    }
+
+	    $linktags = get_terms( 'link_library_tags', $link_tags_query_args );
+
+	    if ( $linktags ) {
+		    if ( 'show' == $libraryoptions['showaddlinktags'] ) {
+			    if ( empty( $linktagslabel ) ) {
+				    $linktagslabel = __( 'Link tags', 'link-library' );
+			    }
+
+			    $output .= '<tr><th>' . $linktagslabel;
+			    $output .= '<br /><br /><span class="multiselecthelp">';
+			    $output .= __( 'Use control-click (Windows) or command-click (Mac) to select multiple', 'link-library' );
+			    $output .= '</span>';
+
+			    $output .= '</th><td>';
+			    $output .= '<SELECT name="link_tags[]" id="link_tags" ';
+
+			    $number_of_categories = sizeof( $linktags );
+			    $selectheight = 60;
+			    if ( $number_of_categories > 0 ) {
+				    $selectheight = 20;
+				    if ( $selectheight > 200 ) {
+					    $selectheight = 200;
+				    } elseif ( $selectheight < 40 ) {
+					    $selectheight = 60;
+				    }
+			    }
+
+			    $output .= 'multiple style="height: ' . $selectheight . 'px"';
+
+			    $output .= '>';
+
+			    if ( empty( $linkcustomtaglistentry ) ) {
+				    $linkcustomcatlistentry = __( 'User-submitted tag (define below)', 'link-library' );
+			    }
+
+			    foreach ( $linktags as $linktag ) {
+				    $output .= '<OPTION VALUE="' . $linktag->term_id . '" ';
+				    if ( isset( $_GET['addlinktag'] ) && in_array( $linktag->term_id, $_GET['addlinktag'] ) ) {
+					    $output .= "selected";
+				    }
+				    $output .= '>' . $linktag->name;
+			    }
+
+			    if ( 'show' == $addlinkcustomtag ) {
+				    $output .= '<OPTION VALUE="new">' . stripslashes( $linkcustomtaglistentry ) . "\n";
+			    }
+
+			    $output .= "</SELECT></td></tr>\n";
+		    }
+
+		    if ( 'show' == $addlinkcustomtag ) {
+			    $output .= '<tr class="customtagrow" ';
+			    if ( !isset( $_GET['addlinkusertags'] ) || empty( $_GET['addlinkusertags'] ) ) {
+				    echo 'style="display: none;"';
+			    }
+
+			    $output .= '><th>' .  $linkcustomtaglabel . '</th><td><input type="text" name="link_user_tags" id="link_user_tags" value="' . ( isset( $_GET['addlinkusertags'] ) ? esc_html( stripslashes( $_GET['addlinkusertags'] ), '1' ) : '') . "\" /></td></tr>\n";
+		    }
+	    }
+
 
         if ( 'show' == $showaddlinkdesc || 'required' == $showaddlinkdesc ) {
             if ( empty( $linkdesclabel ) ) {
@@ -565,11 +636,11 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             $output .= 'name="ll_submittercomment" id="ll_submittercomment" cols="38">' . ( isset( $_GET['addlinksubmitcomment'] ) ? esc_html( stripslashes( $_GET['addlinksubmitcomment']), '1' ) : '' ) . "</textarea></td></tr>\n";
         }
 
-        if ( $showcaptcha && !is_user_logged_in() ) {
+        if ( $showcaptcha /* && !is_user_logged_in() */ ) {
             $output .= apply_filters( 'link_library_generate_captcha', '' );
         }
 
-        if ( 'show' == $showcustomcaptcha && !is_user_logged_in() ) {
+        if ( 'show' == $showcustomcaptcha /* && !is_user_logged_in() */ ) {
             if ( empty( $customcaptchaquestion ) ) {
                 $customcaptchaquestion = __( 'Is boiling water hot or cold?', 'link-library' );
             }
@@ -653,6 +724,18 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         $output .= "\t\t\t\t};\n";
 	    $output .= "\t\t\t};\n";
         $output .= "\t\t});\n";
+
+	    $output .= "\t\tjQuery('#link_tags').change(function() {\n";
+	    $output .= "\t\tvar tag_data = jQuery('#link_tags').val();\n";
+	    $output .= "\t\t\tif ( Array.isArray( tag_data ) ) {\n";
+	    $output .= "\t\t\t\tif ( tag_data.indexOf('new') != -1 ) {\n";
+	    $output .= "\t\t\t\t\tjQuery('.customtagrow').show();\n";
+	    $output .= "\t\t\t\t} else {\n";
+	    $output .= "\t\t\t\t\tjQuery('.customtagrow').hide();\n";
+	    $output .= "\t\t\t\t};\n";
+	    $output .= "\t\t\t};\n";
+	    $output .= "\t\t});\n";
+
         $output .= "\t});\n";
         $output .= "</script>\n";
     }

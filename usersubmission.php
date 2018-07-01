@@ -24,6 +24,8 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 	$captureddata                           = array();
 	$captureddata['link_category']          = ( isset( $_POST['link_category'] ) ? $_POST['link_category'] : '' );
 	$captureddata['link_user_category']     = ( isset( $_POST['link_user_category'] ) ? $_POST['link_user_category'] : '' );
+	$captureddata['link_tags']              = ( isset( $_POST['link_tags'] ) ? $_POST['link_tags'] : '' );
+	$captureddata['link_user_tags']         = ( isset( $_POST['link_user_tags'] ) ? $_POST['link_user_tags'] : '' );
 	$captureddata['link_description']       = ( isset( $_POST['link_description'] ) ? $_POST['link_description'] : '' );
 	$captureddata['link_textfield']         = ( isset( $_POST['link_textfield'] ) ? $_POST['link_textfield'] : '' );
 	$captureddata['link_name']              = ( isset( $_POST['link_name'] ) ? $_POST['link_name'] : '' );
@@ -126,7 +128,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			die();
 		}
 
-		if ( $options['showcaptcha'] && !is_user_logged_in() && $valid ) {
+		if ( $options['showcaptcha'] /* && !is_user_logged_in() */ && $valid ) {
 			$message = apply_filters( 'link_library_verify_captcha', '' );
 			if ( $message > 0 ) {
 				$valid = false;
@@ -223,6 +225,31 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 					}
 				}
 
+				$newlinktags = array();
+
+				foreach ( $captureddata['link_tags'] as $tag_element ) {
+					if ( $tag_element == 'new' && !empty( $captureddata['link_user_tags'] ) ) {
+						$user_tag_array = explode( ',', $captureddata['link_user_tags'] );
+
+						foreach( $user_tag_array as $user_tag ) {
+							$existingtag = get_term_by( 'name', $user_tag, 'link_library_tags' );
+
+							if ( empty( $existingtag ) ) {
+								$new_tag = wp_insert_term( $user_tag, 'link_library_tags', array( 'description' => '', 'slug' => sanitize_text_field( $captureddata['link_user_tags'] ) ) );
+
+								$newlinktags[] = $new_tag['term_id'];
+							} else {
+								$newlinktags[] = $existingtag->term_id;
+							}
+						}
+					} elseif ( $cat_element == 'new' && empty( $captureddata['link_user_tags'] ) ) {
+						$message  = 24;
+					} else {
+						$existingtagid = get_term_by( 'id', $tag_element, 'link_library_tags' );
+						$newlinktags[] = $existingtagid->name;
+					}
+				}
+
 				if ( $validcat == true ) {
 					$newlinkdesc = $captureddata['link_description'];
 					if ( $options['showuserlinks'] == false ) {
@@ -263,7 +290,13 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 					if ( !empty( $new_link_ID ) ) {
 
-						wp_set_post_terms( $new_link_ID, $newlinkcat, 'link_library_category', false );
+						if ( !empty( $newlinkcat ) ) {
+							wp_set_post_terms( $new_link_ID, $newlinkcat, 'link_library_category', false );
+						}
+
+						if ( !empty( $newlinktags ) ) {
+							wp_set_post_terms( $new_link_ID, $newlinktags, 'link_library_tags', false );
+						}
 
 						update_post_meta( $new_link_ID, 'link_url', esc_url( stripslashes( $captureddata['link_url'] ) ) );
 						update_post_meta( $new_link_ID, 'link_target', $options['linktarget'] );
@@ -299,13 +332,34 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						}
 
 						$link_category_name = '';
+						$link_category_names_array = array();
 
-						if ( $captureddata['link_category'] == 'new' && !empty( $captureddata['link_user_category'] ) ) {
-							$link_category_name = $captureddata['link_user_category'];
-						} elseif ( is_int( intval( $captureddata['link_category'] ) ) && 0 != intval( $captureddata['link_category'] ) ) {
-							$existingcat = get_term_by( 'id', $captureddata['link_category'], 'link_library_category' );
-							if ( !empty( $existingcat ) ) {
-								$link_category_name = $existingcat->name;
+						if ( !empty( $newlinkcat ) ) {
+							foreach ( $newlinkcat as $link_cat ) {
+								$existingcat = get_term_by( 'id', $link_cat, 'link_library_category' );
+								if ( !empty( $existingcat ) ) {
+									$link_category_names_array[] = $existingcat->name;
+								}
+							}
+
+							if ( !empty( $link_category_names_array ) ) {
+								$link_category_name = implode( ',', $link_category_names_array );
+							}
+						}
+
+						$link_tags_name = '';
+						$link_tags_names_array = array();
+
+						if ( !empty( $newlinktags ) ) {
+							foreach ( $newlinktags as $link_tag ) {
+								$existingtag = get_term_by( 'id', $link_tag, 'link_library_tags' );
+								if ( !empty( $existingtag ) ) {
+									$link_tags_names_array[] = $existingtag->name;
+								}
+							}
+
+							if ( !empty( $link_tags_names_array ) ) {
+								$link_tags_name = implode( ',', $link_tags_names_array );
 							}
 						}
 
@@ -320,6 +374,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						$emailmessage .= __( 'Link Large Description', 'link-library' ) . ": " . esc_html( stripslashes( $captureddata['link_textfield'] ) ) . "<br />";
 						$emailmessage .= __( 'Link Notes', 'link-library' ) . ": " . esc_html( stripslashes( $captureddata['link_notes'] ) ) . "<br />";
 						$emailmessage .= __( 'Link Category', 'link-library' ) . ": " . $link_category_name . "( " . $captureddata['link_category'] . " )<br /><br />";
+						$emailmessage .= __( 'Link Tags', 'link-library' ) . ": " . $link_tags_name . "( " . $captureddata['link_tags'] . " )<br /><br />";
 						$emailmessage .= __( 'Reciprocal Link', 'link-library' ) . ": " . $captureddata['ll_reciprocal'] . "<br /><br />";
 						$emailmessage .= __( 'Link Secondary Address', 'link-library' ) . ": " . $captureddata['ll_secondwebaddr'] . "<br /><br />";
 						$emailmessage .= __( 'Link Telephone', 'link-library' ) . ": " . $captureddata['ll_telephone'] . "<br /><br />";
@@ -390,6 +445,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						}
 
 						$submitteremailmessage .= __( 'Link Category', 'link-library' ) . ": " . $link_category_name . " ( " . $captureddata['link_category'] . " )<br /><br />";
+						$submitteremailmessage .= __( 'Link Tags', 'link-library' ) . ": " . $link_tags_name_name . " ( " . $captureddata['link_tags'] . " )<br /><br />";
 
 						if ( 'show' == $options['showaddlinkreciprocal'] || 'required' == $options['showaddlinkreciprocal'] ) {
 							$submitteremailmessage .= __( 'Reciprocal Link', 'link-library' ) . ": " . $captureddata['ll_reciprocal'] . "<br /><br />";
@@ -455,6 +511,10 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			$redirectaddress = add_query_arg( 'addlinkusercat', rawurlencode( $captureddata['link_user_category'] ), $redirectaddress );
 		}
 
+		if ( isset( $_POST['link_user_tags'] ) && !empty( $_POST['link_user_tags'] ) ) {
+			$redirectaddress = add_query_arg( 'addlinkusertags', rawurlencode( $captureddata['link_user_tags'] ), $redirectaddress );
+		}
+
 		if ( isset( $_POST['link_description'] ) && $_POST['link_description'] != '' ) {
 			$redirectaddress = add_query_arg( 'addlinkdesc', rawurlencode( $captureddata['link_description'] ), $redirectaddress );
 		}
@@ -511,6 +571,17 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 					$redirectaddress .= '?';
 				}
 				$redirectaddress .= 'addlinkcat[]=' . rawurlencode( $cat_item );
+			}
+		}
+
+		if ( isset( $_POST['link_tags'] ) && !empty( $_POST['link_tags'] ) ) {
+			foreach( $_POST['link_tags'] as $tag_item ) {
+				if ( false !== strpos( $redirectaddress, '?' ) ) {
+					$redirectaddress .= '&';
+				} else {
+					$redirectaddress .= '?';
+				}
+				$redirectaddress .= 'addlinktag[]=' . rawurlencode( $tag_item );
 			}
 		}
 

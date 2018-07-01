@@ -256,6 +256,12 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['showupdatedpos']                  = 'before';
 	$options['showsearchreset']                 = false;
 	$options['weblinktarget']                   = '';
+	$options['linktagslabel']                   = __( 'Link Tags', 'link-library' );
+	$options['showaddlinktags']                 = 'hide';
+	$options['addlinktaglistoverride']          = '';
+	$options['linkcustomtaglabel']              = '';
+	$options['addlinkcustomtag']                = 'hide';
+	$options['linkcustomtaglistentry']          = 'User-submitted tag (define below)';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

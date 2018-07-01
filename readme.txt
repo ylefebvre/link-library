@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.31 =
+* Add new section to user submission form to allow visitors to assign tags to the links they submit
+
 = 6.0.30 =
 * Add option to display categories as a multi-select list in user submission form
 

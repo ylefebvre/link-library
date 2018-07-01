@@ -573,7 +573,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		if ( 'catlist' == $order && is_array( $link_categories ) && !empty( $link_categories_query_args['include'] ) ) {
 			$temp_link_categories = $link_categories;
 			$link_categories = array();
-			foreach ( $link_categories_query_args['include'] as $sort_link_category_id ) {
+			$exploded_include_list = explode( ',', $categorylist_cpt );
+			foreach ( $exploded_include_list as $sort_link_category_id ) {
 				foreach ( $temp_link_categories as $temp_link_cat ) {
 					if ( $sort_link_category_id == $temp_link_cat->term_id ) {
 						$link_categories[] = $temp_link_cat;
