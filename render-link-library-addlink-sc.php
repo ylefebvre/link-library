@@ -281,15 +281,37 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         }
 
         if ( $linkcats ) {
-            if ( 'show' == $libraryoptions['showaddlinkcat'] || 'required' == $libraryoptions['showaddlinkcat'] ) {
+            if ( 'show' == $libraryoptions['showaddlinkcat'] || 'selectmultiple' == $libraryoptions['showaddlinkcat'] ) {
                 if ( empty( $linkcatlabel ) ) {
                     $linkcatlabel = __( 'Link category', 'link-library' );
                 }
 
-                $output .= '<tr><th>' . $linkcatlabel . '</th><td>';
-                $output .= '<SELECT data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" name="link_category" id="link_category">';
+                $output .= '<tr><th>' . $linkcatlabel;
+                if ( 'selectmultiple' == $libraryoptions['showaddlinkcat'] ) {
+                	$output .= '<br /><br /><span class="multiselecthelp">';
+                	$output .= __( 'Use control-click (Windows) or command-click (Mac) to select multiple', 'link-library' );
+                	$output .= '</span>';
+                }
+                $output .= '</th><td>';
+                $output .= '<SELECT data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' );
+                $output .= '" name="link_category[]" id="link_category" ';
 
-                if ( 'nodefaultcat' == $addlinkdefaultcat ) {
+                if ( 'selectmultiple' == $libraryoptions['showaddlinkcat'] ) {
+                	$number_of_categories = sizeof( $linkcats );
+                	$selectheight = 40;
+                	if ( $number_of_categories > 0 ) {
+		                $selectheight = 20 * $number_of_categories;
+		                if ( $selectheight > 200 ) {
+		                	$selectheight = 200;
+		                }
+	                }
+
+                	$output .= 'multiple style="height: ' . $selectheight . 'px"';
+                }
+
+                $output .= '>';
+
+                if ( 'nodefaultcat' == $addlinkdefaultcat && 'show' == $libraryoptions['showaddlinkcat'] ) {
                     $output .= '<option value="">' . __( 'Select a category', 'link-category' ) . '</option>';
                 }
 
@@ -299,7 +321,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
                 foreach ( $linkcats as $linkcat ) {
                     $output .= '<OPTION VALUE="' . $linkcat->term_id . '" ';
-                    if ( isset( $_GET['addlinkcat'] ) && $_GET['addlinkcat'] == $linkcat->term_id ) {
+                    if ( isset( $_GET['addlinkcat'] ) && in_array( $linkcat->term_id, $_GET['addlinkcat'] ) ) {
                         $output .= "selected";
                     } elseif ( 'nodefaultcat' != $addlinkdefaultcat && $linkcat->term_id == intval( $addlinkdefaultcat ) ) {
                         $output .= "selected";
@@ -616,11 +638,20 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         $output .= "\t\t\tlanguage : LinkLibraryValidationLanguage,\n";
         $output .= "\t\t});\n";
         $output .= "\t\tjQuery('#link_category').change(function() {\n";
-        $output .= "\t\t\tif ( jQuery('#link_category').val() == 'new' ) {\n";
-        $output .= "\t\t\t\tjQuery('.customcatrow').show();\n";
-        $output .= "\t\t\t} else {\n";
-        $output .= "\t\t\t\tjQuery('.customcatrow').hide();\n";
-        $output .= "\t\t\t};\n";
+	    $output .= "\t\tvar cat_data = jQuery('#link_category').val();\n";
+	    $output .= "\t\t\tif ( Array.isArray( cat_data ) ) {\n";
+	    $output .= "\t\t\t\tif ( cat_data.indexOf('new') != -1 ) {\n";
+	    $output .= "\t\t\t\t\tjQuery('.customcatrow').show();\n";
+	    $output .= "\t\t\t\t} else {\n";
+	    $output .= "\t\t\t\t\tjQuery('.customcatrow').hide();\n";
+	    $output .= "\t\t\t\t};\n";
+	    $output .= "\t\t\t} else {\n";
+        $output .= "\t\t\t\tif ( jQuery('#link_category').val() == 'new' ) {\n";
+        $output .= "\t\t\t\t\tjQuery('.customcatrow').show();\n";
+        $output .= "\t\t\t\t} else {\n";
+        $output .= "\t\t\t\t\tjQuery('.customcatrow').hide();\n";
+        $output .= "\t\t\t\t};\n";
+	    $output .= "\t\t\t};\n";
         $output .= "\t\t});\n";
         $output .= "\t});\n";
         $output .= "</script>\n";

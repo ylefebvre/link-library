@@ -4799,9 +4799,10 @@ class link_library_plugin_admin {
 				<input type="text" id="linkcatlabel" name="linkcatlabel" size="30" value="<?php echo $options['linkcatlabel']; ?>" />
 			</td>
 			<td>
-				<select name="showaddlinkcat" id="showaddlinkcat" style="width:60px;">
+				<select name="showaddlinkcat" id="showaddlinkcat" style="width:120px;">
 					<option value="hide"<?php selected( $options['showaddlinkcat'] == 'hide' ); ?>><?php _e( 'Hide', 'link-library' ); ?></option>
-					<option value="show"<?php selected( $options['showaddlinkcat'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
+					<option value="show"<?php selected( $options['showaddlinkcat'] == 'show' ); ?>><?php _e( 'Drop-down list', 'link-library' ); ?></option>
+					<option value="selectmultiple"<?php selected( $options['showaddlinkcat'] == 'selectmultiple' ); ?>><?php _e( 'Multi-select list', 'link-library' ); ?></option>
 				</select>
 			</td>
 			<td style='width: 20px'></td>

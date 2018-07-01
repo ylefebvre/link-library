@@ -193,29 +193,34 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			$existinglink = $wpdb->get_var( $existinglinkquery );
 
 			if ( empty( $existinglink ) && ( ( $options['addlinknoaddress'] == false && $captureddata['link_url'] != "" ) || $options['addlinknoaddress'] == true ) ) {
-				if ( $captureddata['link_category'] == 'new' && $captureddata['link_user_category'] != '' ) {
 
-					$existingcat = get_term_by( 'name', $captureddata['link_user_category'], 'link_library_category' );
+				$validcat = false;
+				$newlinkcat = array();
 
-					if ( empty( $existingcat ) ) {
-						$newlinkcat = wp_insert_term( $captureddata['link_user_category'], 'link_library_category', array( 'description' => '', 'slug' => sanitize_text_field( $captureddata['link_user_category'] ) ) );
+				foreach ( $captureddata['link_category'] as $cat_element ) {
+					if ( $cat_element == 'new' && !empty( $captureddata['link_user_category'] ) ) {
 
-						$newlinkcat = array( $newlinkcat['term_id'] );
+						$existingcat = get_term_by( 'name', $captureddata['link_user_category'], 'link_library_category' );
+
+						if ( empty( $existingcat ) ) {
+							$new_category = wp_insert_term( $captureddata['link_user_category'], 'link_library_category', array( 'description' => '', 'slug' => sanitize_text_field( $captureddata['link_user_category'] ) ) );
+
+							$newlinkcat[] = $new_category['term_id'];
+						} else {
+							$newlinkcat[] = $existingcat->term_id;
+						}
+
+						$message = 8;
+						$validcat = true;
+					} elseif ( $cat_element == 'new' && empty( $captureddata['link_user_category'] ) ) {
+						$message  = 7;
 					} else {
-						$newlinkcat = array( $existingcat->term_id );
+						$newlinkcat[] = $cat_element;
+
+						$message = 8;
+
+						$validcat = true;
 					}
-
-					$message = 8;
-					$validcat = true;
-				} elseif ( $captureddata['link_category'] == 'new' && empty( $captureddata['link_user_category'] ) ) {
-					$message  = 7;
-					$validcat = false;
-				} else {
-					$newlinkcat = array( $captureddata['link_category'] );
-
-					$message = 8;
-
-					$validcat = true;
 				}
 
 				if ( $validcat == true ) {
@@ -446,10 +451,6 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			$redirectaddress = add_query_arg( 'addlinkurl', rawurlencode( $captureddata['link_url'] ), $redirectaddress );
 		}
 
-		if ( isset( $_POST['link_category'] ) && $_POST['link_category'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkcat', rawurlencode( $captureddata['link_category'] ), $redirectaddress );
-		}
-
 		if ( isset( $_POST['link_user_category'] ) && $_POST['link_user_category'] != '' ) {
 			$redirectaddress = add_query_arg( 'addlinkusercat', rawurlencode( $captureddata['link_user_category'] ), $redirectaddress );
 		}
@@ -500,6 +501,17 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 		if ( isset( $_POST['ll_customcaptchaanswer'] ) && $_POST['ll_customcaptchaanswer'] != '' ) {
 			$redirectaddress = add_query_arg( 'addlinkcustomcaptcha', rawurlencode( $captureddata['ll_customcaptchaanswer'] ), $redirectaddress );
+		}
+
+		if ( isset( $_POST['link_category'] ) && !empty( $_POST['link_category'] ) ) {
+			foreach( $_POST['link_category'] as $cat_item ) {
+				if ( false !== strpos( $redirectaddress, '?' ) ) {
+					$redirectaddress .= '&';
+				} else {
+					$redirectaddress .= '?';
+				}
+				$redirectaddress .= 'addlinkcat[]=' . rawurlencode( $cat_item );
+			}
 		}
 
 		$redirectaddress = esc_url_raw( $redirectaddress );
