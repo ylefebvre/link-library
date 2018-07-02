@@ -347,7 +347,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             if ( 'show' == $addlinkcustomcat ) {
                 $output .= '<tr class="customcatrow" ';
                 if ( !isset( $_GET['addlinkusercat'] ) || empty( $_GET['addlinkusercat'] ) ) {
-                	echo 'style="display: none;"';
+	                $output .= 'style="display: none;"';
                 }
 
                 $output .= '><th>' .  $linkcustomcatlabel . '</th><td><input type="text" name="link_user_category" id="link_user_category" value="' . ( isset( $_GET['addlinkusercat'] ) ? esc_html( stripslashes( $_GET['addlinkusercat'] ), '1' ) : '') . "\" /></td></tr>\n";
@@ -412,7 +412,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 		    if ( 'show' == $addlinkcustomtag ) {
 			    $output .= '<tr class="customtagrow" ';
 			    if ( !isset( $_GET['addlinkusertags'] ) || empty( $_GET['addlinkusertags'] ) ) {
-				    echo 'style="display: none;"';
+				    $output .= 'style="display: none;"';
 			    }
 
 			    $output .= '><th>' .  $linkcustomtaglabel . '</th><td><input type="text" name="link_user_tags" id="link_user_tags" value="' . ( isset( $_GET['addlinkusertags'] ) ? esc_html( stripslashes( $_GET['addlinkusertags'] ), '1' ) : '') . "\" /></td></tr>\n";

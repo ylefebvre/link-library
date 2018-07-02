@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.32 =
+* Fix for user submission form
+
 = 6.0.31 =
 * Add new section to user submission form to allow visitors to assign tags to the links they submit
 
