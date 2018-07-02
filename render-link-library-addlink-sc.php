@@ -624,11 +624,11 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             $output .= 'name="ll_submittercomment" id="ll_submittercomment" cols="38">' . ( isset( $_GET['addlinksubmitcomment'] ) ? esc_html( stripslashes( $_GET['addlinksubmitcomment']), '1' ) : '' ) . "</textarea></td></tr>\n";
         }
 
-        if ( $showcaptcha /* && !is_user_logged_in() */ ) {
+        if ( $showcaptcha && !is_user_logged_in() ) {
             $output .= apply_filters( 'link_library_generate_captcha', '' );
         }
 
-        if ( 'show' == $showcustomcaptcha /* && !is_user_logged_in() */ ) {
+        if ( 'show' == $showcustomcaptcha && !is_user_logged_in() ) {
             if ( empty( $customcaptchaquestion ) ) {
                 $customcaptchaquestion = __( 'Is boiling water hot or cold?', 'link-library' );
             }

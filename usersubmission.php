@@ -128,7 +128,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			die();
 		}
 
-		if ( $options['showcaptcha'] /* && !is_user_logged_in() */ && $valid ) {
+		if ( $options['showcaptcha'] && !is_user_logged_in() && $valid ) {
 			$message = apply_filters( 'link_library_verify_captcha', '' );
 			if ( $message > 0 ) {
 				$valid = false;
