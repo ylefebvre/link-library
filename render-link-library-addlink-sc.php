@@ -298,15 +298,10 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
                 if ( 'selectmultiple' == $libraryoptions['showaddlinkcat'] ) {
                 	$number_of_categories = sizeof( $linkcats );
-                	$selectheight = 40;
-                	if ( $number_of_categories > 0 ) {
-		                $selectheight = 20 * $number_of_categories;
-		                if ( $selectheight > 200 ) {
-		                	$selectheight = 200;
-		                }
+                	if ( $linkcustomcatlistentry ) {
+		                $number_of_categories++;
 	                }
-
-                	$output .= 'multiple style="height: ' . $selectheight . 'px"';
+                	$output .= 'multiple size="' . ( $number_of_categories < 10 ? $number_of_categories : 10 ) . '" style="height: auto"';
                 }
 
                 $output .= '>';
@@ -375,18 +370,11 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 			    $output .= '</th><td>';
 			    $output .= '<SELECT name="link_tags[]" id="link_tags" ';
 
-			    $number_of_categories = sizeof( $linktags );
-			    $selectheight = 60;
-			    if ( $number_of_categories > 0 ) {
-				    $selectheight = 20;
-				    if ( $selectheight > 200 ) {
-					    $selectheight = 200;
-				    } elseif ( $selectheight < 40 ) {
-					    $selectheight = 60;
-				    }
+			    $number_of_tags = sizeof( $linktags );
+			    if ( $linkcustomtaglistentry ) {
+				    $number_of_tags++;
 			    }
-
-			    $output .= 'multiple style="height: ' . $selectheight . 'px"';
+			    $output .= 'multiple size="' . ( $number_of_tags < 10 ? $number_of_tags : 10 ) . '" style="height: auto"';
 
 			    $output .= '>';
 

@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.34 =
+* Adjustments for calculation of height of multi-select fields in user submission form
+
 = 6.0.33 =
 * Added option to display links that are scheduled for publication at a latter date, under links tab of library settings
 
