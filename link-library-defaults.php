@@ -262,6 +262,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['linkcustomtaglabel']              = '';
 	$options['addlinkcustomtag']                = 'hide';
 	$options['linkcustomtaglistentry']          = 'User-submitted tag (define below)';
+	$options['showscheduledlinks']              = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

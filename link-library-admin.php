@@ -2061,7 +2061,7 @@ class link_library_plugin_admin {
 					'cat_letter_filter_autoselect', 'cat_letter_filter_showalloption', 'emailsubmitter', 'addlinkakismet', 'rssfeedinlineskipempty',
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
-					'allowcolumnsorting', 'showsearchreset'
+					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks'
 				)
 				as $option_name
 			) {
@@ -3684,6 +3684,13 @@ class link_library_plugin_admin {
 				<td class="lltooltip" title="<?php _e( 'Allows extra query string to be added to all links in library', 'link-library' ); ?>">
 					<input type="text" id="extraquerystring" name="extraquerystring" size="40" value="<?php echo $options['extraquerystring']; ?>" />
 				</td>
+				<td></td>
+				<td>
+					<?php _e( 'Show Scheduled Links (published with future date)', 'link-library' ); ?>
+				</td>
+				<td>
+					<input type="checkbox" id="showscheduledlinks" name="showscheduledlinks" <?php checked( $options['showscheduledlinks'] ); ?>/>
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -3692,7 +3699,7 @@ class link_library_plugin_admin {
 				<td>
 					<input type="checkbox" id="showcolumnheaders" name="showcolumnheaders" <?php checked( $options['showcolumnheaders'] ); ?>/>
 				</td>
-				<td>
+				<td></td>
 				<td>
 					<?php _e( 'Column Headers Override', 'link-library' ); ?>
 				</td>

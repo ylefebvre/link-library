@@ -724,6 +724,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['post_status'][] = 'draft';
 				}
 
+				if ( $showscheduledlinks ) {
+					$link_query_args['post_status'][] = 'future';
+				}
+
 				if ( !empty( $searchstring ) ) {
 					$link_query_args['s'] = $searchstring;
 				}

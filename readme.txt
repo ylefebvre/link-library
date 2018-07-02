@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.33 =
+* Added option to display links that are scheduled for publication at a latter date, under links tab of library settings
+
 = 6.0.32 =
 * Fix for user submission form
 
