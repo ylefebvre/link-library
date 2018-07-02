@@ -883,9 +883,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												$catlink .= ' target="' . $linktarget . '"';
 
 											$catlink .= '>';
-										} elseif ( $catlinkspermalinksmode ) {
+										} /* elseif ( $catlinkspermalinksmode ) {
 											var_dump( 'Generating cat link' );
-										}
+										} */
 										$catlink .= $link_category->name;
 										if ( !empty( $caturl ) ) {
 											$catlink .= '</a>';

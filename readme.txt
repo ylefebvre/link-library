@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.35 =
+* Fix for "Generating cat link" debug message appearing in some configurations
+
 = 6.0.34 =
 * Adjustments for calculation of height of multi-select fields in user submission form
 
