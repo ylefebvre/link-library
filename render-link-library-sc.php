@@ -1315,7 +1315,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$linkitem['link_rating'] = '';
 								}
 
-								$date_diff = $link_meta['link_updated'][0] - time();
+								$date_diff = time() - $link_meta['link_updated'][0];
 
 								if ( $date_diff < 604800 ) {
 									$linkitem['recently_updated'] = true;

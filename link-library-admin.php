@@ -5704,7 +5704,7 @@ class link_library_plugin_admin {
 		if ( 'link_library_updated' == $column ) {
 			$link_updated = get_post_meta( get_the_ID(), 'link_updated', true );
 
-			$date_diff = $link_meta['link_updated'][0] - time();
+			$date_diff = time() - intval( $link_updated );
 
 			if ( $date_diff < 604800 ) {
 				echo '<strong>** RECENTLY UPDATED **</strong><br />';
