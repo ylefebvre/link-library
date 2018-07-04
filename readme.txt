@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.36 =
+* Empty categories now properly appear again when displaying categories in drop-down list mode when showing empties
+* Replaced references to setTimestamp to be compatible with PHP 5.2
+
 = 6.0.35 =
 * Fix for "Generating cat link" debug message appearing in some configurations
 

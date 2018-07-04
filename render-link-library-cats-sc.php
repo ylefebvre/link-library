@@ -268,7 +268,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                     $catfront = "\t<td>";
                 } elseif ( 'unordered' == $flatlist ) {
                     $catfront = "\t<li>";
-                } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && $linkcount > 0 ) {
+                } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && ( $linkcount > 0 || !$hide_if_empty )) {
                     $catfront = "\t<option ";
                     if ( !empty( $categoryid ) && $categoryid == $catname->term_id ) {
                         $catfront .= 'selected="selected" ';
@@ -447,7 +447,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                     $catterminator = "</td>\n";
                 } elseif ( 'unordered' == $flatlist ) {
                     $catterminator = "</li>\n";
-                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
+                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist && ( $linkcount > 0 || !$hide_if_empty )) {
                     $catterminator = "</option>\n";
                 }
 
