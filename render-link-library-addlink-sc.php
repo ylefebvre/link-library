@@ -330,7 +330,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
                 $output .= "</SELECT></td></tr>\n";
             } else {
-                $output .= '<input type="hidden" name="link_category" id="link_category" value="';
+                $output .= '<input type="hidden" name="link_category[]" id="link_category" value="';
                 if ( 'nodefaultcat' == $addlinkdefaultcat ) {
                     $output .= $linkcats[0]->term_id;
                 } else {

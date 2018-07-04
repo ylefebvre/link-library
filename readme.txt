@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.38 =
+* Fixed user link submission when not allowing user to select category
+
 = 6.0.37 =
 * Fixed to new date diff code implementation
 
