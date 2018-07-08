@@ -66,7 +66,7 @@ class link_library_plugin_admin {
 			add_action( 'admin_footer',  array( $this, 'render_modal' ) );
 		}
 
-		add_action( 'link_library_reciprocal_check', 'link_library_reciprocal_link_checker', 10, 4 );
+		add_action( 'wp_ajax_link_library_recipbrokencheck', 'link_library_reciprocal_link_checker' );
 	}
 
 	function is_edit_page( $new_edit = null ) {
@@ -931,15 +931,45 @@ class link_library_plugin_admin {
 
 			if ( isset( $_GET['message'] ) && $_GET['message'] == '1' ) {
 				echo "<div id='message' class='updated fade'><p><strong>" . __( 'Settings updated', 'link-library' ) . ".</strong></p></div>";
-			} elseif ( isset( $_GET['message'] ) && $_GET['message'] == '2' ) {
-				echo "<div id='message' class='updated fade'><p>";
-				do_action( 'link_library_reciprocal_check', $this, $genoptions['recipcheckaddress'], $genoptions['recipcheckdelete403'], 'reciprocal' );
-				echo "</p></div>";
-			} elseif ( isset( $_GET['message'] ) && $_GET['message'] == '3' ) {
-				echo "<div id='message' class='updated fade'><p>";
-				do_action( 'link_library_reciprocal_check', $this, $genoptions['recipcheckaddress'], $genoptions['recipcheckdelete403'], 'broken' );
-				echo "</p></div>";
-			} elseif ( isset( $_GET['message'] ) && $_GET['message'] == '4' ) {
+			} elseif ( isset( $_GET['message'] ) && ( $_GET['message'] == '2' || $_GET['message'] == '3' ) ) { ?>
+				<div id='message' class='updated fade'><p>
+				<strong><?php _e( 'Reciprocal Link Checker Report', 'link-library' ); ?></strong><br /><br />
+				<div class="nextcheckitem"></div>
+				<script type="text/javascript">
+					var currentlinkindex = 1;
+					function testlink() {
+						jQuery.ajax({
+							type   : 'POST',
+							url    : '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+							data   : {
+								action      : 'link_library_recipbrokencheck',
+								_ajax_nonce : '<?php echo wp_create_nonce( 'link_library_recipbrokencheck' ); ?>',
+								mode        : '<?php if ( $_GET['message'] == '2' ) { echo 'reciprocal'; } elseif ( $_GET['message'] == 3 ) { echo 'broken'; } ?>',
+								index		: currentlinkindex,
+								RecipCheckAddress: jQuery('#recipcheckaddress').val(),
+								recipcheckdelete403 : jQuery('#recipcheckdelete403').val(),
+							},
+							success: function (data) {
+								if (data != '' ) {
+									if ( data != 'There are no links with reciprocal links associated with them.<br />' || $currentlinkindex == 1) {
+										jQuery('.nextcheckitem').replaceWith(data);
+									}
+
+									if ( data != 'There are no links with reciprocal links associated with them.<br />' ) {
+										currentlinkindex++;
+										testlink();
+									}
+								}
+							}
+						});
+					}
+
+					jQuery( document ).ready(function() {
+						testlink();
+					});
+				</script>
+				</p></div>
+			<?php } elseif ( isset( $_GET['message'] ) && $_GET['message'] == '4' ) {
 				echo "<div id='message' class='updated fade'><p>";
 				$this->link_library_duplicate_link_checker( $this );
 				echo "</p></div>";
@@ -5928,8 +5958,11 @@ class link_library_plugin_admin {
 	}
 }
 
-function link_library_reciprocal_link_checker( $ll_admin_class, $RecipCheckAddress = '', $recipcheckdelete403 = false, $check_type = 'reciprocal' ) {
-	set_time_limit( 0 );
+function link_library_reciprocal_link_checker() {
+
+	$RecipCheckAddress = ( isset( $_POST['RecipCheckAddress'] ) && !empty( $_POST['RecipCheckAddress'] ) ? $_POST['RecipCheckAddress'] : '' );
+	$recipcheckdelete403 = ( isset( $_POST['recipcheckdelete403'] ) && !empty( $_POST['recipcheckdelete403'] ) && 'on' == $_POST['recipcheckdelete403'] ? true : false );
+	$check_type = ( isset( $_POST['mode'] ) && !empty( $_POST['mode'] ) ? $_POST['mode'] : 'reciprocal' );
 
 	if ( ! empty( $RecipCheckAddress ) || ( empty( $RecipCheckAddress ) && 'reciprocal' != $check_type ) ) {
 		$args = array(
@@ -5939,7 +5972,8 @@ function link_library_reciprocal_link_checker( $ll_admin_class, $RecipCheckAddre
 			'order' => 'ASC',
 			'meta_value' => ' ',
 			'meta_compare' => '!=',
-			'posts_per_page' => -1
+			'posts_per_page' => 1,
+			'paged' => ( isset( $_POST['index'] ) ? $_POST['index'] : 1 )
 		);
 
 		if ( 'reciprocal' == $check_type ) {
@@ -5950,12 +5984,6 @@ function link_library_reciprocal_link_checker( $ll_admin_class, $RecipCheckAddre
 		}
 
 		$the_link_query = new WP_Query( $args );
-
-		if ( 'reciprocal' == $check_type ) {
-			echo "<strong>" . __( 'Reciprocal Link Checker Report', 'link-library' ) . "</strong><br /><br />";
-		} elseif ( 'broken' == $check_type ) {
-			echo "<strong>" . __( 'Broken Link Checker Report', 'link-library' ) . "</strong><br /><br />";
-		}
 
 		if ( $the_link_query->have_posts() ) {
 			while ( $the_link_query->have_posts() ) {
@@ -5988,12 +6016,20 @@ function link_library_reciprocal_link_checker( $ll_admin_class, $RecipCheckAddre
 					echo '<span style="color: #FF0000">' . __( 'Website Unreachable', 'link-library' ) . '</span><br />';
 				}
 			}
+
+			echo '<div class="nextcheckitem"></div>';
 		} else {
-			echo __( 'There are no links with reciprocal links associated with them', 'link-library' ) . ".<br />";
+			if ( 'reciprocal' == $check_type ) {
+				echo __( 'There are no links with reciprocal links associated with them', 'link-library' ) . ".<br />";
+			} elseif ( 'broken' == $check_type ) {
+				echo __( 'There are no links to check', 'link-library' ) . ".<br />";
+			}
+
 		}
 
 		wp_reset_postdata();
 	}
+	die();
 }
 
 function link_library_render_editor_button() {

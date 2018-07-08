@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.39 =
+* Re-worked reciprocal and broken link checkers so they check links using ajax one by one. This way, the checker can never time out, even with large libraries
+
 = 6.0.38 =
 * Fixed user link submission when not allowing user to select category
 
