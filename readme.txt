@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.41 =
+* Fix to link checking tools to properly check status of box to delete links that return a 403 error
+
 = 6.0.40 =
 * Fixes for new reciprocal and broken link checkers
 

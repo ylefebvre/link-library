@@ -954,7 +954,7 @@ class link_library_plugin_admin {
 								mode        : '<?php if ( $_GET['message'] == '2' ) { echo 'reciprocal'; } elseif ( $_GET['message'] == 3 ) { echo 'broken'; } ?>',
 								index		: currentlinkindex,
 								RecipCheckAddress: jQuery('#recipcheckaddress').val(),
-								recipcheckdelete403 : jQuery('#recipcheckdelete403').val(),
+								recipcheckdelete403 : jQuery('#recipcheckdelete403').is(':checked')
 							},
 							success: function (data) {
 								if (data != '' ) {
@@ -5968,8 +5968,10 @@ class link_library_plugin_admin {
 function link_library_reciprocal_link_checker() {
 
 	$RecipCheckAddress = ( isset( $_POST['RecipCheckAddress'] ) && !empty( $_POST['RecipCheckAddress'] ) ? $_POST['RecipCheckAddress'] : '' );
-	$recipcheckdelete403 = ( isset( $_POST['recipcheckdelete403'] ) && !empty( $_POST['recipcheckdelete403'] ) && 'on' == $_POST['recipcheckdelete403'] ? true : false );
+	$recipcheckdelete403 = ( isset( $_POST['recipcheckdelete403'] ) && !empty( $_POST['recipcheckdelete403'] ) && 'true' == $_POST['recipcheckdelete403'] ? true : false );
 	$check_type = ( isset( $_POST['mode'] ) && !empty( $_POST['mode'] ) ? $_POST['mode'] : 'reciprocal' );
+
+	var_dump( $recipcheckdelete403 );
 
 	if ( ! empty( $RecipCheckAddress ) || ( empty( $RecipCheckAddress ) && 'reciprocal' != $check_type ) ) {
 		$args = array(
