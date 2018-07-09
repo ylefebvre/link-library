@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.40 =
+* Fixes for new reciprocal and broken link checkers
+
 = 6.0.39 =
 * Re-worked reciprocal and broken link checkers so they check links using ajax one by one. This way, the checker can never time out, even with large libraries
 

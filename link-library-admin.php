@@ -933,7 +933,14 @@ class link_library_plugin_admin {
 				echo "<div id='message' class='updated fade'><p><strong>" . __( 'Settings updated', 'link-library' ) . ".</strong></p></div>";
 			} elseif ( isset( $_GET['message'] ) && ( $_GET['message'] == '2' || $_GET['message'] == '3' ) ) { ?>
 				<div id='message' class='updated fade'><p>
-				<strong><?php _e( 'Reciprocal Link Checker Report', 'link-library' ); ?></strong><br /><br />
+				<strong>
+				<?php
+					if ( $_GET['message'] == '2' ) {
+						_e( 'Reciprocal Link Checker Report', 'link-library' );
+					} else {
+						_e( 'Broken Link Checker Report', 'link-library' );
+					}
+				?></strong><br /><br />
 				<div class="nextcheckitem"></div>
 				<script type="text/javascript">
 					var currentlinkindex = 1;
