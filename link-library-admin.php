@@ -951,11 +951,11 @@ class link_library_plugin_admin {
 							},
 							success: function (data) {
 								if (data != '' ) {
-									if ( data != 'There are no links with reciprocal links associated with them.<br />' || $currentlinkindex == 1) {
+									if ( ( data != 'There are no links with reciprocal links associated with them.<br />' && data != 'There are no links to check.<br />' ) || currentlinkindex == 1 ) {
 										jQuery('.nextcheckitem').replaceWith(data);
 									}
 
-									if ( data != 'There are no links with reciprocal links associated with them.<br />' ) {
+									if ( data != 'There are no links with reciprocal links associated with them.<br />' && data != 'There are no links to check.<br />' ) {
 										currentlinkindex++;
 										testlink();
 									}
