@@ -17,6 +17,66 @@ require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
  * @return                  List of categories output for browser
  */
 
+function addlink_render_category_list( $categories, $select_name, $depth, $order, $libraryoptions ) {
+
+	$output = '';
+	if ( !empty( $categories ) ) {
+		if ( 0 == $depth ) {
+			$output .= '<select data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
+			$output .= ' id="' . $select_name . '" name="' . $select_name . '[]" ';
+			if ( 'selectmultiple' == $libraryoptions['showaddlinkcat'] ) {
+				$number_of_categories = sizeof( $categories );
+				if ( $libraryoptions['addlinkcustomcat'] ) {
+					$number_of_categories++;
+				}
+				$output .= 'multiple size="' . ( $number_of_categories < 10 ? $number_of_categories : 10 ) . '" style="height: auto"';
+			}
+			$output .= '>';
+
+			if ( 'nodefaultcat' == $libraryoptions['addlinkdefaultcat'] && 'show' == $libraryoptions['showaddlinkcat'] ) {
+				$output .= '<option value="">' . __( 'Select a category', 'link-category' ) . '</option>';
+			}
+
+		}
+
+		foreach ( $categories as $category ) {
+			$output .= '<option value="' . $category->term_id . ' ';
+
+			if ( isset( $_GET['addlinkcat'] ) && in_array( $category->term_id, $_GET['addlinkcat'] ) ) {
+				$output .= "selected";
+			} elseif ( 'nodefaultcat' != $libraryoptions['addlinkdefaultcat'] && $category->term_id == intval( $libraryoptions['addlinkdefaultcat'] ) ) {
+				$output .= "selected";
+			}
+
+			$output .= '">' . str_repeat( '&nbsp;', 4 * $depth ) . $category->name . '</option>';
+			$child_categories = get_terms( 'link_library_category', array( 'orderby' => 'name', 'parent' => $category->term_id, 'order' => $order, 'hide_empty' => false ) );
+
+			if ( !empty( $child_categories ) ) {
+				$output .= addlink_render_category_list( $child_categories, $select_name, $depth + 1, $order, $libraryoptions );
+			}
+		}
+
+		if ( 0 == $depth ) {
+			if ( empty( $libraryoptions['linkcustomcatlistentry'] ) ) {
+				$linkcustomcatlistentry = __( 'User-submitted category (define below)', 'link-library' );
+			} else {
+				$linkcustomcatlistentry = $libraryoptions['linkcustomcatlistentry'];
+			}
+
+			if ( 'show' == $libraryoptions['addlinkcustomcat'] ) {
+				$output .= '<OPTION VALUE="new">' . stripslashes( $linkcustomcatlistentry ) . "\n";
+			}
+
+			$output .= '</select>';
+		}
+
+	} else {
+		$output .= _e( 'No link categories! Create some!', 'link-library' );
+	}
+
+	return $output;
+}
+
 function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $code ) {
 
     wp_enqueue_script( 'form-validator' );
@@ -254,7 +314,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 		    $excluded_links_array = explode( ',', $excludecategorylist_cpt );
 	    }
 
-	    $link_categories_query_args = array( 'hide_empty' => false );
+	    $link_categories_query_args = array( 'hide_empty' => false, 'parent' => 0 );
 	    if ( !empty( $include_links_array ) ) {
 		    $link_categories_query_args['include'] = $include_links_array;
 	    }
@@ -293,42 +353,10 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 	$output .= '</span>';
                 }
                 $output .= '</th><td>';
-                $output .= '<SELECT data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' );
-                $output .= '" name="link_category[]" id="link_category" ';
 
-                if ( 'selectmultiple' == $libraryoptions['showaddlinkcat'] ) {
-                	$number_of_categories = sizeof( $linkcats );
-                	if ( $linkcustomcatlistentry ) {
-		                $number_of_categories++;
-	                }
-                	$output .= 'multiple size="' . ( $number_of_categories < 10 ? $number_of_categories : 10 ) . '" style="height: auto"';
-                }
+	            $output .= addlink_render_category_list( $linkcats, 'link_category', 0, 'ASC', $libraryoptions );
 
-                $output .= '>';
-
-                if ( 'nodefaultcat' == $addlinkdefaultcat && 'show' == $libraryoptions['showaddlinkcat'] ) {
-                    $output .= '<option value="">' . __( 'Select a category', 'link-category' ) . '</option>';
-                }
-
-                if ( empty( $linkcustomcatlistentry ) ) {
-                    $linkcustomcatlistentry = __( 'User-submitted category (define below)', 'link-library' );
-                }
-
-                foreach ( $linkcats as $linkcat ) {
-                    $output .= '<OPTION VALUE="' . $linkcat->term_id . '" ';
-                    if ( isset( $_GET['addlinkcat'] ) && in_array( $linkcat->term_id, $_GET['addlinkcat'] ) ) {
-                        $output .= "selected";
-                    } elseif ( 'nodefaultcat' != $addlinkdefaultcat && $linkcat->term_id == intval( $addlinkdefaultcat ) ) {
-                        $output .= "selected";
-                    }
-                    $output .= '>' . $linkcat->name;
-                }
-
-                if ( 'show' == $addlinkcustomcat ) {
-                    $output .= '<OPTION VALUE="new">' . stripslashes( $linkcustomcatlistentry ) . "\n";
-                }
-
-                $output .= "</SELECT></td></tr>\n";
+	            $output .= "</td></tr>\n";
             } else {
                 $output .= '<input type="hidden" name="link_category[]" id="link_category" value="';
                 if ( 'nodefaultcat' == $addlinkdefaultcat ) {

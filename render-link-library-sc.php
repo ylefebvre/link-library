@@ -280,7 +280,7 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
  * @return                  List of categories output for browser
  */
 
-function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount = 'false', $parent_cat_id = 0, $level = 0, $display_children = true, $hide_children_cat_links = false ) {
+function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount = 'false', $parent_cat_id = 0, $level = 0, $display_children = true, $hide_children_cat_links = false, &$linkcount ) {
 
 	$showonecatonly = '';
 	$showonecatmode = '';
@@ -656,8 +656,6 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 
 		$xpath = $LLPluginClass->relativePath( dirname( __FILE__ ), ABSPATH );
-
-		$linkcount = 1;
 
 		if ( !empty( $link_categories ) ) {
 			foreach ( $link_categories as $link_category ) {
@@ -2063,7 +2061,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 						$currentcategory = $currentcategory + 1;
 
 						if ( $display_children && $cat_has_children ) {
-							$output .= RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount, $link_category->term_id, $level + 1, $display_children, $hidechildcatlinks );
+							$output .= RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount, $link_category->term_id, $level + 1, $display_children, $hidechildcatlinks, $linkcount );
 						}
 
 						if ( $combineresults ) {

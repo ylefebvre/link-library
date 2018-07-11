@@ -59,6 +59,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.42 =
+* Sub-categories now display hierarchically in User link submission form
+* Increased timeout to 10 seconds for reciprocal and broken link checkers to avoid timeouts with some sites
+* Fix to pagination display when using sub-categories
+
 = 6.0.41 =
 * Fix to link checking tools to properly check status of box to delete links that return a 403 error
 

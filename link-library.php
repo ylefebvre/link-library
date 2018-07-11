@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.41
+Version: 6.0.42
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -701,7 +701,7 @@ class link_library_plugin {
     }
 
 	function CheckReciprocalLink( $RecipCheckAddress = '', $external_link = '' ) {
-		$response = wp_remote_get( $external_link, array( 'user-agent' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36' ) );
+		$response = wp_remote_get( $external_link, array( 'user-agent' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36', 'timeout' => 10 ) );
 
         if( is_wp_error( $response ) ) {
             $response_code = $response->get_error_code();
@@ -857,7 +857,8 @@ class link_library_plugin {
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-sc.php';
-		return RenderLinkLibrary( $this, $genoptions, $options, $settings, true );
+		$linkcount = 1;
+		return RenderLinkLibrary( $this, $genoptions, $options, $settings, true, 0, 0, true, false, $linkcount );
 	}
 
 	/********************************************** Function to Process [link-library-filters] shortcode ***************************************/
@@ -996,7 +997,8 @@ class link_library_plugin {
         }
 
         require_once plugin_dir_path( __FILE__ ) . 'render-link-library-sc.php';
-        $linklibraryoutput .= RenderLinkLibrary( $this, $genoptions, $options, $settings, false );
+        $linkcount = 1;
+        $linklibraryoutput .= RenderLinkLibrary( $this, $genoptions, $options, $settings, false, 0, 0, true, false, $linkcount );
 
         if ( isset( $_POST['ajaxupdate'] ) ) {
             echo $linklibraryoutput;
