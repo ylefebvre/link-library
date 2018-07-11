@@ -542,7 +542,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 
 		if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) ) {
-			$link_categories_query_args['slug'] = explode( ',', $categorysluglist );
+			if ( !empty( $categorysluglist ) ) {
+				$link_categories_query_args['slug'] = explode( ',', $categorysluglist );
+			} elseif ( isset( $_GET['cat'] ) ) {
+				$link_categories_query_args['slug'] = $_GET['cat'];
+			}
 		}
 
 		if ( isset( $categoryname ) && !empty( $categoryname ) && 'HTMLGETPERM' == $showonecatmode && empty( $singlelinkid ) ) {

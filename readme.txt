@@ -59,6 +59,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.43 =
+* Fixed link moderation table, showing 'None assigned' messages outside of the table for links without tags
+* Fixed notification e-mail missing title
+* Fixed pages with cat variable in link not displaying links properly
+
 = 6.0.42 =
 * Sub-categories now display hierarchically in User link submission form
 * Increased timeout to 10 seconds for reciprocal and broken link checkers to avoid timeouts with some sites

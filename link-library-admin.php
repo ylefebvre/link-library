@@ -2945,7 +2945,7 @@ class link_library_plugin_admin {
 							$link_cat_string = implode( ', ', $link_cat_array );
 						}
 					} else {
-						echo 'None Assigned';
+						$link_cat_string = 'None Assigned';
 					}
 
 					$link_tags = wp_get_post_terms( get_the_ID(), 'link_library_tags' );
@@ -2959,7 +2959,7 @@ class link_library_plugin_admin {
 							$link_tags_string = implode( ', ', $link_tags_array );
 						}
 					} else {
-						echo 'None Assigned';
+						$link_tags_string = 'None Assigned';
 					}
 
 					?>
