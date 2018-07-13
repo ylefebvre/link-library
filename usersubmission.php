@@ -376,8 +376,11 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						$emailmessage .= __( 'Link Description', 'link-library' ) . ": " . esc_html( stripslashes( $captureddata['link_description'] ) ) . "<br />";
 						$emailmessage .= __( 'Link Large Description', 'link-library' ) . ": " . esc_html( stripslashes( $captureddata['link_textfield'] ) ) . "<br />";
 						$emailmessage .= __( 'Link Notes', 'link-library' ) . ": " . esc_html( stripslashes( $captureddata['link_notes'] ) ) . "<br />";
-						$emailmessage .= __( 'Link Category', 'link-library' ) . ": " . $link_category_name . "( " . $captureddata['link_category'] . " )<br /><br />";
-						$emailmessage .= __( 'Link Tags', 'link-library' ) . ": " . $link_tags_name . "( " . $captureddata['link_tags'] . " )<br /><br />";
+						$emailmessage .= __( 'Link Category', 'link-library' ) . ": " . $link_category_name . "( " . implode( ', ', $captureddata['link_category'] ) . " )<br /><br />";
+						if ( !empty( $link_tags_name ) ) {
+							$emailmessage .= __( 'Link Tags', 'link-library' ) . ": " . $link_tags_name . "( " . implode( ', ', $captureddata['link_tags'] ) . " )<br /><br />";
+						}
+
 						$emailmessage .= __( 'Reciprocal Link', 'link-library' ) . ": " . $captureddata['ll_reciprocal'] . "<br /><br />";
 						$emailmessage .= __( 'Link Secondary Address', 'link-library' ) . ": " . $captureddata['ll_secondwebaddr'] . "<br /><br />";
 						$emailmessage .= __( 'Link Telephone', 'link-library' ) . ": " . $captureddata['ll_telephone'] . "<br /><br />";

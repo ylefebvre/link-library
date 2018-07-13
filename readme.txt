@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.44 =
+* Fixed word array appearing in new link admin e-mail for categories
+
 = 6.0.43 =
 * Fixed link moderation table, showing 'None assigned' messages outside of the table for links without tags
 * Fixed notification e-mail missing title
