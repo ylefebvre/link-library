@@ -762,7 +762,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				} elseif ( 'random' == $linkorder ) {
 					$link_query_args['orderby'] = 'rand';
 				} elseif ( 'hits' == $linkorder ) {
-					$link_query_args['meta_query']['link_visits_clause'] = array( 'key' => 'link_visits' );
+					$link_query_args['meta_query']['link_visits_clause'] = array( 'key' => 'link_visits', 'type' => 'numeric' );
 					$link_query_args['orderby']['link_visits_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				}
 

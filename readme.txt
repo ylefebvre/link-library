@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.45 =
+* Fix to properly order links ordered by link visits
+
 = 6.0.44 =
 * Fixed word array appearing in new link admin e-mail for categories
 
