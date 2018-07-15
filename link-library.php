@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.45
+Version: 6.0.46
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -182,6 +182,25 @@ function link_library_modify_http_response( $plugins_response ) {
 	}
 
 	return $plugins_response;
+}
+
+function ll_expand_posts_search( $search, $query ) {
+	global $wpdb;
+
+	if ( $query->query_vars['post_type'] == 'link_library_links' && !empty( $query->query['s'] ) ) {
+		$sql    = "
+            or exists (
+                select * from {$wpdb->postmeta} where post_id={$wpdb->posts}.ID
+                and meta_key in ( 'link_description', 'link_notes', 'link_textfield', 'link_url' )
+                and meta_value like %s
+            )
+        ";
+		$like   = '%' . $wpdb->esc_like($query->query['s']) . '%';
+		$search = preg_replace("#\({$wpdb->posts}.post_title LIKE [^)]+\)\K#",
+			$wpdb->prepare($sql, $like), $search);
+	}
+
+	return $search;
 }
 
 /*********************************** Link Library Class *****************************************************************************/

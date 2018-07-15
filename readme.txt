@@ -59,6 +59,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.46 =
+* Improvements to upgrade routine to account for users who were running older version of Link Library before upgrade
+* Search improvements. Brings back search in link descriptions, notes and large descriptions. Also searches through these fields when searching for links in admin
+* Fixes for text after double-quotes getting cut off in link description and note fields
+
 = 6.0.45 =
 * Fix to properly order links ordered by link visits
 

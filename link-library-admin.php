@@ -497,6 +497,12 @@ class link_library_plugin_admin {
 				update_option( 'LinkLibraryGeneral', $genoptions );
 			}
 		}
+
+		global $typenow;
+
+		if ($typenow === 'link_library_links') {
+			add_filter('posts_search', 'll_expand_posts_search', 10, 2);
+		}
 	}
 
 	function ll_add_category_id( $content, $column_name, $term_id ){
@@ -5260,10 +5266,12 @@ class link_library_plugin_admin {
 		}
 
 		$link_description = get_post_meta( $link->ID, 'link_description', true );
+		$link_description = htmlentities( $link_description );
 		$link_textfield = get_post_meta( $link->ID, 'link_textfield', true );
 		$link_target = get_post_meta( $link->ID, 'link_target', true );
 		$link_rss = get_post_meta( $link->ID, 'link_rss', true );
 		$link_notes = get_post_meta( $link->ID, 'link_notes', true );
+		$link_notes = htmlentities( $link_notes );
 		?>
 		<table style="width:100%">
 			<tr>

@@ -731,6 +731,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 
 				if ( !empty( $searchstring ) ) {
+					add_filter( 'posts_search', 'll_expand_posts_search', 10, 2 );
 					$link_query_args['s'] = $searchstring;
 				}
 
@@ -2162,6 +2163,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 		$output .= "\n<!-- End of Link Library Output -->\n\n";
 	}
+
+	remove_filter( 'posts_search', 'll_expand_posts_search', 10 );
 
 	wp_reset_postdata();
 
