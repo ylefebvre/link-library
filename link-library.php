@@ -1130,7 +1130,8 @@ class link_library_plugin {
 							if ( $settingconfigpos && $settingconfigpos < $shortcodeend ) {
 								$settingset = substr( $post->post_content, $settingconfigpos + 9, $shortcodeend - $settingconfigpos - 9 );
 									
-								$settingsetids[] = $settingset;
+								$settingsetids[] = trim($settingset,'"');
+
 							} else if ( 0 == count($settingsetids) ) {
 								$settingsetids[] = 1;
 							}
