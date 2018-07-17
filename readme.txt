@@ -59,6 +59,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1 =
+* Stable release one month after 6.0 version. Update issues have trickled down, so I making this version 6.1.
+* Fixes for RSS Preview pop-up window
+* Fixed for intermittent before and after link fields in advanced library configuration
+* Added new field to be able to specify max number of links to display per category, instead of only in total
+
 = 6.0.48 =
 * Fix for single category GET category variable
 

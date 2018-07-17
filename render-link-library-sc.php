@@ -1372,8 +1372,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								if ( $linkaddfrequency > 0 ) {
-									if ( $the_link_query->current_post == 0 || ( $the_link_query->current_post + 1 ) % $linkaddfrequency == 0 ) {
-										//$output .= 'before';
+									if ( $the_link_query->current_post == 0 || $the_link_query->current_post % $linkaddfrequency == 0 ) {
 										$output .= stripslashes( $addbeforelink );
 									}
 								}
@@ -2030,12 +2029,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								$output .= stripslashes( $afteritem ) . "\n";
 
 								if ( $linkaddfrequency > 0 ) {
-									/* $output .= $the_link_query->current_post . ' ';
-									$output .= $linkaddfrequency . ' ';
-									$output .= ( $the_link_query->current_post + 1 ) . ' ';
-									$output .= ( $the_link_query->current_post + 1 ) % $linkaddfrequency; */
-									if ( 0 == ( $the_link_query->current_post + 1 ) % $linkaddfrequency ) {
-										//$output .= 'after';
+									if ( ( $the_link_query->current_post + 1 ) % $linkaddfrequency === 0 || $the_link_query->current_post + 1 == $the_link_query->found_posts ) {
 										$output .= stripslashes( $addafterlink );
 									}
 								}
@@ -2046,7 +2040,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 								$linkcount++;
 
-								if ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) {
+								if ( ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) ||
+										!empty( $maxlinkspercat ) && is_numeric( $maxlinkspercat ) && 0 < $maxlinkspercat && $the_link_query->current_post + 1 == $maxlinkspercat ) {
 									break;
 								}
 

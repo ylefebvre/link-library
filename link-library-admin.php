@@ -2087,7 +2087,7 @@ class link_library_plugin_admin {
 					'searchfieldtext', 'catfilterlabel', 'searchnoresultstext', 'addlinkdefaultcat', 'beforesubmittername', 'aftersubmittername',
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
 					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
-					'addlinkcustomtag', 'linkcustomtaglistentry'
+					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -3694,10 +3694,21 @@ class link_library_plugin_admin {
 				</td>
 				<td></td>
 				<td class="lltooltip" title="<?php _e( 'Leave empty to show all results', 'link-library' ); ?>">
-					<?php _e( 'Max number of links to display', 'link-library' ); ?>
+					<?php _e( 'Total max number of links to display', 'link-library' ); ?>
 				</td>
 				<td class="lltooltip" title="<?php _e( 'Leave empty to show all results', 'link-library' ); ?>">
 					<input type="text" id="maxlinks" name="maxlinks" size="4" value="<?php echo $options['maxlinks']; ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td class="lltooltip" title="<?php _e( 'Leave empty to show all results', 'link-library' ); ?>">
+					<?php _e( 'Max number of links to display per category', 'link-library' ); ?>
+				</td>
+				<td class="lltooltip" title="<?php _e( 'Leave empty to show all results for each category', 'link-library' ); ?>">
+					<input type="text" id="maxlinkspercat" name="maxlinkspercat" size="4" value="<?php echo $options['maxlinkspercat']; ?>" />
 				</td>
 			</tr>
 			<tr>
