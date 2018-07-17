@@ -312,6 +312,8 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['rolelevel']                    = 'Administrator';
 	$genoptions['editlevel']                    = 'Administrator';
 	$genoptions['cptslug']                      = 'links';
+	$genoptions['publicly_queryable']           = false;
+	$genoptions['exclude_from_search']          = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

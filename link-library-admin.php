@@ -1897,7 +1897,7 @@ class link_library_plugin_admin {
 				$genoptions['recaptchasecretkey'] = '';
 			}
 
-			foreach ( array( 'debugmode', 'emaillinksubmitter', 'suppressemailfooter', 'usefirstpartsubmittername', 'hidedonation' ) as $option_name ) {
+			foreach ( array( 'debugmode', 'emaillinksubmitter', 'suppressemailfooter', 'usefirstpartsubmittername', 'hidedonation', 'publicly_queryable', 'exclude_from_search' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					$genoptions[$option_name] = true;
 				} else {
@@ -1911,6 +1911,9 @@ class link_library_plugin_admin {
 
 			update_option( 'links_updated_date_format', $_POST['links_updated_date_format'] );
 		}
+
+		global $wp_rewrite;
+		$wp_rewrite->flush_rules( false );
 
 		//lets redirect the post request into get request (you may add additional params at the url, if you need to show save results
 		$redirecturl = remove_query_arg( array( 'message', 'importrowscount', 'successimportcount' ), $_POST['_wp_http_referer'] );
@@ -2442,6 +2445,14 @@ class link_library_plugin_admin {
 							<td>
 								<input type="text" id="cptslug" name="cptslug" size="20" value="<?php echo $genoptions['cptslug']; ?>" />
 							</td>
+						</tr>
+						<tr>
+							<td>Individual link pages can be seen by visitors</td>
+							<td><input type="checkbox" id="publicly_queryable" name="publicly_queryable" <?php checked( $genoptions['publicly_queryable'] ); ?>/></td>
+						</tr>
+						<tr>
+							<td>Links appear in search results</td>
+							<td><input type="checkbox" id="exclude_from_search" name="exclude_from_search" <?php checked( $genoptions['exclude_from_search'] ); ?>/></td>
 						</tr>
 						<tr>
 							<td>Minimum role for Link Library configuration</td>
@@ -4099,9 +4110,10 @@ class link_library_plugin_admin {
 							<td style='background-color: #5ccccc;color:#fff' class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before and after the Web Link', 'link-library' ); ?>'><?php _e( 'Web Link', 'link-library' ); ?></td>
 							<td style='text-align:center;background: #FFF'>
 								<select name="displayweblink" id="displayweblink" style="width:80px;">
-									<option value="false"<?php selected( $options['displayweblink'] == "false" ); ?>><?php _e( 'False', 'link-library' ); ?></option>
-									<option value="address"<?php selected( $options['displayweblink'] == "address" ); ?>><?php _e( 'Web Address', 'link-library' ); ?></option>
-									<option value="label"<?php selected( $options['displayweblink'] == "label" ); ?>><?php _e( 'Label', 'link-library' ); ?></option>
+									<option value="false"<?php selected( $options['displayweblink'] == 'false' ); ?>><?php _e( 'False', 'link-library' ); ?></option>
+									<option value="address"<?php selected( $options['displayweblink'] == 'address' ); ?>><?php _e( 'Web Address Link', 'link-library' ); ?></option>
+									<option value="addressonly"<?php selected( $options['displayweblink'] == 'addressonly' ); ?>><?php _e( 'Plain Web Address', 'link-library' ); ?></option>
+									<option value="label"<?php selected( $options['displayweblink'] == 'label' ); ?>><?php _e( 'Text Label with Link', 'link-library' ); ?></option>
 								</select>
 							</td>
 							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed before Web Link', 'link-library' ); ?>'>
@@ -5272,7 +5284,9 @@ class link_library_plugin_admin {
 		$link_rss = get_post_meta( $link->ID, 'link_rss', true );
 		$link_notes = get_post_meta( $link->ID, 'link_notes', true );
 		$link_notes = htmlentities( $link_notes );
+		wp_nonce_field( plugin_basename( __FILE__ ), 'link_edit_nonce' );
 		?>
+
 		<table style="width:100%">
 			<tr>
 				<td style="width:20%"><?php _e( 'Web Address', 'link-library' ); ?></td>
@@ -5645,17 +5659,7 @@ class link_library_plugin_admin {
 		// Check post type for book reviews
 
 		if ( $link->post_type == 'link_library_links' && isset( $_POST['action'] ) && 'editpost' == $_POST['action'] ) {
-
-			$array_urls_nonce = array( 'link_url' );
-			foreach ( $array_urls_nonce as $array_url_nonce ) {
-				if ( isset( $_POST[$array_url_nonce] ) && !empty( $_POST[$array_url_nonce] ) ) {
-					if ( !isset( $_POST['link_edit_nonce'] ) || wp_verify_nonce( $_POST['link_edit_nonce'], plugin_basename( __FILE__ ) ) ) {
-						update_post_meta( $link_id, $array_url_nonce, esc_url( $_POST[$array_url_nonce] ) );
-					}
-				}
-			}
-
-			$array_urls = array( 'link_rss', 'link_second_url', 'link_reciprocal', 'link_image' );
+			$array_urls = array( 'link_rss', 'link_second_url', 'link_reciprocal', 'link_image', 'link_url' );
 			foreach ( $array_urls as $array_url ) {
 				if ( isset( $_POST[$array_url] ) ) {
 					update_post_meta( $link_id, $array_url, esc_url( $_POST[$array_url] ) );
@@ -5730,6 +5734,15 @@ class link_library_plugin_admin {
 				$newrating = 0;
 			} elseif ( $newrating > 10 ) {
 				$newrating = 10;
+			}
+		} elseif ( $link->post_type == 'link_library_links' && isset( $_POST['action'] ) && 'inline-save' == $_POST['action'] ) {
+			$array_urls_nonce = array( 'link_url' );
+			foreach ( $array_urls_nonce as $array_url_nonce ) {
+				if ( isset( $_POST[$array_url_nonce] ) && !empty( $_POST[$array_url_nonce] ) ) {
+					if ( wp_verify_nonce( $_POST['link_edit_nonce'], plugin_basename( __FILE__ ) ) ) {
+						update_post_meta( $link_id, $array_url_nonce, esc_url( $_POST[$array_url_nonce] ) );
+					}
+				}
 			}
 		}
 	}

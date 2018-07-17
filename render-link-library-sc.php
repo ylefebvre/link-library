@@ -596,7 +596,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			}
 		}
 
-		if ( $pagination && 'search' != $mode && !$onlycount) {
+		if ( $pagination && 'search' != $mode ) {
 			if ($linksperpage == 0 || empty( $linksperpage ) ) {
 				$linksperpage = 5;
 			}
@@ -815,9 +815,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && !isset( $_GET['searchll'] ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $_GET['searchll'] ) ) ) {
 					$output .= "<div id='linklist" . $settings . "' class='linklist'>\n";
 					$output .= '</div><!-- Div empty list -->';
-				} elseif ( $the_link_query->found_posts && $onlycount ) {
-					return $the_link_query->found_posts;
-				} elseif ( ( $the_link_query->found_posts || !$hide_if_empty || $cat_has_children ) && !$onlycount ) {
+				} elseif ( ( $the_link_query->found_posts || !$hide_if_empty || $cat_has_children ) ) {
 					if ( ( $the_link_query->have_posts() || !$hide_if_empty || $cat_has_children ) && ( empty( $maxlinks ) || 0 == $maxlinks | $linkcount <= $maxlinks ) ) {
 						if ( ! $combineresults ) {
 							$currentcategoryid = $link_category->term_id;

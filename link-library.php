@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.0.46
+Version: 6.0.47
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -345,14 +345,17 @@ class link_library_plugin {
 	                'all_items' => 'All Links',
 					'menu_name' => _x('Link Library %%PENDING_COUNT%%', 'Link Library', 'link-library'),
                 ),
-                'public' => true,
+                'show_in_nav_menu' => true,
+                'show_ui' => true,
+                'exclude_from_search' => !$genoptions['exclude_from_search'],
+                'publicly_queryable' => $genoptions['publicly_queryable'],
                 'menu_position' => 10,
                 'supports' =>
                     array( 'title', 'editor', 'comments' ),
                 'taxonomies' => array( 'link_library_category' ),
                 'menu_icon' =>
                     plugins_url( 'icons/link-icon.png', __FILE__ ),
-                'has_archive' => true,
+                'has_archive' => false,
                 'rewrite' => array( 'slug' => $genoptions['cptslug'] . '/%link_library_category%' )
             )
         );
@@ -865,7 +868,7 @@ class link_library_plugin {
 
 		$settingsname = 'LinkLibraryPP' . $settings;
 		$options = get_option( $settingsname );
-		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$linkeditoruser = current_user_can( 'manage_options' );
 
 		if ( !empty( $categorylistoverride ) ) {
 			$options['categorylist_cpt'] = $categorylistoverride;
@@ -875,9 +878,42 @@ class link_library_plugin {
 			$options['excludecategorylist_cpt'] = $excludecategoryoverride;
 		}
 
-		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-sc.php';
-		$linkcount = 1;
-		return RenderLinkLibrary( $this, $genoptions, $options, $settings, true, 0, 0, true, false, $linkcount );
+		$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
+		$link_query_args['post_status'] = array( 'publish' );
+
+		if ( !empty( $options['categorylist_cpt'] ) ) {
+			$catlistarray = explode( ',', $options['categorylist_cpt'] );
+			$link_query_args['tax_query'] = array( array( 'taxonomy' => 'link_library_category',
+													'field' => 'term_id',
+													'terms' => $catlistarray,
+													'operator' => 'IN' ) );
+		}
+
+		if ( !empty( $options['excludecategorylist_cpt'] ) ) {
+			$catlistexcludearray = explode( ',', $options['excludecategorylist_cpt'] );
+			$link_query_args['tax_query'] = array( array( 'taxonomy' => 'link_library_category',
+			                                              'field' => 'term_id',
+			                                              'terms' => $catlistexcludearray,
+			                                              'operator' => 'NOT IN' ) );
+		}
+
+		if ( $options['showuserlinks'] ) {
+			$link_query_args['post_status'][] = 'pending';
+		}
+
+		if ( $options['showinvisible'] || ( $options['showinvisibleadmin'] && $linkeditoruser ) ) {
+			$link_query_args['post_status'][] = 'draft';
+		}
+
+		if ( $options['showscheduledlinks'] ) {
+			$link_query_args['post_status'][] = 'future';
+		}
+
+		$the_link_query = new WP_Query( $link_query_args );
+
+		wp_reset_postdata();
+
+		return $the_link_query->found_posts;
 	}
 
 	/********************************************** Function to Process [link-library-filters] shortcode ***************************************/

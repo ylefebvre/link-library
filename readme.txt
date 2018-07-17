@@ -59,6 +59,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.47 =
+* Added new option for Web Link display to only display Plain Web Address, without any hyperlink
+* Fix for [link-library-count] shortcode to properly display link count
+* Added code so that permalinks rewrite rules are automatically flushed when you save general settings
+* Fixed problem with quick edit of link URL
+
 = 6.0.46 =
 * Improvements to upgrade routine to account for users who were running older version of Link Library before upgrade
 * Search improvements. Brings back search in link descriptions, notes and large descriptions. Also searches through these fields when searching for links in admin
