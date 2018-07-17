@@ -427,7 +427,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 
 		if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) ) {
-			$show_one_cat_query_args['slug'] = explode( ',', $categorysluglist );
+			if ( !empty( $categorysluglist ) ) {
+				$show_one_cat_query_args['slug'] = explode( ',', $categorysluglist );
+			} elseif ( isset( $_GET['cat'] ) ) {
+				$show_one_cat_query_args['slug'] = isset( $_GET['cat'] );
+			}
+
 		}
 
 		if ( isset( $categoryname ) && !empty( $categoryname ) && 'HTMLGETPERM' == $showonecatmode && empty( $singlelinkid ) ) {
@@ -547,6 +552,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			} elseif ( isset( $_GET['cat'] ) ) {
 				$link_categories_query_args['slug'] = $_GET['cat'];
 			}
+			$link_categories_query_args['include'] = array();
+			$link_categories_query_args['exclude'] = array();
 		}
 
 		if ( isset( $categoryname ) && !empty( $categoryname ) && 'HTMLGETPERM' == $showonecatmode && empty( $singlelinkid ) ) {
@@ -1365,7 +1372,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								if ( $linkaddfrequency > 0 ) {
-									if ( ( $linkcount - 1 ) % $linkaddfrequency == 0 ) {
+									if ( $the_link_query->current_post == 0 || ( $the_link_query->current_post + 1 ) % $linkaddfrequency == 0 ) {
+										$output .= 'before';
 										$output .= stripslashes( $addbeforelink );
 									}
 								}
@@ -2022,7 +2030,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								$output .= stripslashes( $afteritem ) . "\n";
 
 								if ( $linkaddfrequency > 0 ) {
-									if ( 0 == $linkcount % $linkaddfrequency ) {
+									$output .= $the_link_query->current_post . ' ';
+									$output .= $linkaddfrequency . ' ';
+									$output .= ( $the_link_query->current_post + 1 ) . ' ';
+									$output .= ( $the_link_query->current_post + 1 ) % $linkaddfrequency;
+									if ( 0 == ( $the_link_query->current_post + 1 ) % $linkaddfrequency ) {
+										$output .= 'after';
 										$output .= stripslashes( $addafterlink );
 									}
 								}

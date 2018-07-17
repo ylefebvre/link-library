@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.0.48 =
+* Fix for single category GET category variable
+
 = 6.0.47 =
 * Added new option for Web Link display to only display Plain Web Address, without any hyperlink
 * Fix for [link-library-count] shortcode to properly display link count
