@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.1 =
+* Added rel tags noopener and noreferrer to links for security
+
 = 6.1 =
 * Stable release one month after 6.0 version. Update issues have trickled down, so I making this version 6.1.
 * Fixes for RSS Preview pop-up window

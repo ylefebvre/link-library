@@ -1417,11 +1417,17 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$the_permalink = $linkitem['link_permalink'];
 								}
 
-								if ( empty( $linkitem['link_rel'] ) && ( $nofollow || $linkitem['link_no_follow'] ) ) {
-									$linkitem['link_rel'] = ' rel="nofollow ' . $linkitem['link_rel'] . '"';
-								} else {
-									$linkitem['link_rel'] = ' rel="' . $linkitem['link_rel'] . '"';
+								$rel_list = array( 'noopener', 'noreferrer' );
+								if ( $nofollow ) {
+									$rel_list[] = 'nofollow';
 								}
+
+								if ( !empty( $linkitem['link_rel'] ) ) {
+									$rel_list[] = $linkitem['link_rel'];
+								}
+
+								$linkitem['link_rel'] = trim( ' rel="' . implode( ' ', $rel_list ) . '"' );
+
 
 								if ( $use_html_tags ) {
 									$descnotes = $linkitem['link_notes'];
