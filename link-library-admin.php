@@ -3482,6 +3482,7 @@ class link_library_plugin_admin {
 						<select name="order" id="order" style="width:200px;">
 							<option value="name"<?php selected( $options['order'] == 'name' ); ?>><?php _e( 'Order by Name', 'link-library' ); ?></option>
 							<option value="id"<?php selected( $options['order'] == 'id' ); ?>><?php _e( 'Order by ID', 'link-library' ); ?></option>
+							<option value="slug"<?php selected( $options['order'] == 'slug' ); ?>><?php _e( 'Order by Category Slug', 'link-library' ); ?></option>
 							<?php if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) { ?>
 								<option value="catlist"<?php selected( $options['order'] == 'catlist' ); ?>><?php _e( 'Order of categories based on included category list', 'link-library' ); ?></option>
 							<?php } ?>

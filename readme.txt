@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.2 =
+* Fix for undefined index when using link-library-count shortcode
+* Adds new option to sort categories by slug
+
 = 6.1.1 =
 * Added rel tags noopener and noreferrer to links for security
 

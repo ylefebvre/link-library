@@ -570,6 +570,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		} elseif ( 'id' == $order ) {
 			$link_categories_query_args['orderby'] = 'id';
 			$link_categories_query_args['order'] = in_array( $direction, $validdirections ) ? $direction : 'ASC';
+		} elseif ( 'slug' == $order ) {
+			$link_categories_query_args['orderby'] = 'slug';
+			$link_categories_query_args['order'] = in_array( $direction, $validdirections ) ? $direction : 'ASC';
 		}
 
 		if ( isset( $AJAXcatid ) && !empty( $AJAXcatid ) ) {
