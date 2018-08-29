@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.3 =
+* Fix to exclude links from custom post types that can be imported back into Link Library in Import/Export section
+
 = 6.1.2 =
 * Fix for undefined index when using link-library-count shortcode
 * Adds new option to sort categories by slug

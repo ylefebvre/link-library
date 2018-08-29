@@ -2879,14 +2879,16 @@ class link_library_plugin_admin {
 							$site_post_types = get_post_types( array( '_builtin' => false ) );
 							if ( !empty( $site_post_types ) ) {
 								foreach( $site_post_types as $site_post_type ) {
-									$any_posts = get_posts( array( 'post_type' => $site_post_type ) );
-									if ( !empty( $any_posts ) && count( $any_posts ) < 200 ) {
-										if ( !empty( $any_posts ) ) {
-											$post_type_data = get_post_type_object( $site_post_type ); ?>
+									if ( 'link_library_links' != $site_post_type ) {
+										$any_posts = get_posts( array( 'post_type' => $site_post_type ) );
+										if ( !empty( $any_posts ) && count( $any_posts ) < 200 ) {
+											if ( !empty( $any_posts ) ) {
+												$post_type_data = get_post_type_object( $site_post_type ); ?>
 
-											<input type="radio" name="siteimportlinksscope" value="specific<?php echo $site_post_type; ?>"> <?php _e( 'Specific ' . $post_type_data->labels->singular_name, 'link-library' ); ?>
-											<?php wp_dropdown_posts( array( 'post_type' => $site_post_type, 'select_name' => $site_post_type . '_id' ) ); ?><br /><br />
-										<?php } }
+												<input type="radio" name="siteimportlinksscope" value="specific<?php echo $site_post_type; ?>"> <?php _e( 'Specific ' . $post_type_data->labels->singular_name, 'link-library' ); ?>
+												<?php wp_dropdown_posts( array( 'post_type' => $site_post_type, 'select_name' => $site_post_type . '_id' ) ); ?><br /><br />
+											<?php } }
+									}
 								}
 							}
 						?>
