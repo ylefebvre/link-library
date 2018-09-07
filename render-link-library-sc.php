@@ -2099,16 +2099,16 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				$output .= $searchnoresultstext . "\n";
 			}
 		}
-
-		if ( $usethumbshotsforimages ) {
-			if ( $thumbnailgenerator == 'robothumb' ) {
-				$output .= '<div class="llthumbshotsnotice"><a href="http://www.robothumb.com">Screenshots par Robothumb</a></div>';
-			} elseif ( $thumbnailgenerator == 'thumbshots' ) {
-				$output .= '<div class="llthumbshotsnotice"><a href="http://www.thumbshots.com" target="_blank" title="Thumbnails Screenshots by Thumbshots">Thumbnail Screenshots by Thumbshots</a></div>';
-			}
-		}
 	} else {
 		$output .= __( 'No links found', 'link-library' );
+	}
+
+	if ( $usethumbshotsforimages && $level == 0 ) {
+		if ( $thumbnailgenerator == 'robothumb' ) {
+			$output .= '<div class="llthumbshotsnotice"><a href="http://www.robothumb.com">' . _e( 'Screenshots by Robothumb', 'link-library' ) . '</a></div>';
+		} elseif ( $thumbnailgenerator == 'thumbshots' ) {
+			$output .= '<div class="llthumbshotsnotice"><a href="http://www.thumbshots.com" target="_blank" title="Thumbnails Screenshots by Thumbshots">' . _e( 'Thumbnail Screenshots by Thumbshots', 'link-library' ) . '</a></div>';
+		}
 	}
 
 	if ( $level == 0 && $pagination && 'search' != $mode && ( 'AFTER' == $paginationposition || empty( $pagination ) ) ) {

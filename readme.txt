@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.4 =
+* Fix so that Robothumb message only appears once if you use sub-categories
+
 = 6.1.3 =
 * Fix to exclude links from custom post types that can be imported back into Link Library in Import/Export section
 
