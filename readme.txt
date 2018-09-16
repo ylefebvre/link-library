@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.5 =
+* Additional fixes for Robothumb message
+* Fixed for image links not being closed properly when using external thumbnail generation service
+
 = 6.1.4 =
 * Fix so that Robothumb message only appears once if you use sub-categories
 
