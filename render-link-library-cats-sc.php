@@ -14,8 +14,7 @@ require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
  * @return                  List of categories output for browser
  */
 
-function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings ) {
-
+function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $parent_cat_id = 0, $level = 0 ) {
     $generaloptions = wp_parse_args( $generaloptions, ll_reset_gen_settings( 'return' ) );
     extract( $generaloptions );
 
@@ -103,7 +102,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		    }
 	    }
 
-        $link_categories_query_args = array( );
+        $link_categories_query_args = array( 'parent' => $parent_cat_id );
 
         if ( $hide_if_empty ) {
             $link_categories_query_args['hide_empty'] = true;
@@ -123,15 +122,15 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
             add_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending', 10, 3 );
         }
 
-        if ( !empty( $categorylist_cpt ) && empty( $singlelinkid ) ) {
+        if ( !empty( $categorylist_cpt ) && empty( $singlelinkid ) && $level == 0 ) {
             $link_categories_query_args['include'] = explode( ',', $categorylist_cpt );
         }
 
-        if ( !empty( $excludecategorylist_cpt ) && empty( $singlelinkid ) ) {
+        if ( !empty( $excludecategorylist_cpt ) && empty( $singlelinkid ) && $level == 0 ) {
             $link_categories_query_args['exclude'] = explode( ',', $excludecategorylist_cpt );
         }
 
-        if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) ) {
+        if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) && $level == 0 ) {
         	if ( !empty( $categorysluglist ) ) {
 		        $link_categories_query_args['slug'] = explode( ',', $categorysluglist );
 	        } elseif ( isset( $_GET['cat'] ) ) {
@@ -139,11 +138,11 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	        }
         }
 
-        if ( isset( $categoryname ) && !empty( $categoryname ) && 'HTMLGETPERM' == $showonecatmode && empty( $singlelinkid ) ) {
+        if ( isset( $categoryname ) && !empty( $categoryname ) && 'HTMLGETPERM' == $showonecatmode && empty( $singlelinkid ) && $level == 0 ) {
             $link_categories_query_args['slug'] = $categoryname;
         }
 
-        if ( ( !empty( $categorynamelist ) || isset( $_GET['catname'] ) ) && empty( $singlelinkid ) ) {
+        if ( ( !empty( $categorynamelist ) || isset( $_GET['catname'] ) ) && empty( $singlelinkid ) && $level == 0 ) {
             $link_categories_query_args['name'] = explode( ',', urldecode( $categorynamelist ) );
         }
 
@@ -161,6 +160,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
         }
 
         $link_categories = get_terms( 'link_library_category', $link_categories_query_args );
+
         remove_filter( 'get_terms', 'link_library_get_terms_filter' );
 
 	    if ( !empty( $link_categories_query_args['include'] ) && !empty( $link_categories_query_args['exclude'] ) ) {
@@ -194,21 +194,32 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
         // Display each category
         if ( $link_categories ) {
 
-            $output .=  '<div id="linktable" class="linktable">';
+            if ( $level == 0 ) {
+	            $output .=  '<div id="linktable" class="linktable">';
 
-            if ( 'table' == $flatlist ) {
-                $output .= "<table width=\"" . $table_width . "%\">\n";
-            } elseif ( 'unordered' == $flatlist ) {
-                $output .= "<ul class='menu'>\n";
-            } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
-                $output .= "<form name='catselect'><select ";
-	            if ( 'dropdowndirect' == $flatlist ) {
-		            $output .= "onchange='showcategory()' ";
+	            if ( 'table' == $flatlist ) {
+		            $output .= "<table width=\"" . $table_width . "%\">\n";
+	            } elseif ( 'unordered' == $flatlist ) {
+		            $output .= "<ul class='menu'>\n";
+	            } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
+		            $output .= "<form name='catselect'><select ";
+		            if ( 'dropdowndirect' == $flatlist ) {
+			            $output .= "onchange='showcategory()' ";
+		            }
+		            $output .= "name='catdropdown' class='catdropdown'>";
 	            }
-	            $output .= "name='catdropdown' class='catdropdown'>";
+            } else {
+	            $output .= "<ul class='linksubcatlist' style='padding-left: " . $level * 30 . "px;'>\n";
             }
 
             foreach ( $link_categories as $catname ) {
+
+	            $childcategories = get_terms( array( 'taxonomy' => 'link_library_category', 'child_of' => $catname->term_id ) );
+
+	            $cat_has_children = false;
+	            if ( !is_wp_error( $childcategories ) && !empty( $childcategories ) ) {
+		            $cat_has_children = true;
+	            }
 
                 if ( !empty( $currentcatletter ) && $cat_letter_filter != 'no' ) {
                     if ( substr( $catname->name, 0, 1) != $currentcatletter ) {
@@ -267,23 +278,27 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
                 // Display the category name
                 $countcat += 1;
-                if ( $num_columns > 0 && 'table' == $flatlist && ( ( 1 == $countcat % $num_columns ) || ( 1 == $num_columns ) ) ) {
-                    $output .= "<tr>\n";
+                if ( $level == 0 ) {
+	                if ( $num_columns > 0 && 'table' == $flatlist && ( ( 1 == $countcat % $num_columns ) || ( 1 == $num_columns ) ) ) {
+		                $output .= "<tr>\n";
+	                }
+
+	                if ( 'table' == $flatlist ) {
+		                $catfront = "\t<td>";
+	                } elseif ( 'unordered' == $flatlist ) {
+		                $catfront = "\t<li>";
+	                } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && ( $linkcount > 0 || !$hide_if_empty )) {
+		                $catfront = "\t<option ";
+		                if ( !empty( $categoryid ) && $categoryid == $catname->term_id ) {
+			                $catfront .= 'selected="selected" ';
+		                }
+		                $catfront .= 'value="';
+	                }
+                } else {
+	                $catfront = "\t<li>";
                 }
 
-                if ( 'table' == $flatlist ) {
-                    $catfront = "\t<td>";
-                } elseif ( 'unordered' == $flatlist ) {
-                    $catfront = "\t<li>";
-                } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && ( $linkcount > 0 || !$hide_if_empty )) {
-                    $catfront = "\t<option ";
-                    if ( !empty( $categoryid ) && $categoryid == $catname->term_id ) {
-                        $catfront .= 'selected="selected" ';
-                    }
-                    $catfront .= 'value="';
-                }
-
-                if ( $linkcount > 0 ) {
+                if ( $linkcount > 0 || ( $linkcount == 0 && $cat_has_children ) ) {
 	                if ( $showonecatonly ) {
 		                if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
 			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
@@ -418,7 +433,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
                 if ( 'right' == $catlistdescpos || empty( $catlistdescpos ) ) {
 	                $catitem .= '<div class="linkcatname">' . $catname->name;
-	                if ( $showcatlinkcount ) {
+	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
 	                $catitem .= '</div>';
@@ -434,7 +449,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
                 if ( 'left' == $catlistdescpos ) {
 	                $catitem .= '<div class="linkcatname">' . $catname->name;
-	                if ( $showcatlinkcount ) {
+	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
 		                $catitem .= '<span class="linkcatcount"> (' . $catname->linkcount . ')</span>';
 	                }
 	                $catitem .= '</div>';
@@ -450,38 +465,50 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
                 $output .= ( $catfront . $cattext . $catitem );
 
-                if ( 'table' == $flatlist ) {
-                    $catterminator = "</td>\n";
-                } elseif ( 'unordered' == $flatlist ) {
-                    $catterminator = "</li>\n";
-                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist && ( $linkcount > 0 || !$hide_if_empty )) {
-                    $catterminator = "</option>\n";
+                if ( $cat_has_children ) {
+	                $output .= RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $catname->term_id, $level + 1 );
+                }
+
+                if ( $level == 0 ) {
+	                if ( 'table' == $flatlist ) {
+		                $catterminator = "</td>\n";
+	                } elseif ( 'unordered' == $flatlist ) {
+		                $catterminator = "</li>\n";
+	                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist && ( $linkcount > 0 || !$hide_if_empty )) {
+		                $catterminator = "</option>\n";
+	                }
+                } else {
+	                $catterminator = "</li>\n";
                 }
 
                 $output .= ( $catterminator );
 
-                if ( $num_columns > 0 && 'table' == $flatlist and ( 0 == $countcat % $num_columns ) ) {
+                if ( $num_columns > 0 && 'table' == $flatlist && ( 0 == $countcat % $num_columns ) && $level == 0 ) {
                     $output .= "</tr>\n";
                 }
             }
 
-            if ( $num_columns > 0 && 'table' == $flatlist and ( 3 == $countcat % $num_columns ) ) {
+            if ( $num_columns > 0 && 'table' == $flatlist && ( 3 == $countcat % $num_columns ) && $level == 0) {
                 $output .= "</tr>\n";
             }
 
-            if ( 'table' == $flatlist && $link_categories ) {
-                $output .= "</table>\n";
-            } elseif ( 'unordered' == $flatlist && $link_categories ) {
-                $output .= "</ul>\n";
-            } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && $link_categories ) {
-                $output .= "</select>\n";
-	            if ( 'dropdown' == $flatlist ) {
-		            $output .= "<button type='button' onclick='showcategory()'>" . __('Go!', 'link-library') . "</button>";
+            if ( $level == 0 ) {
+	            if ( 'table' == $flatlist && $link_categories ) {
+		            $output .= "</table>\n";
+	            } elseif ( 'unordered' == $flatlist && $link_categories ) {
+		            $output .= "</ul>\n";
+	            } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && $link_categories ) {
+		            $output .= "</select>\n";
+		            if ( 'dropdown' == $flatlist ) {
+			            $output .= "<button type='button' onclick='showcategory()'>" . __('Go!', 'link-library') . "</button>";
+		            }
+		            $output .= '</form>';
 	            }
-                $output .= '</form>';
-            }
 
-            $output .= "</div>\n";
+	            $output .= "</div>\n";
+            } else {
+            	$output .= '</ul>';
+            }
 
             if ( $showonecatonly && ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) ) {
                 if ( empty( $loadingicon ) ) {

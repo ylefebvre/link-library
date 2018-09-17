@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.6 =
+* Made 'Powered by Robothumb' link have _empty target to open in new tab / window
+* Added condition to refuse reciprocal links that are set to the posting site
+
 = 6.1.5 =
 * Additional fixes for Robothumb message
 * Fixed for image links not being closed properly when using external thumbnail generation service

@@ -2103,7 +2103,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 	if ( $usethumbshotsforimages && $level == 0 ) {
 		if ( $thumbnailgenerator == 'robothumb' ) {
-			$output .= '<div class="llthumbshotsnotice"><a href="http://www.robothumb.com">' . __( 'Screenshots by Robothumb', 'link-library' ) . '</a></div>';
+			$output .= '<div class="llthumbshotsnotice"><a href="http://www.robothumb.com" target="_blank">' . __( 'Screenshots by Robothumb', 'link-library' ) . '</a></div>';
 		} elseif ( $thumbnailgenerator == 'thumbshots' ) {
 			$output .= '<div class="llthumbshotsnotice"><a href="http://www.thumbshots.com" target="_blank" title="Thumbnails Screenshots by Thumbshots">' . __( 'Thumbnail Screenshots by Thumbshots', 'link-library' ) . '</a></div>';
 		}

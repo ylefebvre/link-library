@@ -151,9 +151,18 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			}
 		}
 
+		$parsed_new_reciprocal = parse_url( esc_url( $captureddata['ll_reciprocal'] ) );
+		$reciprocal_domain = $parsed_new_reciprocal['host'];
+
+		$parsed_main_site_url = parse_url( get_site_url() );
+		$main_site_domain = $parsed_main_site_url['host'];
+
+		if ( $reciprocal_domain == $main_site_domain ) {
+			$valid = false;
+			$message = 24;
+		}
+
 		if ( $valid && $options['onereciprocaldomain'] && ( 'required' == $options['showaddlinkreciprocal'] || ( 'show' == $options['showaddlinkreciprocal'] && !empty( $captureddata['ll_reciprocal'] ) ) ) ) {
-			$parsed_new_reciprocal = parse_url( esc_url( $captureddata['ll_reciprocal'] ) );
-			$reciprocal_domain = $parsed_new_reciprocal['host'];
 
 			$reciprocal_links = array('');
 			$reciprocal_query = new WP_Query( array( 'post_type' => 'link_library_links', 'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ) ) );
