@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.8 =
+* Small fix for data validation of reciprocal link URL
+
 = 6.1.7 =
 * Fixed shortcode so that you can display a sub-category using the [link-library categorylistoverride="XX"] parameter
 
