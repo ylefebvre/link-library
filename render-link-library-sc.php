@@ -578,7 +578,20 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		if ( isset( $AJAXcatid ) && !empty( $AJAXcatid ) ) {
 			$link_categories_query_args['include'] = $AJAXcatid;
 		} else {
-			$link_categories_query_args['parent'] = $parent_cat_id;
+			$no_sub_cat = true;
+			if ( !empty( $link_categories_query_args['include'] ) ) {
+				foreach ( $link_categories_query_args['include'] as $include_cat ) {
+					$cat_term = get_term_by( 'id', $include_cat, 'link_library_category' );
+					if ( !empty( $cat_term ) ) {
+						if ( $cat_term->parent != 0 && $level == 0 ) {
+							$no_sub_cat = false;
+						}
+					}
+				}
+			}
+			if ( $no_sub_cat ) {
+				$link_categories_query_args['parent'] = $parent_cat_id;
+			}
 		}
 
 		$link_categories = get_terms( 'link_library_category', $link_categories_query_args );

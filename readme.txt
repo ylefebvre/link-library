@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.7 =
+* Fixed shortcode so that you can display a sub-category using the [link-library categorylistoverride="XX"] parameter
+
 = 6.1.6 =
 * Made 'Powered by Robothumb' link have _empty target to open in new tab / window
 * Added condition to refuse reciprocal links that are set to the posting site
