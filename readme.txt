@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.10 =
+* Changed default order of items in target drop-down list in link editor
+* Added option in Global Options to choose which target option should appear first in link editor. Defaults to _blank.
+
 = 6.1.9 =
 * Fixed issue with category name not appearing when selecting 'After category name' or 'After top-level category name' as the category description position
 * Fixed issue with link count not displaying when category description configured to appear on left side of category name in [link-library-cats] shortcode

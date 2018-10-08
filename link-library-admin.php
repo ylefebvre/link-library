@@ -1874,7 +1874,8 @@ class link_library_plugin_admin {
 					'numberstylesets', 'includescriptcss', 'pagetitleprefix', 'pagetitlesuffix', 'schemaversion', 'thumbshotscid', 'approvalemailtitle',
 					'moderatorname', 'moderatoremail', 'rejectedemailtitle', 'approvalemailbody', 'rejectedemailbody', 'moderationnotificationtitle',
 					'linksubmissionthankyouurl', 'recipcheckaddress', 'imagefilepath', 'catselectmethod', 'expandiconpath', 'collapseiconpath', 'updatechannel',
-					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug'
+					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug',
+					'defaultlinktarget'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2492,6 +2493,16 @@ class link_library_plugin_admin {
 									<option value="commalist" <?php selected( $genoptions['catselectmethod'], 'commalist' ); ?>><?php _e( 'Comma-separated ID list', 'link-library' ); ?>
 									<option value="multiselectlist" <?php selected( $genoptions['catselectmethod'], 'multiselectlist' ); ?>><?php _e( 'Multi-select List', 'link-library' ); ?>
 								</select></td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Default link target in editor', 'link-library' ); ?></td>
+							<td><?php $target_array = array( '_blank' => '_blank (new window or tab)', '' => '_none (same window or tab)', '_top' => '_top (current window or tab, with no frames)' );
+								echo '<select name="defaultlinktarget" id="defaultlinktarget">';
+									foreach ( $target_array as $target_value => $target_item ) {
+									echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultlinktarget'] ) . '>' . $target_item . '</option>';
+									}
+									echo '</select>';
+								?></td>
 						</tr>
 						<tr>
 							<td class="lltooltip" title="<?php _e( 'Enter comma-separate list of pages on which the Link Library stylesheet and scripts should be loaded. Primarily used if you display Link Library using the API', 'link-library' ); ?>"><?php _e( 'Additional pages to load styles and scripts', 'link-library' ); ?></td>
@@ -5285,6 +5296,10 @@ class link_library_plugin_admin {
 	/************************************************ Render Custom Meta Box in Link Editor *******************************************/
 
 	function ll_link_basic_info( $link ) {
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+		extract( $genoptions );
+
 		$link_url = get_post_meta( $link->ID, 'link_url', true );
 
 		if ( empty( $link_url ) && isset( $_GET['linkurl'] ) ) {
@@ -5294,7 +5309,13 @@ class link_library_plugin_admin {
 		$link_description = get_post_meta( $link->ID, 'link_description', true );
 		$link_description = htmlentities( $link_description );
 		$link_textfield = get_post_meta( $link->ID, 'link_textfield', true );
-		$link_target = get_post_meta( $link->ID, 'link_target', true );
+
+		if ( metadata_exists( 'post', $link->ID, 'link_target' ) ) {
+			$link_target = get_post_meta( $link->ID, 'link_target', true );
+		} else {
+			$link_target = $defaultlinktarget;
+		}
+
 		$link_rss = get_post_meta( $link->ID, 'link_rss', true );
 		$link_notes = get_post_meta( $link->ID, 'link_notes', true );
 		$link_notes = htmlentities( $link_notes );
@@ -5333,8 +5354,10 @@ class link_library_plugin_admin {
 			<tr>
 				<td><?php _e( 'Target', 'link-library' ); ?></td>
 				<td><?php
-					$target_array = array( '' => '_none (same window or tab)', '_blank' => '_blank (new window or tab)', '_top' => '_top (current window or tab, with no frames)' );
+					$target_array = array( '_blank' => '_blank (new window or tab)', '' => '_none (same window or tab)', '_top' => '_top (current window or tab, with no frames)' );
 					echo '<select name="link_target" id="link_target">';
+					echo '<option value="' . $defaultlinktarget . '" ' . selected( $defaultlinktarget, $link_target ) . '>' . $target_array[$defaultlinktarget] . '</option>';
+					unset( $target_array[$defaultlinktarget] );
 					foreach ( $target_array as $target_value => $target_item ) {
 						echo '<option value="' . $target_value . '" ' . selected( $target_value, $link_target ) . '>' . $target_item . '</option>';
 					}
