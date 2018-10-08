@@ -691,7 +691,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$output .= $breadcrumb;
 				}
 
-				if ( $pagination && 'search' != $mode ) {
+				if ( $pagination && 'search' != $mode && !$combineresults ) {
 					if ( $linkcount + $link_category->count - 1 < $startingitem || $linkcount > $startingitem + $linksperpage - 1 ) {
 						$linkcount = $linkcount + $link_category->count;
 						continue;

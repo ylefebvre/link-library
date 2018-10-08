@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.11 =
+* Fix issue with pagination mode and combine all results without categories mode not working together
+
 = 6.1.10 =
 * Changed default order of items in target drop-down list in link editor
 * Added option in Global Options to choose which target option should appear first in link editor. Defaults to _blank.
