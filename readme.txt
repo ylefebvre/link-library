@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.9 =
+* Fixed issue with category name not appearing when selecting 'After category name' or 'After top-level category name' as the category description position
+* Fixed issue with link count not displaying when category description configured to appear on left side of category name in [link-library-cats] shortcode
+
 = 6.1.8 =
 * Small fix for data validation of reciprocal link URL
 

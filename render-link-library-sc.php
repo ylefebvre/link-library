@@ -899,7 +899,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 									$catlink = '<div class="' . $catnameoutput . '"><!-- Div Cat Name -->';
 
-									if ( 'right' == $catdescpos || empty( $catdescpos ) ) {
+									if ( 'right' == $catdescpos || 'aftercatname' == $catdescpos || 'aftertoplevelcatname' == $catdescpos || empty( $catdescpos ) ) {
 										if ( !empty( $caturl ) ) {
 											$catlink .= '<a href="' . link_library_add_http( $caturl ) . '" ';
 

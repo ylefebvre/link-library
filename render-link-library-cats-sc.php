@@ -431,7 +431,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                $cattext .= '<span class="emptycat">';
                 }
 
-                if ( 'right' == $catlistdescpos || empty( $catlistdescpos ) ) {
+                if ( !$showcategorydescheaders || ( $showcategorydescheaders && ( 'right' == $catlistdescpos || empty( $catlistdescpos ) ) ) ) {
 	                $catitem .= '<div class="linkcatname">' . $catname->name;
 	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
@@ -447,10 +447,10 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                     $catitem .= '<span class="linkcatdesc">' . $catname->description . '</span>';
                 }
 
-                if ( 'left' == $catlistdescpos ) {
+                if ( $showcategorydescheaders && 'left' == $catlistdescpos ) {
 	                $catitem .= '<div class="linkcatname">' . $catname->name;
 	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
-		                $catitem .= '<span class="linkcatcount"> (' . $catname->linkcount . ')</span>';
+		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
 	                $catitem .= '</div>';
                 }
