@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.1.12
+Version: 6.1.13
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -775,10 +775,46 @@ class link_library_plugin {
 
         if ( !empty( $categorylistoverride ) ) {
             $options['categorylist_cpt'] = $categorylistoverride;
+
+	        $update_list = false;
+	        $category_list_array = explode( ',', $categorylistoverride );
+	        foreach( $category_list_array as $index => $category_text ) {
+		        if ( !is_numeric( $category_text ) ) {
+			        $update_list = true;
+			        $matched_term = get_term_by( 'slug', $category_text, 'link_library_category' );
+
+			        if ( $matched_term ) {
+				        $category_list_array[$index] = $matched_term->term_id;
+			        } else {
+				        unset( $category_list_array[$index] );
+			        }
+		        }
+	        }
+	        if ( $update_list ) {
+		        $options['categorylist_cpt'] = implode( ',', $category_list_array );
+	        }
         }
 
 		if ( !empty( $excludecategoryoverride ) ) {
             $options['excludecategorylist_cpt'] = $excludecategoryoverride;
+
+			$update_list = false;
+			$exclude_category_list_array = explode( ',', $excludecategoryoverride );
+			foreach( $exclude_category_list_array as $index => $category_text ) {
+				if ( !is_numeric( $category_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $category_text, 'link_library_category' );
+
+					if ( $matched_term ) {
+						$exclude_category_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $exclude_category_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['categorylist_cpt'] = implode( ',', $exclude_category_list_array );
+			}
         }
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
@@ -997,10 +1033,46 @@ class link_library_plugin {
 
 		if ( !empty( $categorylistoverride ) ) {
             $options['categorylist_cpt'] = $categorylistoverride;
+
+            $update_list = false;
+            $category_list_array = explode( ',', $categorylistoverride );
+            foreach( $category_list_array as $index => $category_text ) {
+            	if ( !is_numeric( $category_text ) ) {
+            		$update_list = true;
+            		$matched_term = get_term_by( 'slug', $category_text, 'link_library_category' );
+
+            		if ( $matched_term ) {
+            			$category_list_array[$index] = $matched_term->term_id;
+					} else {
+            			unset( $category_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['categorylist_cpt'] = implode( ',', $category_list_array );
+			}
         }
 
 		if ( !empty( $excludecategoryoverride ) ) {
             $options['excludecategorylist_cpt'] = $excludecategoryoverride;
+
+			$update_list = false;
+			$exclude_category_list_array = explode( ',', $excludecategoryoverride );
+			foreach( $exclude_category_list_array as $index => $category_text ) {
+				if ( !is_numeric( $category_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $category_text, 'link_library_category' );
+
+					if ( $matched_term ) {
+						$exclude_category_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $exclude_category_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['categorylist_cpt'] = implode( ',', $exclude_category_list_array );
+			}
         }
 
 		if ( !empty( $singlelinkid ) ) {

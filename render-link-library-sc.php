@@ -827,7 +827,15 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					echo '<!-- showonecatmode: ' . $showonecatonly . ', AJAXnocatset: ' . $AJAXnocatset . ', nocatonstartup: ' . $nocatonstartup . '-->';
 				}
 
-				$childcategories = get_terms( array( 'taxonomy' => 'link_library_category', 'child_of' => $link_category->term_id ) );
+				$child_cat_params = array( 'taxonomy' => 'link_library_category', 'child_of' => $link_category->term_id );
+
+				if ( $hide_if_empty ) {
+					$child_cat_params['hide_empty'] = true;
+				} else {
+					$child_cat_params['hide_empty'] = false;
+				}
+
+				$childcategories = get_terms( $child_cat_params );
 
 				$cat_has_children = false;
 				if ( !is_wp_error( $childcategories ) && !empty( $childcategories ) ) {

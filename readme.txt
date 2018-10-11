@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.13 =
+* Add support for list of category slugs in shortcode parameters
+* Additional fix for empty sub-categories not appearing correctly in [link-library-cats] shortcode
+
 = 6.1.12 =
 * Fix for empty sub-categories not appearing correctly in [link-library-cats] shortcode
 
