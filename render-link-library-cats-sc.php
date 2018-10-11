@@ -214,7 +214,15 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
             foreach ( $link_categories as $catname ) {
 
-	            $childcategories = get_terms( array( 'taxonomy' => 'link_library_category', 'child_of' => $catname->term_id ) );
+	            $childcatparams =  array( 'taxonomy' => 'link_library_category', 'child_of' => $catname->term_id );
+
+	            if ( $hide_if_empty ) {
+		            $childcatparams['hide_empty'] = true;
+	            } else {
+		            $childcatparams['hide_empty'] = false;
+	            }
+
+	            $childcategories = get_terms( $childcatparams );
 
 	            $cat_has_children = false;
 	            if ( !is_wp_error( $childcategories ) && !empty( $childcategories ) ) {

@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.12 =
+* Fix for empty sub-categories not appearing correctly in [link-library-cats] shortcode
+
 = 6.1.11 =
 * Fix issue with pagination mode and combine all results without categories mode not working together
 
