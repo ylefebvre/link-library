@@ -1504,7 +1504,15 @@ class link_library_plugin_admin {
 						update_post_meta( $new_link_ID, 'link_email', $link_email );
 
 						if ( empty( $existing_link_post_id ) ) {
-							update_post_meta( $new_link_ID, 'link_visits', 0 );
+							$link_visits = 0;
+							$link_visits_labels = array( 'Link Visits' );
+							foreach( $link_visits_labels as $link_visits_label ) {
+								if ( isset( $import_columns[$link_visits_label] ) ) {
+									$link_visits = intval( $data[$import_columns[$link_visits_label]] );
+								}
+							}
+
+							update_post_meta( $new_link_ID, 'link_visits', $link_visits );
 						}
 
 						$link_reciprocal = '';
@@ -1552,6 +1560,24 @@ class link_library_plugin_admin {
 						} else {
 							update_post_meta( $new_link_ID, 'link_featured', false );
 						}
+
+						$link_submitter_name = '';
+						$submitter_name_labels = array( 'Link Submitter Name' );
+						foreach( $submitter_name_labels as $submitter_name_label ) {
+							if ( isset( $import_columns[$submitter_name_label] ) ) {
+								$link_submitter_name = sanitize_text_field( $data[$import_columns[$submitter_name_label]] );
+							}
+						}
+						update_post_meta( $new_link_ID, 'link_submitter_name', $link_submitter_name );
+
+						$link_submitter_email = '';
+						$submitter_email_labels = array( 'Link Submitter E-mail' );
+						foreach( $submitter_email_labels as $submitter_email_label ) {
+							if ( isset( $import_columns[$submitter_email_label] ) ) {
+								$link_submitter_email = sanitize_email( $data[$import_columns[$submitter_email_label]] );
+							}
+						}
+						update_post_meta( $new_link_ID, 'link_submitter_email', $link_submitter_email );
 					}
 				}
 			}
@@ -1716,16 +1742,15 @@ class link_library_plugin_admin {
 						$link_object = array();
 						$links_to_export->the_post();
 
-						$link_cats = '';
+						$link_cats_array = array();
 						$link_categories = wp_get_post_terms( get_the_ID(), 'link_library_category' );
 						if ( $link_categories ) {
-							$countcats = 0;
 							foreach ( $link_categories as $link_category ) {
-								if ( $countcats >= 1 ) {
-									$link_cats .= ', ';
-								}
-								$link_cats .= $link_category->name;
-								$countcats++;
+								$link_cats[] = $link_category->name;
+								$link_parent_cats[] = $link_category->parent;
+							}
+							if ( !empty( $link_cats_array ) ) {
+								$link_cats = implode( ', ', $link_cats_array );
 							}
 						}
 
@@ -1747,6 +1772,10 @@ class link_library_plugin_admin {
 						$link_object['Link Target'] = get_post_meta( get_the_ID(), 'link_target', true );
 						$link_object['Updated Date - Empty for none'] = date( 'Y-m-d', intval( get_post_meta( get_the_ID(), 'link_updated', true ) ) );
 						$link_object['Link Featured'] = get_post_meta( get_the_ID(), 'link_featured', true );
+						$link_object['Link Submitter Name'] = get_post_meta( get_the_ID(), 'link_submitter_name', true );
+						$link_object['Link Submitter E-mail'] = get_post_meta( get_the_ID(), 'link_submitter_email', true );
+						$link_object['Link Visits'] = get_post_meta( get_the_ID(), 'link_visits', true );
+
 						$link_items[] = $link_object;
 					}
 				}
@@ -1766,10 +1795,9 @@ class link_library_plugin_admin {
 					foreach ( $link_items as $link_item ) {
 						$datarow = array();
 						foreach ( $link_item as $key => $value ) {
-							$datarow[] = '"' . $value . '"';
+							$datarow[] = $value;
 						}
-						$data = join( ',', $datarow ) . "\n";
-						fwrite( $fh, $data );
+						fputcsv( $fh, $datarow, ',', '"' );
 					}
 
 					fclose( $fh );
@@ -5799,13 +5827,15 @@ class link_library_plugin_admin {
 		if ( 'link_library_updated' == $column ) {
 			$link_updated = get_post_meta( get_the_ID(), 'link_updated', true );
 
-			$date_diff = time() - intval( $link_updated );
+			if ( !empty( $link_updated ) ) {
+				$date_diff = time() - intval( $link_updated );
 
-			if ( $date_diff < 604800 ) {
-				echo '<strong>** RECENTLY UPDATED **</strong><br />';
+				if ( $date_diff < 604800 ) {
+					echo '<strong>** RECENTLY UPDATED **</strong><br />';
+				}
+
+				echo date( "Y-m-d H:i", $link_updated );
 			}
-
-			echo date( "Y-m-d H:i", $link_updated );
 		} elseif ( 'link_library_url' == $column ) {
 			$link_url = esc_url( get_post_meta( get_the_ID(), 'link_url', true ) );
 			echo '<a href="' . $link_url . '">' . $link_url . '</a>';
