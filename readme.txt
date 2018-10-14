@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.15 =
+* Export all links function adds a new column for category slugs. This column had priority over category names. Also renamed Category column to Category Names.
+* Import links functionality now check for category with Category Slug name. If it does not exist, it uses the category name field to create the category
+
 = 6.1.14 =
 * Added submitter name, submitter e-mail and link visits to Export All Links functionality
 * Added ability to import these 3 new fields

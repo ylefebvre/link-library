@@ -1314,20 +1314,33 @@ class link_library_plugin_admin {
 						$existing_link_post_id = '';
 						$matched_link_cats = array();
 
-						if ( ( isset( $import_columns['Category'] ) && !empty( $data[$import_columns['Category']] ) ) || ( isset( $import_columns['cat_name'] ) && !empty( $data[$import_columns['cat_name']] ) )) {
-							$new_link_cats_array = array();
-							if ( isset( $import_columns['Category'] ) ) {
-								$new_link_cats_array = explode( ',', $data[$import_columns['Category']] );
-							} elseif( isset( $import_columns['cat_name'] ) ) {
-								$new_link_cats_array = explode( ',', $data[$import_columns['cat_name']] );
+						if ( ( isset( $import_columns['Category Slugs'] ) && !empty( $data[$import_columns['Category Slugs']] ) ) ) {
+							$new_link_cats_slugs_array = array();
+							if ( isset( $import_columns['Category Slugs'] ) ) {
+								$new_link_cats_slugs_array = explode( ',', $data[$import_columns['Category Slugs']] );
 							}
 
-							foreach ( $new_link_cats_array as $new_link_cat ) {
-								$cat_matched_term = get_term_by( 'name', $new_link_cat, 'link_library_category' );
+							if ( ( isset( $import_columns['Category Names'] ) && !empty( $data[$import_columns['Category Names']] ) ) || ( isset( $import_columns['cat_name'] ) && !empty( $data[$import_columns['cat_name']] ) ) ) {
+								if ( isset( $import_columns['Category Names'] ) ) {
+									$new_link_cats_array = explode( ',', $data[$import_columns['Category Names']] );
+								} elseif( isset( $import_columns['cat_name'] ) ) {
+									$new_link_cats_array = explode( ',', $data[$import_columns['cat_name']] );
+								}
+							}
+
+							foreach ( $new_link_cats_slugs_array as $index => $new_link_cat_slug ) {
+								$cat_matched_term = get_term_by( 'slug', $new_link_cat_slug, 'link_library_category' );
 
 								if ( false !== $cat_matched_term ) {
 									$matched_link_cats[] = $cat_matched_term->term_id;
 								} else {
+									$new_link_cat = '';
+									if ( !empty( $new_link_cats_array ) && isset( $new_link_cats_array[$index] ) ) {
+										$new_link_cat = $new_link_cats_array[$index];
+									} else {
+										$new_link_cat = $new_link_cat_slug;
+									}
+
 									$new_cat_term_data   = wp_insert_term( $new_link_cat, 'link_library_category' );
 									if ( is_wp_error( $new_cat_term_data ) ) {
 										print_r( 'Failed creating category ' . $new_link_cat );
@@ -1743,14 +1756,18 @@ class link_library_plugin_admin {
 						$links_to_export->the_post();
 
 						$link_cats_array = array();
+						$link_cats_slugs_array = array();
 						$link_categories = wp_get_post_terms( get_the_ID(), 'link_library_category' );
 						if ( $link_categories ) {
 							foreach ( $link_categories as $link_category ) {
-								$link_cats[] = $link_category->name;
-								$link_parent_cats[] = $link_category->parent;
+								$link_cats_array[] = $link_category->name;
+								$link_cats_slugs_array[] = $link_category->slug;
 							}
 							if ( !empty( $link_cats_array ) ) {
 								$link_cats = implode( ', ', $link_cats_array );
+							}
+							if ( !empty( $link_cats_slugs_array ) ) {
+								$link_cats_slugs = implode( ', ', $link_cats_slugs_array );
 							}
 						}
 
@@ -1759,7 +1776,8 @@ class link_library_plugin_admin {
 						$link_object['RSS'] = get_post_meta( get_the_ID(), 'link_rss', true );
 						$link_object['Description'] = get_post_meta( get_the_ID(), 'link_description', true );
 						$link_object['Notes'] = get_post_meta( get_the_ID(), 'link_notes', true );
-						$link_object['Category'] = $link_cats;
+						$link_object['Category Slugs'] = $link_cats_slugs;
+						$link_object['Category Names'] = $link_cats;
 						$link_object['Status'] = get_post_status();
 						$link_object['Secondary URL'] = get_post_meta( get_the_ID(), 'link_second_url', true );
 						$link_object['Telephone'] = get_post_meta( get_the_ID(), 'link_telephone', true );
