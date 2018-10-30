@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.16 =
+* Fixed for displaying list of categories in drop-down list format with sub-categories
+
 = 6.1.15 =
 * Export all links function adds a new column for category slugs. This column had priority over category names. Also renamed Category column to Category Names.
 * Import links functionality now check for category with Category Slug name. If it does not exist, it uses the category name field to create the category

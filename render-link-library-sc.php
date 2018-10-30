@@ -2099,7 +2099,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 						$currentcategory = $currentcategory + 1;
 
-						if ( $display_children && $cat_has_children ) {
+						if ( $display_children && $cat_has_children && !$showonecatonly ) {
 							$output .= RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount, $link_category->term_id, $level + 1, $display_children, $hidechildcatlinks, $linkcount );
 						}
 

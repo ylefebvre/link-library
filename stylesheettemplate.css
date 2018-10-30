@@ -2,6 +2,8 @@
 
 .linktable a {text-decoration:none}
 
+.linktable td { vertical-align: top; }
+
 a.featured {
     font-weight: bold;
 }

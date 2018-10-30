@@ -1341,7 +1341,7 @@ class link_library_plugin_admin {
 										$new_link_cat = $new_link_cat_slug;
 									}
 
-									$new_cat_term_data   = wp_insert_term( $new_link_cat, 'link_library_category' );
+									$new_cat_term_data   = wp_insert_term( $new_link_cat, 'link_library_category', array( 'slug' => $new_link_cat_slug ) );
 									if ( is_wp_error( $new_cat_term_data ) ) {
 										print_r( 'Failed creating category ' . $new_link_cat );
 									} else {
