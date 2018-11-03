@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.17 =
+* Fix issue with search filters remaining in place after search has executed
+
 = 6.1.16 =
 * Fixed for displaying list of categories in drop-down list format with sub-categories
 

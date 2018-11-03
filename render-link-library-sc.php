@@ -595,7 +595,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 
 		$link_categories = get_terms( 'link_library_category', $link_categories_query_args );
-		remove_filter( 'get_terms', 'link_library_get_terms_filter' );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_only_publish' );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_pending' );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft' );
+		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending' );
 
 		if ( 'catlist' == $order && is_array( $link_categories ) && !empty( $link_categories_query_args['include'] ) ) {
 			$temp_link_categories = $link_categories;
@@ -1157,8 +1160,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 											$sort_label = $sorting_labels[$display_item];
 										}
 
-										if ( isset( $activation_variables[$display_item] ) && $$activation_variables[$display_item] ) {
-											if ( !in_array( $display_item, array( 7, 8, 9 ) ) || ( in_array( $display_item, array( 7, 8, 9 ) ) && $$activation_variables[$display_item] != 'false' ) ) {
+										$act_var_name = $activation_variables[$display_item];
+
+										if ( isset( $activation_variables[$display_item] ) && $$act_var_name ) {
+											if ( !in_array( $display_item, array( 7, 8, 9 ) ) || ( in_array( $display_item, array( 7, 8, 9 ) ) && $$act_var_name != 'false' ) ) {
 												if ( empty( $column_label ) ) {
 													$column_label = $default_labels[$display_item];
 												}

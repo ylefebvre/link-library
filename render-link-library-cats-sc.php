@@ -164,7 +164,10 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
         $link_categories = get_terms( 'link_library_category', $link_categories_query_args );
 
-        remove_filter( 'get_terms', 'link_library_get_terms_filter' );
+	    remove_filter( 'get_terms', 'link_library_get_terms_filter_only_publish' );
+	    remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_pending' );
+	    remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft' );
+	    remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending' );
 
 	    if ( !empty( $link_categories_query_args['include'] ) && !empty( $link_categories_query_args['exclude'] ) ) {
 		    foreach( $link_categories as $link_key => $linkcat ) {
