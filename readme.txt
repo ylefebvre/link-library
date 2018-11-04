@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.18 =
+* Fix to allow Link Library custom post type to be seen by other plugins that support CPTs
+
 = 6.1.17 =
 * Fix issue with search filters remaining in place after search has executed
 

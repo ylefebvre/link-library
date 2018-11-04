@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.1.17
+Version: 6.1.18
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.ca/
 Text Domain: link-library
@@ -325,40 +325,46 @@ class link_library_plugin {
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
-        register_post_type( 'link_library_links',
-            array(
-                'labels' => array(
-                    'name' => 'Link Library',
-                    'singular_name' => 'Link',
-                    'add_new' => 'Add New',
-                    'add_new_item' => 'Add New Link',
-                    'edit' => 'Edit',
-                    'edit_item' => 'Edit Link',
-                    'new_item' => 'New Link',
-                    'view' => 'View',
-                    'view_item' => 'View Link',
-                    'search_items' => 'Search Links',
-                    'not_found' => 'No Links found',
-                    'not_found_in_trash' =>
-                        'No Links found in Trash',
-                    'parent' => 'Parent Link',
-	                'all_items' => 'All Links',
-					'menu_name' => _x('Link Library %%PENDING_COUNT%%', 'Link Library', 'link-library'),
-                ),
-                'show_in_nav_menu' => true,
-                'show_ui' => true,
-                'exclude_from_search' => !$genoptions['exclude_from_search'],
-                'publicly_queryable' => $genoptions['publicly_queryable'],
-                'menu_position' => 10,
-                'supports' =>
-                    array( 'title', 'editor', 'comments' ),
-                'taxonomies' => array( 'link_library_category' ),
-                'menu_icon' =>
-                    plugins_url( 'icons/link-icon.png', __FILE__ ),
-                'has_archive' => false,
-                'rewrite' => array( 'slug' => $genoptions['cptslug'] . '/%link_library_category%' )
-            )
-        );
+		$post_type_args = array(
+			'labels' => array(
+				'name' => 'Link Library',
+				'singular_name' => 'Link',
+				'add_new' => 'Add New',
+				'add_new_item' => 'Add New Link',
+				'edit' => 'Edit',
+				'edit_item' => 'Edit Link',
+				'new_item' => 'New Link',
+				'view' => 'View',
+				'view_item' => 'View Link',
+				'search_items' => 'Search Links',
+				'not_found' => 'No Links found',
+				'not_found_in_trash' =>
+					'No Links found in Trash',
+				'parent' => 'Parent Link',
+				'all_items' => 'All Links',
+				'menu_name' => _x('Link Library %%PENDING_COUNT%%', 'Link Library', 'link-library'),
+			),
+			'show_in_nav_menu' => true,
+			'show_ui' => true,
+			'exclude_from_search' => !$genoptions['exclude_from_search'],
+			'publicly_queryable' => $genoptions['publicly_queryable'],
+			'menu_position' => 10,
+			'supports' =>
+				array( 'title', 'editor', 'comments' ),
+			'taxonomies' => array( 'link_library_category' ),
+			'menu_icon' =>
+				plugins_url( 'icons/link-icon.png', __FILE__ ),
+			'has_archive' => false,
+			'rewrite' => array( 'slug' => $genoptions['cptslug'] . '/%link_library_category%' )
+		);
+
+		if ( $genoptions['exclude_from_search'] && $genoptions['publicly_queryable'] ) {
+			unset( $post_type_args['exclude_from_search'] );
+			unset( $post_type_args['publicly_queryable'] );
+			$post_type_args['public'] = true;
+		}
+
+        register_post_type( 'link_library_links', $post_type_args );
 
         register_taxonomy(
             'link_library_category',
