@@ -264,6 +264,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['linkcustomtaglistentry']          = 'User-submitted tag (define below)';
 	$options['showscheduledlinks']              = false;
 	$options['maxlinkspercat']                  = '';
+	$options['suppressnoreferrer']              = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

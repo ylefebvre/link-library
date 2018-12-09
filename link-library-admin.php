@@ -2154,7 +2154,7 @@ class link_library_plugin_admin {
 					'cat_letter_filter_autoselect', 'cat_letter_filter_showalloption', 'emailsubmitter', 'addlinkakismet', 'rssfeedinlineskipempty',
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
-					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks'
+					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer'
 				)
 				as $option_name
 			) {
@@ -4473,6 +4473,14 @@ class link_library_plugin_admin {
 					<input type="checkbox" id="nofollow" name="nofollow" <?php checked( $options['nofollow'] ); ?>/>
 				</td>
 				<td></td>
+				<td>
+					<?php _e( 'Suppress noreferrer and noopener tags on links', 'link-library' ); ?>
+				</td>
+				<td style='width:75px;padding:0px 20px 0px 20px'>
+					<input type="checkbox" id="suppressnoreferrer" name="suppressnoreferrer" <?php checked( $options['suppressnoreferrer'] ); ?>/>
+				</td>
+			</tr>
+			<tr>
 				<td>
 					<?php _e( 'Show edit links when logged in as editor or administrator', 'link-library' ); ?>
 				</td>
