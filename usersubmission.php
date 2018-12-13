@@ -288,6 +288,11 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 						if ( $current_user ) {
 							$username = $current_user->user_login;
+
+							/* if ( function_exists( 'bp_activity_add' ) ) {
+								$action_message = $current_user->display_name . ' added link "' . esc_html( stripslashes( $captureddata['link_name'] ) ) . ' in category ';
+								bp_activity_add( array( 'action' => $action_message, 'component' => 'links', 'type' => 'created_link' ) );
+							} */
 						}
 					}
 

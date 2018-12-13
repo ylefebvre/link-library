@@ -843,7 +843,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				$cat_has_children = false;
 				if ( !is_wp_error( $childcategories ) && !empty( $childcategories ) ) {
 					$cat_has_children = true;
+
+					$children_have_links = false;
 				}
+
 
 				// Display links
 				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && !isset( $_GET['searchll'] ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $_GET['searchll'] ) ) ) {
@@ -2124,13 +2127,13 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			}
 		} else {
 			$output .= __( 'All of your links must be assigned at least to one category to be displayed', 'link-library');
-
-			if ( isset( $_GET['searchll'] ) ) {
-				$output .= $searchnoresultstext . "\n";
-			}
 		}
 	} else {
 		$output .= __( 'No links found', 'link-library' );
+	}
+
+	if ( isset( $_GET['searchll'] ) && $linkcount == 1 && $level == 0 ) {
+		$output .= $searchnoresultstext . "\n";
 	}
 
 	if ( $usethumbshotsforimages && $level == 0 ) {
