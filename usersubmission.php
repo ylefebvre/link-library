@@ -151,15 +151,17 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 			}
 		}
 
-		$parsed_new_reciprocal = parse_url( esc_url( $captureddata['ll_reciprocal'] ) );
-		$reciprocal_domain = $parsed_new_reciprocal['host'];
+		if ( !empty( isset( $captureddata['ll_reciprocal'] ) && $captureddata['ll_reciprocal'] != '' ) ) {
+			$parsed_new_reciprocal = parse_url( esc_url( $captureddata['ll_reciprocal'] ) );
+			$reciprocal_domain = $parsed_new_reciprocal['host'];
 
-		$parsed_main_site_url = parse_url( get_site_url() );
-		$main_site_domain = $parsed_main_site_url['host'];
+			$parsed_main_site_url = parse_url( get_site_url() );
+			$main_site_domain = $parsed_main_site_url['host'];
 
-		if ( $reciprocal_domain == $main_site_domain ) {
-			$valid = false;
-			$message = 24;
+			if ( $reciprocal_domain == $main_site_domain ) {
+				$valid = false;
+				$message = 24;
+			}
 		}
 
 		if ( $valid && $options['onereciprocaldomain'] && ( 'required' == $options['showaddlinkreciprocal'] || ( 'show' == $options['showaddlinkreciprocal'] && !empty( $captureddata['ll_reciprocal'] ) ) ) ) {
@@ -207,6 +209,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 				$validcat = false;
 				$newlinkcat = array();
+				$newlinkcatlist = array();
 
 				foreach ( $captureddata['link_category'] as $cat_element ) {
 					if ( $cat_element == 'new' && !empty( $captureddata['link_user_category'] ) ) {
@@ -217,8 +220,10 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 							$new_category = wp_insert_term( $captureddata['link_user_category'], 'link_library_category', array( 'description' => '', 'slug' => sanitize_text_field( $captureddata['link_user_category'] ) ) );
 
 							$newlinkcat[] = $new_category['term_id'];
+							$newlinkcatlist[] = sanitize_text_field( $captureddata['link_user_category'] );
 						} else {
 							$newlinkcat[] = $existingcat->term_id;
+							$newlinkcatlist[] = $existingcat->name;
 						}
 
 						$message = 8;
@@ -227,6 +232,8 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						$message  = 7;
 					} else {
 						$newlinkcat[] = $cat_element;
+						$existingcat = get_term_by( 'id', $cat_element, 'link_library_category' );
+						$newlinkcatlist[] = $existingcat->name;
 
 						$message = 8;
 
@@ -283,18 +290,18 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 					}
 
 					$username = '';
-					if ( $options['storelinksubmitter'] == true ) {
-						$current_user = wp_get_current_user();
-
-						if ( $current_user ) {
-							$username = $current_user->user_login;
-
-							/* if ( function_exists( 'bp_activity_add' ) ) {
-								$action_message = $current_user->display_name . ' added link "' . esc_html( stripslashes( $captureddata['link_name'] ) ) . ' in category ';
-								bp_activity_add( array( 'action' => $action_message, 'component' => 'links', 'type' => 'created_link' ) );
-							} */
-						}
+					$current_user = wp_get_current_user();
+					if ( $options['storelinksubmitter'] == true && $current_user ) {
+						$username = $current_user->user_login;
 					}
+
+					/* if ( $current_user ) {
+						if ( function_exists( 'bp_activity_add' ) ) {
+							$cat_list_string = implode( ',', $newlinkcatlist );
+							$action_message = $current_user->display_name . ' ' . __( 'added link', 'link-library' ) . ' "' . esc_html( stripslashes( $captureddata['link_name'] ) ) . '" ' . __( 'in category', 'link-library' ) . ' "' . $cat_list_string . '"';
+							bp_activity_add( array( 'action' => $action_message, 'component' => 'links', 'type' => 'created_link' ) );
+						}
+					} */
 
 					$new_link_data = array(
 						'post_type' => 'link_library_links',
