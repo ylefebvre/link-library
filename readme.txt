@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.22 =
+* Fix for combined results list not appearing anymore
+
 = 6.1.21 =
 * Complete fix for empty search results not displaying message indicated in admin
 

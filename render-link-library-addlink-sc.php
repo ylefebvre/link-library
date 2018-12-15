@@ -255,8 +255,11 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         $output .= '<input type="hidden" name="link_library_user_link_submission" value="1" />';
 
         global $wp_query;
-        $thePostID = $wp_query->post->ID;
-        $output .= '<input type="hidden" name="pageid" value="' . $thePostID . '" />';
+        if ( isset( $wp_query->post->ID ) && !empty( $wp_query->post->ID ) ) {
+	        $thePostID = $wp_query->post->ID;
+	        $output .= '<input type="hidden" name="pageid" value="' . $thePostID . '" />';
+        }
+
         $output .= '<input type="hidden" name="settingsid" value="' . $settings . '" />';
 
         $xpath = $LLPluginClass->relativePath( dirname( __FILE__ ), ABSPATH );

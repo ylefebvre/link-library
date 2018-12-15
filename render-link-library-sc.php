@@ -2120,6 +2120,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 						}
 
 						if ( $combineresults ) {
+							if ( $start_link_count != $linkcount ) {
+								$output .= $current_cat_output;
+							}
 							break;
 						} else {
 							$current_cat_output .= "</div><!-- Div End Category -->\n";

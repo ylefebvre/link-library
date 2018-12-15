@@ -295,13 +295,13 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						$username = $current_user->user_login;
 					}
 
-					/* if ( $current_user ) {
+					if ( $current_user ) {
 						if ( function_exists( 'bp_activity_add' ) ) {
 							$cat_list_string = implode( ',', $newlinkcatlist );
 							$action_message = $current_user->display_name . ' ' . __( 'added link', 'link-library' ) . ' "' . esc_html( stripslashes( $captureddata['link_name'] ) ) . '" ' . __( 'in category', 'link-library' ) . ' "' . $cat_list_string . '"';
 							bp_activity_add( array( 'action' => $action_message, 'component' => 'links', 'type' => 'created_link' ) );
 						}
-					} */
+					}
 
 					$new_link_data = array(
 						'post_type' => 'link_library_links',
