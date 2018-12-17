@@ -220,10 +220,10 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 							$new_category = wp_insert_term( $captureddata['link_user_category'], 'link_library_category', array( 'description' => '', 'slug' => sanitize_text_field( $captureddata['link_user_category'] ) ) );
 
 							$newlinkcat[] = $new_category['term_id'];
-							$newlinkcatlist[] = sanitize_text_field( $captureddata['link_user_category'] );
+							$newlinkcatlist[$new_category['term_id']] = sanitize_text_field( $captureddata['link_user_category'] );
 						} else {
 							$newlinkcat[] = $existingcat->term_id;
-							$newlinkcatlist[] = $existingcat->name;
+							$newlinkcatlist[$existingcat->term_id] = $existingcat->name;
 						}
 
 						$message = 8;
@@ -233,7 +233,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 					} else {
 						$newlinkcat[] = $cat_element;
 						$existingcat = get_term_by( 'id', $cat_element, 'link_library_category' );
-						$newlinkcatlist[] = $existingcat->name;
+						$newlinkcatlist[$existingcat->term_id] = $existingcat->name;
 
 						$message = 8;
 
@@ -296,9 +296,68 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 					}
 
 					if ( $current_user ) {
-						if ( function_exists( 'bp_activity_add' ) ) {
-							$cat_list_string = implode( ',', $newlinkcatlist );
-							$action_message = $current_user->display_name . ' ' . __( 'added link', 'link-library' ) . ' "' . esc_html( stripslashes( $captureddata['link_name'] ) ) . '" ' . __( 'in category', 'link-library' ) . ' "' . $cat_list_string . '"';
+						if ( $genoptions['bp_log_activity'] && function_exists( 'bp_activity_add' ) ) {
+							$action_message = $current_user->display_name . ' ' . __( 'added link', 'link-library' ) . ' ' . esc_html( stripslashes( $captureddata['link_name'] ) ) . ' ' . __( 'in category', 'link-library' ) . ' ';
+
+							$catcounter = 1;
+							foreach( $newlinkcatlist as $new_cat_id => $new_cat_name ) {
+								if ( $catcounter > 1 ) {
+									$action_message .= ', ';
+								}
+
+								if ( !empty( $genoptions['bp_link_page_url'] ) && !empty( $genoptions['bp_link_settings'] ) ) {
+									$tempoptionname = "LinkLibraryPP" . $genoptions['bp_link_settings'];
+									$tempoptions    = get_option( $tempoptionname );
+									extract( $tempoptions );
+
+									if ( $showonecatonly ) {
+										if ( 'HTMLGET' == $showonecatmode ) {
+											$cattext = '<a href="';
+
+											if ( !empty( $genoptions['bp_link_page_url'] ) && strpos( $genoptions['bp_link_page_url'], '?' ) != false ) {
+												$cattext .= $genoptions['bp_link_page_url'] . '&cat_id=';
+											} elseif ( !empty( $genoptions['bp_link_page_url'] ) && strpos( $genoptions['bp_link_page_url'], '?' ) == false ) {
+												$cattext .= $genoptions['bp_link_page_url'] . '?cat_id=';
+											}
+
+											$cattext .= $new_cat_id . '">';
+										} elseif ( 'HTMLGETSLUG' == $showonecatmode ) {
+											$temp_term = get_term_by( 'id', $new_cat_id, 'link_library_category' );
+											$cattext = '<a href="';
+
+											if ( !empty( $genoptions['bp_link_page_url'] ) && strpos( $genoptions['bp_link_page_url'], '?' ) != false ) {
+												$cattext .= $genoptions['bp_link_page_url'] . '&cat=';
+											} elseif ( !empty( $genoptions['bp_link_page_url'] ) && strpos( $genoptions['bp_link_page_url'], '?' ) == false ) {
+												$cattext .= $genoptions['bp_link_page_url'] . '?cat=';
+											} elseif ( empty( $genoptions['bp_link_page_url'] ) ) {
+												$cattext .= '?cat=';
+											}
+
+											$cattext .= $temp_term->slug . '">';
+										} elseif ( 'HTMLGETPERM' == $showonecatmode ) {
+											$temp_term = get_term_by( 'id', $new_cat_id, 'link_library_category' );
+											$cattext = '<a href="' . $genoptions['bp_link_page_url'] . '/' . $catname->slug . '">';
+										}
+									} else if ( $catanchor ) {
+										if ( !$pagination ) {
+											$temp_term = get_term_by( 'id', $new_cat_id, 'link_library_category' );
+
+											$cattext = '<a href="' . $genoptions['bp_link_page_url'] . '/#' . $temp_term->slug . '">';
+										}
+									}
+
+									$action_message .= $cattext;
+								}
+
+								$action_message .= $new_cat_name;
+
+								if ( !empty( $genoptions['bp_link_page_url'] ) && !empty( $genoptions['bp_link_settings'] ) ) {
+									$action_message .= '</a>';
+								}
+
+								$catcounter++;
+							}
+
 							bp_activity_add( array( 'action' => $action_message, 'component' => 'links', 'type' => 'created_link' ) );
 						}
 					}

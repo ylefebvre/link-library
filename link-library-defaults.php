@@ -317,6 +317,9 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['publicly_queryable']           = false;
 	$genoptions['exclude_from_search']          = false;
 	$genoptions['defaultlinktarget']            = '_blank';
+	$genoptions['bp_log_activity']              = false;
+	$genoptions['bp_link_page_url']             = '';
+	$genoptions['bp_link_settings']             = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

@@ -667,6 +667,7 @@ class link_library_plugin_admin {
 		add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'FAQ', 'link-library' ), __( 'FAQ', 'link-library' ), $admin_capability, 'link-library-faq', array( $this, 'on_show_page' ) );
 
 		//register  callback gets call prior your own page gets rendered
+		add_action( 'load-' . $pagehookgeneraloptions, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehooksettingssets, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehookmoderate, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehookstylesheet, array( $this, 'on_load_page' ) );
@@ -1921,7 +1922,7 @@ class link_library_plugin_admin {
 					'moderatorname', 'moderatoremail', 'rejectedemailtitle', 'approvalemailbody', 'rejectedemailbody', 'moderationnotificationtitle',
 					'linksubmissionthankyouurl', 'recipcheckaddress', 'imagefilepath', 'catselectmethod', 'expandiconpath', 'collapseiconpath', 'updatechannel',
 					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug',
-					'defaultlinktarget'
+					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -1944,7 +1945,7 @@ class link_library_plugin_admin {
 				$genoptions['recaptchasecretkey'] = '';
 			}
 
-			foreach ( array( 'debugmode', 'emaillinksubmitter', 'suppressemailfooter', 'usefirstpartsubmittername', 'hidedonation', 'publicly_queryable', 'exclude_from_search' ) as $option_name ) {
+			foreach ( array( 'debugmode', 'emaillinksubmitter', 'suppressemailfooter', 'usefirstpartsubmittername', 'hidedonation', 'publicly_queryable', 'exclude_from_search', 'bp_log_activity' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					$genoptions[$option_name] = true;
 				} else {
@@ -2614,6 +2615,41 @@ class link_library_plugin_admin {
 									<option value="<?php echo $size; ?>" <?php selected( $genoptions['thumbnailsize'], $size ); ?>><?php echo $size; ?>
 								<?php } ?>
 								</select>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2"><hr /></td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Log link creation activity on BuddyPress feed', 'link-library' ); ?></td>
+							<td>
+								<input type="checkbox" id="bp_log_activity" name="bp_log_activity" <?php checked( $genoptions['bp_log_activity'] ); ?> />
+							</td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Link Page URL (relative or absolute)', 'link-library' ); ?></td>
+							<td>
+								<input type="text" id="bp_link_page_url" name="bp_link_page_url" size="60" value="<?php echo $genoptions['bp_link_page_url']; ?>" />
+							</td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Library Configuration used for Links page', 'link-library' ); ?></td>
+							<td>
+								<SELECT id="bp_link_settings" name="bp_link_settings" style='width: 300px'>
+									<option>Select a library configuration</option>
+									<?php if ( empty( $genoptions['numberstylesets'] ) ) {
+										$numberofsets = 1;
+									} else {
+										$numberofsets = $genoptions['numberstylesets'];
+									}
+									for ( $counter = 1; $counter <= $numberofsets; $counter ++ ): ?>
+										<?php $tempoptionname = "LinkLibraryPP" . $counter;
+										$tempoptions          = get_option( $tempoptionname ); ?>
+										<option value="<?php echo $counter ?>" <?php selected( $genoptions['bp_link_settings'], $counter ); ?>><?php _e( 'Library', 'link-library' ); ?> <?php echo $counter ?><?php if ( ! empty( $tempoptions ) && isset( $tempoptions['settingssetname'] ) ) {
+												echo " (" . stripslashes( $tempoptions['settingssetname'] ) . ")";
+											} ?></option>
+									<?php endfor; ?>
+								</SELECT>
 							</td>
 						</tr>
 						<tr>

@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.23 =
+* New integration to BuddyPress. User submitted links can now appear in activity feed.
+
 = 6.1.22 =
 * Fix for combined results list not appearing anymore
 
