@@ -388,10 +388,8 @@ class link_library_plugin_admin {
 			if ( $mode == 'thumb' || $mode == 'thumbonly' ) {
 				if ( $thumbnailgenerator == 'robothumb' ) {
 					$genthumburl = "http://www.robothumb.com/src/?url=" . esc_html( $url ) . "&size=" . $thumbnailsize;
-				} elseif ( $thumbnailgenerator == 'thumbshots' ) {
-					if ( !empty ( $cid ) ) {
-						$genthumburl = "http://images.thumbshots.com/image.aspx?cid=" . rawurlencode( $cid ) . "&v1=w=120&url=" . esc_html( $url );
-					}
+				} elseif ( $thumbnailgenerator == 'wordpress' ) {
+					$genthumburl = "https://s.wordpress.com/mshots/v1/" . urlencode( $url ) . "&w=480";
 				}
 
 			} elseif ( $mode == 'favicon' || $mode == 'favicononly' ) {
@@ -410,8 +408,20 @@ class link_library_plugin_admin {
 				}
 			}
 
-			$img    = $uploads['basedir'] . "/" . $filepath . "/" . $linkid . '.png';
-			$status = file_put_contents( $img, @file_get_contents( $genthumburl ) );
+			$img    = $uploads['basedir'] . "/" . $filepath . "/" . $linkid . '.jpg';
+			$image = '';
+
+			if ( $thumbnailgenerator == 'robothumb' ) {
+				$status = file_put_contents( $img, @file_get_contents( $genthumburl ) );
+			} elseif ( $thumbnailgenerator == 'wordpress' ) {
+				$response = wp_remote_get( $genthumburl );
+				$code = wp_remote_retrieve_response_code( $response );
+				if ( 200 !== $code ) {
+					return new WP_Error( 'response-error', sprintf( __( 'Server response code: %d', 'text-domain' ), $code ) );
+				}
+				$body = wp_remote_retrieve_body( $response );
+				$image = base64_decode( json_decode( $body ) );
+			}
 
 			if ( $status !== false ) {
 				if ( $filepathtype == 'absolute' || empty( $filepathtype ) ) {
@@ -2589,8 +2599,8 @@ class link_library_plugin_admin {
 							<td><?php _e( 'Thumbnail Generator', 'link-library' ); ?></td>
 							<td>
 								<select id="thumbnailgenerator" name="thumbnailgenerator">
+									<option value="wordpress" <?php selected( $genoptions['thumbnailgenerator'], 'wordpress' ); ?>>WordPress.com
 									<option value="robothumb" <?php selected( $genoptions['thumbnailgenerator'], 'robothumb' ); ?>>Robothumb.com
-									<option value="thumbshots" <?php selected( $genoptions['thumbnailgenerator'], 'thumbshots' ); ?>>Thumbshots.org
 								</select>
 							</td>
 						</tr>

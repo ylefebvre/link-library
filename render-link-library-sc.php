@@ -292,6 +292,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 	$libraryoptions = wp_parse_args( $libraryoptions, ll_reset_options( 1, 'list', 'return' ) );
 	extract( $libraryoptions );
 
+	remove_filter('posts_request', 'relevanssi_prevent_default_request');
+	remove_filter('the_posts', 'relevanssi_query', 99);
+
 	global $wp_query;
 
 	if ( $level == 0 && ( ( isset( $_GET['cat_name'] ) && !empty( $_GET['cat_name'] ) ) || ( isset( $wp_query->query_vars['cat_name'] ) && !empty( $wp_query->query_vars['cat_name'] ) ) ) ) {

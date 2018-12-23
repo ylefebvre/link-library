@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.24 =
+* Fix for conflicts with the Relevanssi in some installations
+
 = 6.1.23 =
 * New integration to BuddyPress. User submitted links can now appear in activity feed.
 
