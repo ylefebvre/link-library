@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.25 =
+* Reverted experimented thumbnail generation code
+
 = 6.1.24 =
 * Fix for conflicts with the Relevanssi in some installations
 
