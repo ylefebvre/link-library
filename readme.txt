@@ -59,6 +59,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.26 =
+* Added ability to have shortcodes in large descriptions
+* Added ability to have shortcodes in full-page content
+
 = 6.1.25 =
 * Reverted experimented thumbnail generation code
 

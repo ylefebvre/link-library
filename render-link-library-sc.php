@@ -1472,6 +1472,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$linkitem['link_rel'] = trim( ' rel="' . implode( ' ', $rel_list ) . '"' );
 								}
 
+								$linkitem['link_textfield'] = do_shortcode( $linkitem['link_textfield'] );
+
 								if ( $use_html_tags ) {
 									$descnotes = $linkitem['link_notes'];
 									$descnotes = str_replace( '[', '<', $descnotes );
@@ -1973,7 +1975,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												break;
 
-											case 13: 	//------------------ Link Large Description Output --------------------
+											case 13: 	//------------------ Submitter Name Output --------------------
 
 												if ( $showsubmittername && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_submitter_name'] ) ) ) ) {
 													if ( true == $debugmode ) {
