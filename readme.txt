@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.27 =
+* Fix for double-line display when showing links on single pages
+
 = 6.1.26 =
 * Added ability to have shortcodes in large descriptions
 * Added ability to have shortcodes in full-page content
