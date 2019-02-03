@@ -1,6 +1,6 @@
 ﻿=== Link Library ===
 Contributors: jackdewey
-Donate link: http://ylefebvre.ca/wordpress-plugins/link-library
+Donate link: https://ylefebvre.home.blog/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
 Tested up to: 5.0
