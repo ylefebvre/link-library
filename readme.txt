@@ -59,6 +59,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.1.28 =
+* Updated donation, plugin and FAQ links
+
 = 6.1.27 =
 * Fix for double-line display when showing links on single pages
 

@@ -447,7 +447,7 @@ class link_library_plugin_admin {
 	function action_admin_init() {
 
 		if ( isset($_GET['page']) && $_GET['page'] == 'link-library-faq' ) {
-			wp_redirect( 'https://ylefebvre.home.blog/wordpress-plugins/link-library/' );
+			wp_redirect( 'https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/' );
 			exit();
 		}
 
@@ -1031,7 +1031,7 @@ class link_library_plugin_admin {
 								} ?>><?php _e( 'Reciprocal Check', 'link-library' ); ?></a>
 							</li>
 							<li class="link-library-page">
-								<a href="https://ylefebvre.home.blog/wordpress-plugins/link-library/"><?php _e( 'FAQ', 'link-library' ); ?></a>
+								<a href="https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/"><?php _e( 'FAQ', 'link-library' ); ?></a>
 							</li>
 							<?php if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) { ?>
 								<li class="link-library-page">
