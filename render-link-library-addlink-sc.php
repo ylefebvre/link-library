@@ -290,7 +290,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         if ( !$addlinknoaddress ) {
             $output .= 'data-validation="required url length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, URL', 'link-library' ) . '" ';
         }
-        $output .= 'type="text" name="link_url" id="link_url" value="' . ( isset( $_GET['addlinkurl'] ) ? esc_html( stripslashes( $_GET['addlinkurl'] ), '1') : 'http://' ) . "\" /></td></tr>\n";
+        $output .= 'type="text" name="link_url" id="link_url" value="' . ( isset( $_GET['addlinkurl'] ) ? esc_html( stripslashes( $_GET['addlinkurl'] ), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
 
         if ( 'show' == $showaddlinkrss || 'required' == $showaddlinkrss) {
             if ( empty( $linkrsslabel ) ) {

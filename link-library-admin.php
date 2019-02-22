@@ -350,7 +350,7 @@ class link_library_plugin_admin {
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 
 		if ( substr( $plugin_file, 0, 25 ) == substr( plugin_basename( __FILE__ ), 0, 25 ) && ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) ) {
-			$links_array = array_merge( $links_array, array( '<a target="_blank" href="http://ylefebvre.ca/wordpress-plugins/link-library">Donate</a>' ) );
+			$links_array = array_merge( $links_array, array( '<a target="_blank" href="https://ylefebvre.home.blog/wordpress-plugins/link-library/">Donate</a>' ) );
 		}
 
 		return $links_array;
@@ -2135,7 +2135,7 @@ class link_library_plugin_admin {
 					'searchfieldtext', 'catfilterlabel', 'searchnoresultstext', 'addlinkdefaultcat', 'beforesubmittername', 'aftersubmittername',
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
 					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
-					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat'
+					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -4981,6 +4981,12 @@ class link_library_plugin_admin {
 					<option value="show"<?php selected( $options['showaddlinkrss'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
 					<option value="required"<?php selected( $options['showaddlinkrss'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
+			</td>
+		</tr>
+		<tr>
+			<td style='width:200px'><?php _e( 'Link address default value', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkaddrdefvalue" name="linkaddrdefvalue" size="30" value="<?php echo $options['linkaddrdefvalue']; ?>" />
 			</td>
 		</tr>
 		<tr>
