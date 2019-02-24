@@ -1242,6 +1242,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								$linkitem['link_permalink'] = get_the_permalink( get_the_ID() );
 								$link_meta = get_metadata( 'post', get_the_ID() );
 
+								$linkitem['category_description'] = $link_category->description;
+
 								if ( isset( $link_meta['link_url'] ) ) {
 									$linkitem['link_url'] = esc_html ( $link_meta['link_url'][0] );
 								} else {

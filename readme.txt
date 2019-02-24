@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.1 =
+* Fix for category description data not displaying when selected in Advanced configuration table
+
 = 6.2 =
 * Added new option for user submission form to change the default text that appears in the link address field
 * Set default value for new option to https, since more and more sites use https by default
