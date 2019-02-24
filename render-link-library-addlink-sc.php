@@ -34,13 +34,13 @@ function addlink_render_category_list( $categories, $select_name, $depth, $order
 			$output .= '>';
 
 			if ( 'nodefaultcat' == $libraryoptions['addlinkdefaultcat'] && 'show' == $libraryoptions['showaddlinkcat'] ) {
-				$output .= '<option value="">' . __( 'Select a category', 'link-category' ) . '</option>';
+				$output .= '<option value="">' . $libraryoptions['userlinkcatselectionlabel'] . '</option>';
 			}
 
 		}
 
 		foreach ( $categories as $category ) {
-			$output .= '<option value="' . $category->term_id . ' ';
+			$output .= '<option value="' . $category->term_id . '" ';
 
 			if ( isset( $_GET['addlinkcat'] ) && in_array( $category->term_id, $_GET['addlinkcat'] ) ) {
 				$output .= "selected";
@@ -48,7 +48,7 @@ function addlink_render_category_list( $categories, $select_name, $depth, $order
 				$output .= "selected";
 			}
 
-			$output .= '">' . str_repeat( '&nbsp;', 4 * $depth ) . $category->name . '</option>';
+			$output .= '>' . str_repeat( '&nbsp;', 4 * $depth ) . $category->name . '</option>';
 			$child_categories = get_terms( 'link_library_category', array( 'orderby' => 'name', 'parent' => $category->term_id, 'order' => $order, 'hide_empty' => false ) );
 
 			if ( !empty( $child_categories ) ) {

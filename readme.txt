@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.2 =
+* Corrected bug that prevented users from being able to select default category in user submission form
+* Added option to change text in category drop-down list from "Select a category"
+
 = 6.2.1 =
 * Fix for category description data not displaying when selected in Advanced configuration table
 

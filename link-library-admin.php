@@ -2135,7 +2135,7 @@ class link_library_plugin_admin {
 					'searchfieldtext', 'catfilterlabel', 'searchnoresultstext', 'addlinkdefaultcat', 'beforesubmittername', 'aftersubmittername',
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
 					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
-					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue'
+					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue', 'userlinkcatselectionlabel'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -5030,6 +5030,11 @@ class link_library_plugin_admin {
 						<?php } ?>
 					</select>
 				<?php } ?>
+			</td>
+			<td></td><td></td>
+			<td style='width:200px'><?php _e( 'Select a category label', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="userlinkcatselectionlabel" name="userlinkcatselectionlabel" size="30" value="<?php echo $options['userlinkcatselectionlabel']; ?>" />
 			</td>
 		</tr>
 		<tr>
