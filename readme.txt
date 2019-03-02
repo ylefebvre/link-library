@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.3 =
+* Added option to have a selection entry in category drop-down list for link-library-cats shortcode
+
 = 6.2.2 =
 * Corrected bug that prevented users from being able to select default category in user submission form
 * Added option to change text in category drop-down list from "Select a category"

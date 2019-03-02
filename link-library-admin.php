@@ -2135,7 +2135,7 @@ class link_library_plugin_admin {
 					'searchfieldtext', 'catfilterlabel', 'searchnoresultstext', 'addlinkdefaultcat', 'beforesubmittername', 'aftersubmittername',
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
 					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
-					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue', 'userlinkcatselectionlabel'
+					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue', 'userlinkcatselectionlabel', 'dropdownselectionprompttext'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2155,7 +2155,7 @@ class link_library_plugin_admin {
 					'cat_letter_filter_autoselect', 'cat_letter_filter_showalloption', 'emailsubmitter', 'addlinkakismet', 'rssfeedinlineskipempty',
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
-					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer'
+					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt'
 				)
 				as $option_name
 			) {
@@ -3595,6 +3595,13 @@ class link_library_plugin_admin {
 							<option value="dropdowndirect"<?php selected( $options['flatlist'] == 'dropdowndirect' ); ?>><?php _e( 'Drop-Down List Direct Access', 'link-library' ); ?></option>
 						</select>
 					</td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Show selection prompt in Drop-down list mode', 'link-library' ); ?></td>
+					<td><input type="checkbox" id="dropdownselectionprompt" name="dropdownselectionprompt" <?php checked( $options['dropdownselectionprompt'] ); ?>/></td>
+					<td></td>
+					<td><?php _e( 'Drop-down list mode selection prompt text', 'link-library' ); ?></td>
+					<td><input type="text" id="dropdownselectionprompttext" name="dropdownselectionprompttext" size="20" value="<?php echo $options['dropdownselectionprompttext']; ?>" /></td>
 				</tr>
 				<tr>
 					<td>

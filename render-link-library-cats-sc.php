@@ -213,6 +213,10 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 			            $output .= "onchange='showcategory()' ";
 		            }
 		            $output .= "name='catdropdown' class='catdropdown'>";
+
+		            if ( $dropdownselectionprompt && !empty( $dropdownselectionprompttext ) ) {
+		            	$output .= '<option value="">' . $dropdownselectionprompttext . '</option>';
+		            }
 	            }
             } else {
 	            if ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {

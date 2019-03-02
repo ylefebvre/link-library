@@ -267,6 +267,8 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['suppressnoreferrer']              = false;
 	$options['linkaddrdefvalue']                = 'https://';
 	$options['userlinkcatselectionlabel']       = __( 'Select a category', 'link-library' );
+	$options['dropdownselectionprompt']         = false;
+	$options['dropdownselectionprompttext']     = __( 'Select a category', 'link-library' );
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
