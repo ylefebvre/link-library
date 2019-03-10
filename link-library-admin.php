@@ -3738,6 +3738,7 @@ class link_library_plugin_admin {
 						<option value="random"<?php selected( $options['linkorder'] == 'random' ); ?>><?php _e( 'Order randomly', 'link-library' ); ?></option>
 						<option value="date"<?php selected( $options['linkorder'] == 'date' ); ?>><?php _e( 'Order by updated date', 'link-library' ); ?></option>
 						<option value="hits"<?php selected( $options['linkorder'] == 'hits' ); ?>><?php _e( 'Order by number of link visits', 'link-library' ); ?></option>
+						<option value="scpo"<?php selected( $options['linkorder'] == 'scpo' ); ?>><?php _e( 'Order specified using Simple Custom Post Order plugin', 'link-library' ); ?></option>
 					</select>
 				</td>
 				<td style='width:100px'></td>

@@ -794,6 +794,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				} elseif ( 'hits' == $linkorder ) {
 					$link_query_args['meta_query']['link_visits_clause'] = array( 'key' => 'link_visits', 'type' => 'numeric' );
 					$link_query_args['orderby']['link_visits_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( 'scpo' == $linkorder ) {
+					$link_query_args['orderby']['menu_order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				}
 
 				if ( $current_user_links ) {
