@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.5 =
+* Changed way that 'Max number of links to display per category' is queried to avoid caching issues with large databases
+* Moved some configuration fields from Advanced tab to Links tab of library configurations
+
 = 6.2.4 =
 * Added new sort type for links and categories, allowing users to manually order them using Simple Custom Post Order plugin (see https://wordpress.org/support/topic/link-order-update/ for setup instructions)
 

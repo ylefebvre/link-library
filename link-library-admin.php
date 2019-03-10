@@ -3816,6 +3816,39 @@ class link_library_plugin_admin {
 				</td>
 			</tr>
 			<tr>
+				<td style='width:150px'>
+					<?php _e( 'Show Link Updated Flag', 'link-library' ); ?>
+				</td>
+				<td style='width:75px;'>
+					<input type="checkbox" id="showupdated" name="showupdated" <?php checked( $options['showupdated'] ); ?>/>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td style='width:150px'>
+					<?php _e( 'Link Updated Flag Position', 'link-library' ); ?>
+				</td>
+				<td style='width:75px;'>
+					<select id="showupdatedpos" name="showupdatedpos">
+						<?php
+						$show_updated_pos_options = array( 'before' => 'Before Link Fields', 'after' => 'After Link Fields' );
+
+						foreach( $show_updated_pos_options as $show_updated_pos_option_key => $show_updated_pos_option ) { ?>
+							<option value="<?php echo $show_updated_pos_option_key; ?>" <?php selected( $options['showupdatedpos'], $show_updated_pos_option_key ); ?>><?php echo $show_updated_pos_option; ?></option>
+						<?php }
+						?>
+					</select>
+				</td>
+				<td style='width:20px'>
+				</td>
+				<td class="lltooltip" title="<?php _e( 'Label to be displayed before new links', 'link-library' ); ?>">
+					<?php _e( 'Updated link label', 'link-library' ); ?>
+				</td>
+				<td class="lltooltip" title="<?php _e( 'Label to be displayed before new links', 'link-library' ); ?>">
+					<input type="text" id="updatedlabel" name="updatedlabel" size="40" value="<?php echo $options['updatedlabel']; ?>" />
+				</td>
+			</tr>
+			<tr>
 				<td class="lltooltip" title="<?php _e( 'Sets default link target window, does not override specific targets set in links', 'link-library' ); ?>">
 					<?php _e( 'Link Target', 'link-library' ); ?>
 				</td>
@@ -4470,43 +4503,11 @@ class link_library_plugin_admin {
 		<br />
 		<table>
 			<tr>
-				<td style='width:150px'>
-					<?php _e( 'Show Link Updated Flag', 'link-library' ); ?>
-				</td>
-				<td style='width:75px;padding:0px 20px 0px 20px'>
-					<input type="checkbox" id="showupdated" name="showupdated" <?php checked( $options['showupdated'] ); ?>/>
-				</td>
-				<td style='width:20px'>
-				</td>
 				<td>
 					<?php _e( 'Convert [] to &lt;&gt; in Link Description and Notes', 'link-library' ); ?>
 				</td>
 				<td style='width:75px;padding:0px 20px 0px 20px'>
 					<input type="checkbox" id="use_html_tags" name="use_html_tags" <?php checked( $options['use_html_tags'] ); ?>/>
-				</td>
-			</tr>
-			<tr>
-				<td style='width:150px'>
-					<?php _e( 'Link Updated Flag Position', 'link-library' ); ?>
-				</td>
-				<td style='width:75px;padding:0px 20px 0px 20px'>
-					<select id="showupdatedpos" name="showupdatedpos">
-						<?php
-						$show_updated_pos_options = array( 'before' => 'Before Link Fields', 'after' => 'After Link Fields' );
-
-						foreach( $show_updated_pos_options as $show_updated_pos_option_key => $show_updated_pos_option ) { ?>
-							<option value="<?php echo $show_updated_pos_option_key; ?>" <?php selected( $options['showupdatedpos'], $show_updated_pos_option_key ); ?>><?php echo $show_updated_pos_option; ?></option>
-						<?php }
-						?>
-					</select>
-				</td>
-				<td style='width:20px'>
-				</td>
-				<td class="lltooltip" title="<?php _e( 'Label to be displayed before new links', 'link-library' ); ?>">
-					<?php _e( 'Updated link label', 'link-library' ); ?>
-				</td>
-				<td class="lltooltip" title="<?php _e( 'Label to be displayed before new links', 'link-library' ); ?>">
-					<input type="text" id="updatedlabel" name="updatedlabel" size="40" value="<?php echo $options['updatedlabel']; ?>" />
 				</td>
 			</tr>
 			<tr>

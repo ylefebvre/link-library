@@ -823,6 +823,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$linkquerystarttime = microtime ( true );
 				}
 
+				if ( !$combineresults && !empty( $maxlinks ) && 0 < intval( $maxlinks ) ) {
+					$link_query_args['posts_per_page'] = intval ( $maxlinks );
+				} elseif ( !empty( $maxlinkspercat ) && 0 < intval( $maxlinkspercat ) ) {
+					$link_query_args['posts_per_page'] = intval ( $maxlinkspercat );
+				}
+
 				$the_link_query = new WP_Query( $link_query_args );
 
 				if ( $debugmode ) {
@@ -2093,8 +2099,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 								$linkcount++;
 
-								if ( ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) ||
-										!empty( $maxlinkspercat ) && is_numeric( $maxlinkspercat ) && 0 < $maxlinkspercat && $the_link_query->current_post + 1 == $maxlinkspercat ) {
+								if ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) {
 									break;
 								}
 
