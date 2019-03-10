@@ -49,7 +49,7 @@ Further configuration is available under the Link Library Settings panel.
 == Changelog ==
 
 = 6.2.4 =
-* Added new sort type for links and categories, allowing users to manually order them using Simple Custom Post Order plugin (see FAQ for setup instructions)
+* Added new sort type for links and categories, allowing users to manually order them using Simple Custom Post Order plugin (see https://wordpress.org/support/topic/link-order-update/ for setup instructions)
 
 = 6.2.3 =
 * Added option to have a selection entry in category drop-down list for link-library-cats shortcode
