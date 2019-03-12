@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.6 =
+* Fixes for looping category output when maximum number to display is set
+
 = 6.2.5 =
 * Changed way that 'Max number of links to display per category' is queried to avoid caching issues with large databases
 * Moved some configuration fields from Advanced tab to Links tab of library configurations

@@ -692,6 +692,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 		if ( !empty( $link_categories ) ) {
 			foreach ( $link_categories as $link_category ) {
+				if ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) {
+					break;
+				}
+
 				if ( $enablerewrite && $showbreadcrumbspermalinks && $parent_cat_id != 0 && $level == 0) {
 					$breadcrumb = '<div class="breadcrumb">' . link_library_get_breadcrumb_path( $link_category->slug, $rewritepage ) . '</div>';
 					$output .= $breadcrumb;
@@ -1237,6 +1241,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 							while ( $the_link_query->have_posts() ) {
 								$the_link_query->the_post();
+
+								if ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) {
+									break;
+								}
 
 								if ( $pagination && 'search' != $mode ) {
 									if ( $linkcount > $pagenumber * $linksperpage || $linkcount < $startingitem ) {
@@ -2099,9 +2107,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 								$linkcount++;
 
-								if ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) {
-									break;
-								}
+
 
 							}
 
