@@ -827,7 +827,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$linkquerystarttime = microtime ( true );
 				}
 
-				if ( !$combineresults && !empty( $maxlinks ) && 0 < intval( $maxlinks ) ) {
+				if ( $combineresults && !empty( $maxlinks ) && 0 < intval( $maxlinks ) ) {
 					$link_query_args['posts_per_page'] = intval ( $maxlinks );
 				} elseif ( !empty( $maxlinkspercat ) && 0 < intval( $maxlinkspercat ) ) {
 					$link_query_args['posts_per_page'] = intval ( $maxlinkspercat );
