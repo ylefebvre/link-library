@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.7 =
+* Add ability to display category name in Advanced Tab
+
 = 6.2.6 =
 * Additional fix related to work done in previous update
 * Fixes for looping category output when maximum number to display is set

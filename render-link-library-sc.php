@@ -1135,7 +1135,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$activation_variables = array( 1 => 'show_images', 2 => 'showname', 3 => 'showdate', 4 => 'showdescription',
 									                               5 => 'shownotes', 6 => 'show_rss', 7 => 'displayweblink', 8 => 'showtelephone',
 									                               9 => 'showemail', 10 => 'showlinkhits', 11 => 'showrating', 12 => 'showlargedescription',
-									                               13 => 'showsubmittername', 14 => 'showcatdesc', 15 => 'showlinktags', 16 => 'showlinkprice' );
+									                               13 => 'showsubmittername', 14 => 'showcatdesc', 15 => 'showlinktags', 16 => 'showlinkprice',
+																   17 => 'showcatname' );
 
 									$default_labels = array( 1 => __( 'Image', 'link-library' ), 2 => __( 'Name', 'link-library' ),
 									                         3 => __( 'Date', 'link-library' ), 4 => __( 'Description', 'link-library'),
@@ -1144,15 +1145,16 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									                         9 => __( 'E-mail', 'link-library' ), 10 => __( 'Hits', 'link-library' ),
 									                         11 => __( 'Rating', 'link-library' ), 12 => __( 'Large Description', 'link-library' ),
 									                         13 => __( 'Submitter Name', 'link-library' ), 14 => __( 'Category Description', 'link-library' ),
-									                         15 => __( 'Tags', 'link-library' ), 16 => __( 'Price', 'link-library') );
+									                         15 => __( 'Tags', 'link-library' ), 16 => __( 'Price', 'link-library'),
+															 17 => __( 'Category Name', 'link-library' ) );
 
 									if ( empty( $dragndroporder ) ) {
-										$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16';
+										$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17';
 									}
 
 									$dragndroparray = explode( ',', $dragndroporder );
 
-									$new_entries = array( '13', '14', '15', '16' );
+									$new_entries = array( '13', '14', '15', '16', '17' );
 
 									foreach ( $new_entries as $new_entry ) {
 										if ( !in_array( $new_entry, $dragndroparray ) ) {
@@ -1259,6 +1261,25 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								$link_meta = get_metadata( 'post', get_the_ID() );
 
 								$linkitem['category_description'] = $link_category->description;
+
+								$linkitem['category_name'] = '';
+								if ( $combineresults ) {
+									$link_terms = wp_get_post_terms( get_the_ID(), 'link_library_category' );
+									if ( !empty( $link_terms ) ) {
+										$link_term_array = array();
+										foreach( $link_terms as $link_term ) {
+											$link_term_array[] = $link_term->name;
+										}
+
+										if ( !empty( $link_term_array ) ) {
+											$link_term_string = implode( ', ', $link_term_array );
+											$linkitem['category_name'] = $link_term_string;
+										}
+									}
+								} else {
+									$linkitem['category_name'] = $link_category->name;
+								}
+
 
 								if ( isset( $link_meta['link_url'] ) ) {
 									$linkitem['link_url'] = esc_html ( $link_meta['link_url'][0] );
@@ -1553,12 +1574,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								if ( empty( $dragndroporder ) ) {
-									$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16';
+									$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17';
 								}
 
 								$dragndroparray = explode( ',', $dragndroporder );
 
-								$new_entries = array( '13', '14', '15', '16' );
+								$new_entries = array( '13', '14', '15', '16', '17' );
 
 								foreach ( $new_entries as $new_entry ) {
 									if ( !in_array( $new_entry, $dragndroparray ) ) {
@@ -2085,6 +2106,22 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 													if ( true == $debugmode ) {
 														$current_cat_output .= "\n<!-- Time to render link large description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimersubmittername ) . " --> \n";
+													}
+												}
+
+												break;
+
+											case 17: 	//------------------ Category Name Output --------------------
+
+												if ( $showcatname && ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['category_name'] ) ) ) ) {
+													if ( true == $debugmode ) {
+														$starttimedesc = microtime ( true );
+													}
+
+													$current_cat_output .= $between . stripslashes( $beforecatname ) . $linkitem['category_name'] . stripslashes( $aftercatname );
+
+													if ( true == $debugmode ) {
+														$current_cat_output .= "\n<!-- Time to render category name section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
 													}
 												}
 

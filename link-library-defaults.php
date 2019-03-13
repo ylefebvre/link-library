@@ -269,6 +269,9 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['userlinkcatselectionlabel']       = __( 'Select a category', 'link-library' );
 	$options['dropdownselectionprompt']         = false;
 	$options['dropdownselectionprompttext']     = __( 'Select a category', 'link-library' );
+	$options['showcatname']                     = false;
+	$options['beforecatname']                   = '';
+	$options['aftercatname']                    = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

@@ -1,5 +1,32 @@
 <?php
 
+/* function ll_get_user_ip()
+{
+	// Get real visitor IP behind CloudFlare network
+	if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+		$_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+		$_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+	}
+	$client  = @$_SERVER['HTTP_CLIENT_IP'];
+	$forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+	$remote  = $_SERVER['REMOTE_ADDR'];
+
+	if(filter_var($client, FILTER_VALIDATE_IP))
+	{
+		$ip = $client;
+	}
+	elseif(filter_var($forward, FILTER_VALIDATE_IP))
+	{
+		$ip = $forward;
+	}
+	else
+	{
+		$ip = $remote;
+	}
+
+	return $ip;
+} */
+
 function link_library_process_user_submission( $my_link_library_plugin ) {
 	check_admin_referer( 'LL_ADDLINK_FORM' );
 
@@ -405,6 +432,10 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						update_post_meta( $new_link_ID, 'link_no_follow', false );
 						update_post_meta( $new_link_ID, 'link_featured', 0 );
 						update_post_meta( $new_link_ID, 'link_updated_manual', false );
+
+						/* $user_ip = ll_get_user_ip();
+						update_post_meta( $new_link_ID, 'link_submitter_ip', $user_ip );
+						update_post_meta( $new_link_ID, 'link_submitted_timestamp', round( microtime( true ) * 1000 ) ); */
 					}
 
 					if ( $options['emailnewlink'] ) {

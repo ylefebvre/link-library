@@ -2135,7 +2135,8 @@ class link_library_plugin_admin {
 					'searchfieldtext', 'catfilterlabel', 'searchnoresultstext', 'addlinkdefaultcat', 'beforesubmittername', 'aftersubmittername',
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
 					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
-					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue', 'userlinkcatselectionlabel', 'dropdownselectionprompttext'
+					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue', 'userlinkcatselectionlabel', 'dropdownselectionprompttext',
+					'beforecatname', 'aftercatname'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2155,7 +2156,8 @@ class link_library_plugin_admin {
 					'cat_letter_filter_autoselect', 'cat_letter_filter_showalloption', 'emailsubmitter', 'addlinkakismet', 'rssfeedinlineskipempty',
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
-					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt'
+					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt',
+					'showcatname'
 				)
 				as $option_name
 			) {
@@ -3986,14 +3988,14 @@ class link_library_plugin_admin {
 		<br /><br />
 		<ul id="sortable">
 			<?php if ( empty( $options['dragndroporder'] ) ) {
-				$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16';
+				$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17';
 			} else {
 				$dragndroporder = $options['dragndroporder'];
 			}
 
 			$dragndroparray = explode( ',', $dragndroporder );
 
-			$new_entries = array( '13', '14', '15', '16' );
+			$new_entries = array( '13', '14', '15', '16', '17' );
 
 			foreach ( $new_entries as $new_entry ) {
 				if ( !in_array( $new_entry, $dragndroparray ) ) {
@@ -4068,6 +4070,10 @@ class link_library_plugin_admin {
 							?>
 							<li id="16" style='background-color: #238e00'><?php _e( 'Price', 'link-library' ); ?></li>
 							<?php break;
+						case 17:
+							?>
+							<li id="17" style='background-color: #23A023'><?php _e( 'Cat Name', 'link-library' ); ?></li>
+							<?php break;
 					}
 				}
 			}
@@ -4115,13 +4121,13 @@ class link_library_plugin_admin {
 			<td style='background: #FFF'></td>
 		</tr>
 		<?php if ( empty( $options['dragndroporder'] ) ) {
-			$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16';
+			$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17';
 		} else {
 			$dragndroporder = $options['dragndroporder'];
 		}
 		$dragndroparray = explode( ',', $dragndroporder );
 
-		$new_entries = array( '13', '14', '15', '16' );
+		$new_entries = array( '13', '14', '15', '16', '17' );
 
 		foreach ( $new_entries as $new_entry ) {
 			if ( !in_array( $new_entry, $dragndroparray ) ) {
@@ -4464,6 +4470,23 @@ class link_library_plugin_admin {
 									<option value="after"<?php selected( $options['linkcurrencyplacement'] == 'after' ); ?>><?php _e( 'After Price', 'link-library' ); ?></option>
 								</select>
 							</td>
+						</tr>
+						<?php break;
+					case 17: /* -------------------------------- Category Name -------------------------------------------*/
+						?>
+						<tr>
+							<td style='background-color: #23A023;color:#fff' class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before and after the Link Category Name', 'link-library' ); ?>'><?php _e( 'Category Name', 'link-library' ); ?></td>
+							<td style='text-align:center;background: #FFF'>
+								<input type="checkbox" id="showcatname" name="showcatname" <?php checked( $options['showcatname'] ); ?>/>
+							</td>
+							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed before Category Name', 'link-library' ); ?>'>
+								<input type="text" id="beforecatname" name="beforecatname" size="22" value="<?php echo stripslashes( $options['beforecatname'] ); ?>" />
+							</td>
+							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed after Link Large Description', 'link-library' ); ?>'>
+								<input type="text" id="aftercatname" name="aftercatname" size="22" value="<?php echo stripslashes( $options['aftercatname'] ); ?>" />
+							</td>
+							<td style='background: #FFF'></td>
+							<td style='background: #FFF'></td>
 						</tr>
 						<?php break;
 				}
