@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.8 =
+* Add option in user submission only allow one link to be submitted domain
+
 = 6.2.7 =
 * Add ability to display category name in Advanced Tab
 

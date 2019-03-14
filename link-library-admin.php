@@ -2157,7 +2157,7 @@ class link_library_plugin_admin {
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
 					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt',
-					'showcatname'
+					'showcatname', 'onelinkperdomain'
 				)
 				as $option_name
 			) {
@@ -5181,6 +5181,11 @@ class link_library_plugin_admin {
 			<td style='width:200px'><?php _e( 'Only allow one reciprocal link per domain', 'link-library' ); ?></td>
 			<td style='width:75px;padding-right:20px'>
 				<input type="checkbox" id="onereciprocaldomain" name="onereciprocaldomain" <?php checked( $options['onereciprocaldomain'] ); ?>/></td>
+			<td style='width: 20px'></td>
+			<td></td>
+			<td style='width:200px'><?php _e( 'Only allow one link per domain', 'link-library' ); ?></td>
+			<td style='width:75px;padding-right:20px'>
+				<input type="checkbox" id="onelinkperdomain" name="onelinkperdomain" <?php checked( $options['onelinkperdomain'] ); ?>/></td>
 			<td style='width: 20px'></td>
 		</tr>
 		<tr>

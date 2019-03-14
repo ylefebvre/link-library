@@ -272,6 +272,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['showcatname']                     = false;
 	$options['beforecatname']                   = '';
 	$options['aftercatname']                    = '';
+	$options['onelinkperdomain']                = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
