@@ -1549,7 +1549,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$title = $cleandesc;
 								}
 
-								if ( $showupdated ) {
+								if ( $showupdatedtooltip ) {
 									$date_format_string = get_option( 'date_format' );
 									$cleandate = date_i18n( $date_format_string, intval( $linkitem['link_updated'] ) );
 									if ( substr( $cleandate, 0, 2 ) != '00' ) {

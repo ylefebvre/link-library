@@ -2157,7 +2157,7 @@ class link_library_plugin_admin {
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
 					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt',
-					'showcatname', 'onelinkperdomain'
+					'showcatname', 'onelinkperdomain', 'showupdatedtooltip'
 				)
 				as $option_name
 			) {
@@ -3825,6 +3825,12 @@ class link_library_plugin_admin {
 					<input type="checkbox" id="showupdated" name="showupdated" <?php checked( $options['showupdated'] ); ?>/>
 				</td>
 				<td></td>
+				<td style='width:150px'>
+					<?php _e( 'Show Link Updated Date in Tooltip', 'link-library' ); ?>
+				</td>
+				<td style='width:75px;'>
+					<input type="checkbox" id="showupdatedtooltip" name="showupdatedtooltip" <?php checked( $options['showupdatedtooltip'] ); ?>/>
+				</td>
 			</tr>
 			<tr>
 				<td style='width:150px'>
