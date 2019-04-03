@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.2.9
+Version: 6.2.10
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -242,6 +242,7 @@ class link_library_plugin {
 		add_shortcode( 'addlinkcustommsg-link-library', array( $this, 'link_library_addlink_func' ) );
 		add_shortcode( 'link-library-count', array( $this, 'link_library_count_func' ) );
 		add_shortcode( 'link-library-filters', array( $this, 'link_library_filters' ) );
+		add_shortcode( 'link-library-tagcloud', array( $this, 'link_library_tagcloud' ) );
 
         // Function to determine if Link Library is used on a page before printing headers
         // the_posts gets triggered before wp_head
@@ -1148,6 +1149,12 @@ class link_library_plugin {
             }
             return $linklibraryoutput . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
         }
+	}
+
+	function link_library_tagcloud( $atts = '' ) {
+		$link_library_terms = get_terms( array( 'taxonomy' => 'link_library_category' ) );
+		$output = wp_generate_tag_cloud( $link_library_terms );
+		return $output;
 	}
 
 	function conditionally_add_scripts_and_styles( $posts ) {

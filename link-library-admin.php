@@ -61,6 +61,9 @@ class link_library_plugin_admin {
 		add_filter( 'manage_edit-link_library_category_columns', array( $this, 'll_category_custom_column_header' ), 10);
 		add_filter( 'manage_link_library_category_custom_column', array( $this, 'll_add_category_id' ), 10, 3 );
 
+		add_filter( 'manage_edit-link_library_tags_columns', array( $this, 'll_category_tags_custom_column_header' ), 10);
+		add_filter( 'manage_link_library_tags_custom_column', array( $this, 'll_add_category_tags_id' ), 10, 3 );
+
 		if ( $this->is_edit_page() ) {
 			add_action( 'media_buttons', 'link_library_render_editor_button', 20 );
 			add_action( 'admin_footer',  array( $this, 'render_modal' ) );
@@ -514,6 +517,18 @@ class link_library_plugin_admin {
 		$columns = array_merge( array_slice( $columns, 0, 2 ),
 								array( 'taxonomy_id' => 'Category ID' ),
 								array_slice( $columns, 2 ) );
+		return $columns;
+	}
+
+	function ll_add_category_tags_id( $content, $column_name, $term_id ){
+		$content = $term_id;
+		return $content;
+	}
+
+	function ll_category_tags_custom_column_header( $columns ){
+		$columns = array_merge( array_slice( $columns, 0, 2 ),
+			array( 'taxonomy_id' => 'Tag ID' ),
+			array_slice( $columns, 2 ) );
 		return $columns;
 	}
 

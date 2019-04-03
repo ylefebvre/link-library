@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.10 =
+* Added column to tag list to show tag IDs
+
 = 6.2.9 =
 * Added new option to display updated date as tooltip when hovering over links, separating it from showing link updated flag
 
