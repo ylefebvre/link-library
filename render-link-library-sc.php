@@ -385,7 +385,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$categorysluglist = $_GET['cat'];
 	} elseif ($showonecatonly && 'HTMLGETCATNAME' == $showonecatmode && isset( $_GET['catname'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
 		$categorynamelist = $_GET['catname'];
-	}elseif ( $showonecatonly && 'HTMLGETPERM' == $showonecatmode && empty( $_GET['searchll'] ) ) {
+	} elseif ( $showonecatonly && 'HTMLGETPERM' == $showonecatmode && empty( $_GET['searchll'] ) ) {
 		global $wp_query;
 
 		$categoryname = $wp_query->query_vars['cat_name'];
@@ -580,7 +580,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 		if ( isset( $AJAXcatid ) && !empty( $AJAXcatid ) ) {
 			$link_categories_query_args['include'] = $AJAXcatid;
-		} else {
+		} elseif ( empty( $link_categories_query_args['slug'] ) ) {
 			$no_sub_cat = true;
 			if ( !empty( $link_categories_query_args['include'] ) ) {
 				foreach ( $link_categories_query_args['include'] as $include_cat ) {
@@ -598,6 +598,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 
 		$link_categories = get_terms( 'link_library_category', $link_categories_query_args );
+
 		remove_filter( 'get_terms', 'link_library_get_terms_filter_only_publish' );
 		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_pending' );
 		remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft' );

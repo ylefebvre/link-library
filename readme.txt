@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.11 =
+* Corrected problem displaying sub-categories when showing one category at a time in HTML GET with Slugs mode
+
 = 6.2.10 =
 * Added column to tag list to show tag IDs
 
