@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.12 =
+* Fix for [link-library-filters] shortcode to remove extra closing div tag
+* Fix option to not display price section in [link-library-filters] shortcode
+
 = 6.2.11 =
 * Corrected problem displaying sub-categories when showing one category at a time in HTML GET with Slugs mode
 
