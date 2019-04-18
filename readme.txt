@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.13 =
+* Updated to import routine to work with clean installations that only have Link Manager in place
+
 = 6.2.12 =
 * Fix for [link-library-filters] shortcode to remove extra closing div tag
 * Fix option to not display price section in [link-library-filters] shortcode
