@@ -74,6 +74,9 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 	} else if ( 'required' == $options['showuserlargedescription'] && empty( $captureddata['link_textfield'] ) ) {
 		$requiredcheck = false;
 		$message = 21;
+	} else if ( 'required' == $options['showaddlinkimage'] && !file_exists( $_FILES['linkimage']['tmp_name'] ) ) {
+		$requiredcheck = false;
+		$message = 25;
 	}
 
 	if ( $captureddata['link_name'] != '' && $requiredcheck ) {
@@ -412,16 +415,18 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						update_post_meta( $new_link_ID, 'link_updated_manual', false );
 
 						if ( isset( $_FILES['linkimage'] ) ) {
-							$file_ext = strtolower( end( explode( '.', $_FILES['linkimage']['name'] ) ) );
+							if ( file_exists( $_FILES['linkimage']['tmp_name'] ) ) {
+								$file_ext = strtolower( end( explode( '.', $_FILES['linkimage']['name'] ) ) );
 
-							$extensions = array( 'jpeg', 'jpg', 'png' );
+								$extensions = array( 'jpeg', 'jpg', 'png' );
 
-							if ( in_array( $file_ext, $extensions ) ){
-								$uploads = wp_upload_dir();
-								$target_file_name = $uploads['basedir'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext;
+								if ( in_array( $file_ext, $extensions ) ){
+									$uploads = wp_upload_dir();
+									$target_file_name = $uploads['basedir'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext;
 
-								move_uploaded_file( $_FILES['linkimage']['tmp_name'], $target_file_name );
-								update_post_meta( $new_link_ID, 'link_image', $uploads['baseurl'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext );
+									move_uploaded_file( $_FILES['linkimage']['tmp_name'], $target_file_name );
+									update_post_meta( $new_link_ID, 'link_image', $uploads['baseurl'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext );
+								}
 							}
 						}
 					}

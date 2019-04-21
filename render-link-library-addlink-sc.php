@@ -244,6 +244,8 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 	            $output .= '<div class="llmessage">' . __('Link rejected. There is already a site with this reciprocal link.', 'link-library') . '</div>';
             } elseif ( 24 == $_GET['addlinkmessage'] ) {
 	            $output .= '<div class="llmessage">' . __('Link rejected. Invalid reciprocal link.', 'link-library') . '</div>';
+            } elseif ( 25 == $_GET['addlinkmessage'] ) {
+	            $output .= '<div class="llmessage">' . $libraryoptions['linkimagelabel'] . __(' is a required field', 'link-library') . '</div>';
             }
         }
     }
