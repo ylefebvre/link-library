@@ -410,6 +410,20 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						update_post_meta( $new_link_ID, 'link_no_follow', false );
 						update_post_meta( $new_link_ID, 'link_featured', 0 );
 						update_post_meta( $new_link_ID, 'link_updated_manual', false );
+
+						if ( isset( $_FILES['linkimage'] ) ) {
+							$file_ext = strtolower( end( explode( '.', $_FILES['linkimage']['name'] ) ) );
+
+							$extensions = array( 'jpeg', 'jpg', 'png' );
+
+							if ( in_array( $file_ext, $extensions ) ){
+								$uploads = wp_upload_dir();
+								$target_file_name = $uploads['basedir'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext;
+
+								move_uploaded_file( $_FILES['linkimage']['tmp_name'], $target_file_name );
+								update_post_meta( $new_link_ID, 'link_image', $uploads['baseurl'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext );
+							}
+						}
 					}
 
 					if ( $options['emailnewlink'] ) {

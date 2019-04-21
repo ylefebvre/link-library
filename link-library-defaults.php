@@ -274,6 +274,8 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['aftercatname']                    = '';
 	$options['onelinkperdomain']                = '';
 	$options['showupdatedtooltip']              = false;
+	$options['linkimagelabel']                  = __( 'Link Image (jpg, jpeg, png)', 'link-library' ) ;
+	$options['showaddlinkimage']                = 'hide';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

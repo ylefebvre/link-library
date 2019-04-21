@@ -48,6 +48,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.15 =
+* Add option in user submission form to allow users to upload images
+
+= 6.2.14 =
+* Small fix to correct errors with Gutenberg editor
+
 = 6.2.13 =
 * Updated to import routine to work with clean installations that only have Link Manager in place
 

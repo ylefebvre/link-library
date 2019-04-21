@@ -843,7 +843,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 
 				if ( $debugmode ) {
-					echo '<!-- showonecatmode: ' . $showonecatonly . ', AJAXnocatset: ' . $AJAXnocatset . ', nocatonstartup: ' . $nocatonstartup . '-->';
+					$output .= '<!-- showonecatmode: ' . $showonecatonly . ', AJAXnocatset: ' . $AJAXnocatset . ', nocatonstartup: ' . $nocatonstartup . '-->';
 				}
 
 				$child_cat_params = array( 'taxonomy' => 'link_library_category', 'child_of' => $link_category->term_id );

@@ -2151,7 +2151,7 @@ class link_library_plugin_admin {
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
 					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
 					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue', 'userlinkcatselectionlabel', 'dropdownselectionprompttext',
-					'beforecatname', 'aftercatname'
+					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -5197,6 +5197,22 @@ class link_library_plugin_admin {
 			<td><?php _e( 'Use Text Area for Notes', 'link-library' ); ?></td>
 			<td>
 				<input type="checkbox" id="usetextareaforusersubmitnotes" name="usetextareaforusersubmitnotes" <?php checked( $options['usetextareaforusersubmitnotes'] ); ?>/></td>
+		</tr>
+		<tr>
+			<td style='width:200px'><?php _e( 'Link image label', 'link-library' ); ?></td>
+			<?php if ( $options['linkimagelabel'] == "" ) {
+				$options['linkimagelabel'] = __( 'Link Image', 'link-library' );
+			} ?>
+			<td>
+				<input type="text" id="linkimagelabel" name="linkimagelabel" size="30" value="<?php echo $options['linkimagelabel']; ?>" />
+			</td>
+			<td>
+				<select name="showaddlinkimage" id="showaddlinkimage" style="width:60px;">
+					<option value="hide"<?php selected( $options['showaddlinkimage'] == 'hide' ); ?>><?php _e( 'Hide', 'link-library' ); ?></option>
+					<option value="show"<?php selected( $options['showaddlinkimage'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
+					<option value="required"<?php selected( $options['showaddlinkimage'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
+				</select>
+			</td>
 		</tr>
 		<tr>
 			<td style='width:200px'><?php _e( 'Only allow one reciprocal link per domain', 'link-library' ); ?></td>
