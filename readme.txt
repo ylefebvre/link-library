@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.16 =
+* Automatically add featured image for links using link image. Useful when trying to display the links custom post type using featured images
+
 = 6.2.15 =
 * Add option in user submission form to allow users to upload images
 

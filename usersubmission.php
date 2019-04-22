@@ -6,6 +6,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 	global $wpdb; // Kept with CPT update
 
 	require_once( ABSPATH . '/wp-admin/includes/taxonomy.php' );
+	require_once( ABSPATH . '/wp-admin/includes/image.php' );
 
 	load_plugin_textdomain( 'link-library', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
@@ -423,9 +424,29 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 								if ( in_array( $file_ext, $extensions ) ){
 									$uploads = wp_upload_dir();
 									$target_file_name = $uploads['basedir'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext;
+									$target_image_url = $uploads['baseurl'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext;
 
 									move_uploaded_file( $_FILES['linkimage']['tmp_name'], $target_file_name );
-									update_post_meta( $new_link_ID, 'link_image', $uploads['baseurl'] . '/link-library-images/' . $new_link_ID . '.' . $file_ext );
+									update_post_meta( $new_link_ID, 'link_image', $target_image_url );
+
+									if ( empty( $target_image_url ) ) {
+										delete_post_thumbnail( $new_link_ID );
+									} else {
+										$wpFileType = wp_check_filetype( $target_image_url, null);
+
+										$attachment = array(
+											'post_mime_type' => $wpFileType['type'],  // file type
+											'post_title' => sanitize_file_name( $target_image_url ),  // sanitize and use image name as file name
+											'post_content' => '',  // could use the image description here as the content
+											'post_status' => 'inherit'
+										);
+
+										// insert and return attachment id
+										$attachmentId = wp_insert_attachment( $attachment, $target_image_url, $new_link_ID );
+										$attachmentData = wp_generate_attachment_metadata( $attachmentId, $target_image_url );
+										wp_update_attachment_metadata( $attachmentId, $attachmentData );
+										set_post_thumbnail( $new_link_ID, $attachmentId );
+									}
 								}
 							}
 						}

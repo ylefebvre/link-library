@@ -426,6 +426,25 @@ class link_library_plugin_admin {
 
 				if ( $mode == 'thumb' || $mode == 'favicon' ) {
 					update_post_meta( $linkid, 'link_image', $newimagedata );
+
+					if ( empty( $newimagedata ) ) {
+						delete_post_thumbnail( $linkid );
+					} else {
+						$wpFileType = wp_check_filetype( $newimagedata, null);
+
+						$attachment = array(
+							'post_mime_type' => $wpFileType['type'],  // file type
+							'post_title' => sanitize_file_name( $newimagedata ),  // sanitize and use image name as file name
+							'post_content' => '',  // could use the image description here as the content
+							'post_status' => 'inherit'
+						);
+
+						// insert and return attachment id
+						$attachmentId = wp_insert_attachment( $attachment, $newimagedata, $linkid );
+						$attachmentData = wp_generate_attachment_metadata( $attachmentId, $newimagedata );
+						wp_update_attachment_metadata( $attachmentId, $attachmentData );
+						set_post_thumbnail( $linkid, $attachmentId );
+					}
 				}
 
 				return $newimagedata;
@@ -1443,6 +1462,25 @@ class link_library_plugin_admin {
 							}
 						}
 						update_post_meta( $new_link_ID, 'link_image', $link_image );
+
+						if ( empty( $link_image ) ) {
+							delete_post_thumbnail( $new_link_ID );
+						} else {
+							$wpFileType = wp_check_filetype( $link_image, null);
+
+							$attachment = array(
+								'post_mime_type' => $wpFileType['type'],  // file type
+								'post_title' => sanitize_file_name( $link_image ),  // sanitize and use image name as file name
+								'post_content' => '',  // could use the image description here as the content
+								'post_status' => 'inherit'
+							);
+
+							// insert and return attachment id
+							$attachmentId = wp_insert_attachment( $attachment, $link_image, $new_link_ID );
+							$attachmentData = wp_generate_attachment_metadata( $attachmentId, $link_image );
+							wp_update_attachment_metadata( $attachmentId, $attachmentData );
+							set_post_thumbnail( $new_link_ID, $attachmentId );
+						}
 
 						$link_target = '';
 						$target_labels = array( 'Link Target', 'link_target' );
@@ -5875,6 +5913,27 @@ class link_library_plugin_admin {
 			foreach ( $array_urls as $array_url ) {
 				if ( isset( $_POST[$array_url] ) ) {
 					update_post_meta( $link_id, $array_url, esc_url( $_POST[$array_url] ) );
+
+					if ( 'link_image' == $array_url ) {
+						if ( empty( $_POST[$array_url] ) ) {
+							delete_post_thumbnail( $link_id );
+						} else {
+							$wpFileType = wp_check_filetype( $_POST[$array_url], null);
+
+							$attachment = array(
+								'post_mime_type' => $wpFileType['type'],  // file type
+								'post_title' => sanitize_file_name( $_POST[$array_url] ),  // sanitize and use image name as file name
+								'post_content' => '',  // could use the image description here as the content
+								'post_status' => 'inherit'
+							);
+
+							// insert and return attachment id
+							$attachmentId = wp_insert_attachment( $attachment, $_POST[$array_url], $link_id );
+							$attachmentData = wp_generate_attachment_metadata( $attachmentId, $_POST[$array_url] );
+							wp_update_attachment_metadata( $attachmentId, $attachmentData );
+							set_post_thumbnail( $link_id, $attachmentId );
+						}
+					}
 				}
 			}
 
