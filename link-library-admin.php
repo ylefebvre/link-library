@@ -5912,12 +5912,16 @@ class link_library_plugin_admin {
 			$array_urls = array( 'link_rss', 'link_second_url', 'link_reciprocal', 'link_image', 'link_url' );
 			foreach ( $array_urls as $array_url ) {
 				if ( isset( $_POST[$array_url] ) ) {
-					update_post_meta( $link_id, $array_url, esc_url( $_POST[$array_url] ) );
-
 					if ( 'link_image' == $array_url ) {
 						if ( empty( $_POST[$array_url] ) ) {
 							delete_post_thumbnail( $link_id );
 						} else {
+							$previous_image_url = get_post_meta( $link_id, 'link_image', true );
+
+							if ( has_post_thumbnail( $link_id ) && $_POST[$array_url] == $previous_image_url ) {
+								break;
+							}
+
 							$wpFileType = wp_check_filetype( $_POST[$array_url], null);
 
 							$attachment = array(
@@ -5934,6 +5938,8 @@ class link_library_plugin_admin {
 							set_post_thumbnail( $link_id, $attachmentId );
 						}
 					}
+
+					update_post_meta( $link_id, $array_url, esc_url( $_POST[$array_url] ) );
 				}
 			}
 
