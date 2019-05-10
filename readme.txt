@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.18 =
+* Admin link listing now has tags columns
+* Admin link listing now allows for filtering of links by tag
+
 = 6.2.17 =
 * Fix for link featured images getting duplicated in media library
 
