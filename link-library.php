@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.2.18
+Version: 6.2.19
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -1356,6 +1356,9 @@ class link_library_plugin {
 				$link_price = number_format( floatval( get_post_meta( get_the_ID(), 'link_price', true ) ), 2 );
 				$link_price_currency = $this->ll_get_string_between( $content, '[currency]', '[/currency]' );
 				$link_price_currency_or_free = $this->ll_get_string_between( $content, '[currency_or_free]', '[/currency_or_free]' );
+				$link_email = esc_html( get_post_meta( get_the_ID(), 'link_email', true ) );
+				$link_phone_number = esc_html( get_post_meta( get_the_ID(), 'link_telephone', true ) );
+
 				$link_terms = wp_get_post_terms( get_the_ID(), 'link_library_category' );
 				$link_terms_list = '';
 				$link_terms_array = array();
@@ -1374,6 +1377,8 @@ class link_library_plugin {
 				$content = str_replace( '[link_description]', $link_description, $content );
 				$content = str_replace( '[link_large_description]', $link_large_description, $content );
 				$content = str_replace( '[link_image]', $link_image, $content );
+				$content = str_replace( '[link_email]', $link_email, $content );
+				$content = str_replace( '[link_telephone]', $link_telephone, $content );
 
 				$content = str_replace( '[link_price]', $link_price, $content );
 				$content = $this->ll_replace_all_between( '[currency]', '[/currency]', $content, $link_price_currency );

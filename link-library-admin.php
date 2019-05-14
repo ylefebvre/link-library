@@ -2843,8 +2843,12 @@ class link_library_plugin_admin {
 					<td>Link image URL. You need to add img src tag or other code to display image.</td>
 				</tr>
 				<tr>
-					<td>[link_price]</td>
-					<td>Link item price</td>
+					<td>[link_email]</td>
+					<td>Link e-mail</td>
+				</tr>
+				<tr>
+					<td>[link_telephone]</td>
+					<td>Link telephone number</td>
 				</tr>
 				<tr>
 					<td>[link_price_or_free]</td>

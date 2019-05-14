@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.19 =
+* Added some shortcodes to use in single item layout template
+
 = 6.2.18 =
 * Admin link listing now has tags columns
 * Admin link listing now allows for filtering of links by tag
