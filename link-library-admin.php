@@ -1975,7 +1975,7 @@ class link_library_plugin_admin {
 					'moderatorname', 'moderatoremail', 'rejectedemailtitle', 'approvalemailbody', 'rejectedemailbody', 'moderationnotificationtitle',
 					'linksubmissionthankyouurl', 'recipcheckaddress', 'imagefilepath', 'catselectmethod', 'expandiconpath', 'collapseiconpath', 'updatechannel',
 					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug',
-					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings'
+					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings', 'defaultprotocoladmin'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2604,6 +2604,16 @@ class link_library_plugin_admin {
 									echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultlinktarget'] ) . '>' . $target_item . '</option>';
 									}
 									echo '</select>';
+								?></td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Default protocol for new links in admin when not specified', 'link-library' ); ?></td>
+							<td><?php $target_array = array( 'http' => 'http://', 'https' => 'https://' );
+								echo '<select name="defaultprotocoladmin" id="defaultprotocoladmin">';
+								foreach ( $target_array as $target_value => $target_item ) {
+									echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultprotocoladmin'] ) . '>' . $target_item . '</option>';
+								}
+								echo '</select>';
 								?></td>
 						</tr>
 						<tr>
@@ -5910,40 +5920,62 @@ class link_library_plugin_admin {
 	}
 
 	function ll_save_link_fields( $link_id, $link ) {
-		// Check post type for book reviews
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
 		if ( $link->post_type == 'link_library_links' && isset( $_POST['action'] ) && 'editpost' == $_POST['action'] ) {
 			$array_urls = array( 'link_rss', 'link_second_url', 'link_reciprocal', 'link_image', 'link_url' );
 			foreach ( $array_urls as $array_url ) {
 				if ( isset( $_POST[$array_url] ) ) {
+					$submitted_url = $_POST[$array_url];
+
 					if ( 'link_image' == $array_url ) {
-						if ( empty( $_POST[$array_url] ) ) {
+						if ( empty( $submitted_url ) ) {
 							delete_post_thumbnail( $link_id );
 						} else {
 							$previous_image_url = get_post_meta( $link_id, 'link_image', true );
 
-							if ( has_post_thumbnail( $link_id ) && $_POST[$array_url] == $previous_image_url ) {
+							if ( has_post_thumbnail( $link_id ) && $submitted_url == $previous_image_url ) {
 								break;
 							}
 
-							$wpFileType = wp_check_filetype( $_POST[$array_url], null);
+							$wpFileType = wp_check_filetype( $submitted_url, null);
 
 							$attachment = array(
 								'post_mime_type' => $wpFileType['type'],  // file type
-								'post_title' => sanitize_file_name( $_POST[$array_url] ),  // sanitize and use image name as file name
+								'post_title' => sanitize_file_name( $submitted_url ),  // sanitize and use image name as file name
 								'post_content' => '',  // could use the image description here as the content
 								'post_status' => 'inherit'
 							);
 
 							// insert and return attachment id
-							$attachmentId = wp_insert_attachment( $attachment, $_POST[$array_url], $link_id );
-							$attachmentData = wp_generate_attachment_metadata( $attachmentId, $_POST[$array_url] );
+							$attachmentId = wp_insert_attachment( $attachment, $submitted_url, $link_id );
+							$attachmentData = wp_generate_attachment_metadata( $attachmentId, $submitted_url );
 							wp_update_attachment_metadata( $attachmentId, $attachmentData );
 							set_post_thumbnail( $link_id, $attachmentId );
 						}
 					}
 
-					update_post_meta( $link_id, $array_url, esc_url( $_POST[$array_url] ) );
+					if ( 'https' == $genoptions['defaultprotocoladmin'] ) {
+						$submitted_url = str_replace( ' ', '%20', $submitted_url );
+						$submitted_url = preg_replace( '|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\\x80-\\xff]|i', '', $submitted_url );
+
+						if ( 0 !== stripos( $submitted_url, 'mailto:' ) ) {
+							$strip = array( '%0d', '%0a', '%0D', '%0A' );
+							$submitted_url   = _deep_replace( $strip, $submitted_url );
+						}
+
+						$submitted_url = str_replace( ';//', '://', $submitted_url );
+						/* If the URL doesn't appear to contain a scheme, we
+						 * presume it needs http:// prepended (unless a relative
+						 * link starting with /, # or ? or a php file).
+						 */
+						if ( strpos( $submitted_url, ':' ) === false && ! preg_match( '/^[a-z0-9-]+?\.php/i', $submitted_url ) ) {
+							$submitted_url = 'https://' . $submitted_url;
+						}
+					}
+
+					update_post_meta( $link_id, $array_url, esc_url( $submitted_url ) );
 				}
 			}
 

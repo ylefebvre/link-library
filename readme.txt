@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.2.20 =
+* Added new Global Option for default protocol for links that are saved without a protocol
+
 = 6.2.19 =
 * Added some shortcodes to use in single item layout template
 

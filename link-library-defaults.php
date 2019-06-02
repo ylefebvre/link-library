@@ -331,6 +331,7 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['bp_log_activity']              = false;
 	$genoptions['bp_link_page_url']             = '';
 	$genoptions['bp_link_settings']             = '';
+	$genoptions['defaultprotocoladmin']         = 'http';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );
