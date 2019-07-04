@@ -1893,6 +1893,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= $the_link;
 														} elseif ( 'secondary' == $sourcetelephone && !empty( $the_second_link ) ) {
 															$current_cat_output .= $the_second_link;
+														} elseif ( 'phone' == $sourcetelephone && !empty( $the_second_link ) ) {
+															$current_cat_output .= 'tel:' . $linkitem['link_telephone'];
 														}
 
 														$current_cat_output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="track_this_link" >';

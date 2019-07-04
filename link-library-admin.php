@@ -4384,8 +4384,9 @@ class link_library_plugin_admin {
 							</td>
 							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Select which link address will be displayed / used for link', 'link-library' ); ?>'>
 								<select name="sourcetelephone" id="sourcetelephone" style="width:200px;">
-									<option value="primary"<?php selected( $options['sourcetelephone'] == "primary" ); ?>><?php _e( 'Primary', 'link-library' ); ?></option>
-									<option value="secondary"<?php selected( $options['sourcetelephone'] == "secondary" ); ?>><?php _e( 'Secondary', 'link-library' ); ?></option>
+									<option value="primary"<?php selected( $options['sourcetelephone'] == 'primary' ); ?>><?php _e( 'Primary', 'link-library' ); ?></option>
+									<option value="secondary"<?php selected( $options['sourcetelephone'] == 'secondary' ); ?>><?php _e( 'Secondary', 'link-library' ); ?></option>
+									<option value="phone"<?php selected( $options['sourcetelephone'] == 'phone' ); ?>><?php _e( 'Phone', 'link-library' ); ?></option>
 								</select>
 							</td>
 						</tr>
