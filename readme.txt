@@ -50,6 +50,7 @@ Further configuration is available under the Link Library Settings panel.
 
 = 6.2.21 =
 * Added new option to display Telephone links as tel links so that they can be called
+* Added a span class around no links to display message to be able to hide it
 
 = 6.2.20 =
 * Added new Global Option for default protocol for links that are saved without a protocol

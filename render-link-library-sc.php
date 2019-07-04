@@ -2195,7 +2195,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 			}
 		} else {
-			$output .= __( 'All of your links must be assigned at least to one category to be displayed', 'link-library');
+			$output .= '<span class="nolinkstodisplay">' . __( 'All of your links must be assigned at least to one category to be displayed', 'link-library') . '</span>';
 		}
 	} else {
 		$output .= __( 'No links found', 'link-library' );
