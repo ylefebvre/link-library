@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3 =
+* Added new Presets section to library configurations to allow new users to quickly experience the most commonly requested link layouts
+
 = 6.2.21 =
 * Added new option to display Telephone links as tel links so that they can be called
 * Added a span class around no links to display message to be able to hide it

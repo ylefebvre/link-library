@@ -890,8 +890,8 @@ class link_library_plugin_admin {
 				$options = ll_reset_options( $settings, 'list', 'return_and_set' );
 			}
 
-			if ( isset( $_GET['resettable'] ) ) {
-				$options = ll_reset_options( $settings, 'table', 'return_and_set' );
+			if ( isset( $_GET['newlayout'] ) ) {
+				$options = ll_modify_layout( $settings, intval( $_GET['newlayout']) );
 			}
 
 			$pagetitle = __( 'Library', 'link-library' ) . ' #' . $settings . " - " . stripslashes( $options['settingssetname'] );
@@ -1147,6 +1147,7 @@ class link_library_plugin_admin {
 									$this->settingssets_selection_meta_box( $data );
 									$this->display_menu( 'settingsset' );
 									$this->settingssets_usage_meta_box( $data );
+									$this->settingssets_presets_meta_box( $data );
 									$this->settingssets_common_meta_box( $data );
 									$this->settingssets_categories_meta_box( $data );
 									$this->settingssets_linkelement_meta_box( $data );
@@ -1245,6 +1246,7 @@ class link_library_plugin_admin {
 			}
 		} elseif ( $menu_name == 'settingsset' ) {
 			$tabitems = array ( 'll-usage' => __( 'Usage', 'link-library' ),
+			                    'll-presets' => __( 'Presets', 'link-library' ),
 			                    'll-common' => __( 'Common', 'link-library' ),
 			                    'll-categories' => __( 'Categories', 'link-library' ),
 			                    'll-links' => __( 'Links', 'link-library' ),
@@ -3077,7 +3079,7 @@ class link_library_plugin_admin {
 
 	function general_save_meta_box() {
 		?>
-		<div class="submitbox" style="padding-top: 15px">
+		<div class="submitbox" style="padding-top: 15px;clear:both">
 			<input type="submit" name="submit" class="button-primary" value="<?php _e( 'Save Settings', 'link-library' ); ?>" />
 		</div>
 	<?php
@@ -3354,13 +3356,46 @@ class link_library_plugin_admin {
 					<td style='text-align:right'>
 						<span><button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to Delete Library #'%s'\n  'Cancel' to stop, 'OK' to delete.", "link-library" ), $settings ) ) . "') ) window.location.href='" . wp_nonce_url( 'admin.php?page=link-library-settingssets&amp;deletesettings=' . $settings, 'link-library-delete' ) . "'\""; ?>><?php _e( 'Delete Library', 'link-library' ); ?> <?php echo $settings ?></button></span>
 						<span><button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to reset Library '%s'\n  'Cancel' to stop, 'OK' to reset.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&reset=" . $settings . "'\""; ?>><?php _e( 'Reset current Library', 'link-library' ); ?></button></span>
-						<span><button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to reset Library '%s' for a table layout\n  'Cancel' to stop, 'OK' to reset.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&resettable=" . $settings . "'\""; ?>><?php _e( 'Reset current Library for table layout', 'link-library' ); ?> </button></span>
 					</td>
 				</tr>
 			</table>
 		</div>
 	<?php
 	}
+
+	function settingssets_presets_meta_box( $data ) {
+		$options    = $data['options'];
+		$settings   = $data['settings'];
+		$genoptions = $data['genoptions'];
+		?>
+		<div style='padding-top:15px' id="ll-presets" class="content-section">
+			<div style="text-align: center;float:left;padding:16px;" class="#preset1">
+				<strong>Layout 1: Simple Unordered List</strong><br /><br />
+				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout1-SimpleListNamesOnly.png", __FILE__ ); ?>"<br /><br /><br />
+				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=1'\""; ?>><?php _e( 'Apply Layout 1', 'link-library' ); ?> </button>
+			</div>
+			<div style="text-align: center;float:left;padding:16px;" class="#preset2">
+				<strong>Layout 2: Unordered List with link descriptions</strong><br /><br />
+				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout2-SimpleListWithDesc.png", __FILE__ ); ?>"<br /><br /><br />
+				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=2'\""; ?>><?php _e( 'Apply Layout 2', 'link-library' ); ?> </button>
+			</div>
+			<div style="text-align: center;float:left;padding:16px;" class="#preset3">
+				<strong>Layout 3: Table with links and descriptions</strong><br /><br />
+				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout3-TableView.png", __FILE__ ); ?>"<br /><br /><br />
+				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=3'\""; ?>><?php _e( 'Apply Layout 3', 'link-library' ); ?> </button>
+			</div>
+			<div style="text-align: center;float:left;padding:16px;" class="#preset4">
+				<strong>Layout 4: Table with link images and descriptions</strong><br /><br />
+				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout4-TableWithImages.png", __FILE__ ); ?>"<br /><br /><br />
+				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=4'\""; ?>><?php _e( 'Apply Layout 4', 'link-library' ); ?> </button>
+			</div>
+			<div style="text-align: center;float:left;padding:16px;" class="#preset4">
+				<strong>Layout 5: Table with images separated from link info</strong><br /><br />
+				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout5-TableWithImagesInSplitCells.png", __FILE__ ); ?>"<br /><br /><br />
+				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=5'\""; ?>><?php _e( 'Apply Layout 5', 'link-library' ); ?> </button>
+			</div>
+		</div>
+	<?php }
 
 	function render_category_list( $categories, $select_name, $depth, $selected_items, $order ) {
 
