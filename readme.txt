@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.1 =
+* Add new shortcode parameter taglistoverride allowing users to specify a comma-separated list of tags to filter links with
+
 = 6.3 =
 * Added new Presets section to library configurations to allow new users to quickly experience the most commonly requested link layouts
 

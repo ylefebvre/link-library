@@ -3,13 +3,13 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.3
+Version: 6.3.1
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
 
 A plugin for the blogging MySQL/PHP-based WordPress.
-Copyright 2018 Yannick Lefebvre
+Copyright 2019 Yannick Lefebvre
 
 Translations:
 French Translation courtesy of Luc Capronnier
@@ -1002,6 +1002,7 @@ class link_library_plugin {
 		$tableoverride = '';
 		$singlelinkid = '';
 		$showonecatonlyoverride = false;
+		$taglistoverride = '';
 
 		extract( shortcode_atts( array(
 			'categorylistoverride' => '',
@@ -1012,7 +1013,8 @@ class link_library_plugin {
 			'tableoverride' => '',
 			'settings' => '',
 			'singlelinkid' => '',
-			'showonecatonlyoverride' => ''
+			'showonecatonlyoverride' => '',
+			'taglistoverride' => ''
 		), $atts ) );
 
 		if ( empty( $settings ) && !isset( $_POST['settings'] ) ) {
@@ -1037,6 +1039,10 @@ class link_library_plugin {
         if ( !empty( $rssoverride ) ) {
             $options['show_rss'] = $rssoverride;
         }
+
+        if ( !empty( $taglistoverride ) ) {
+        	$options['taglistoverride'] = $taglistoverride;
+		}
 
 		if ( !empty( $categorylistoverride ) ) {
             $options['categorylist_cpt'] = $categorylistoverride;
