@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.3.1
+Version: 6.3.2
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -403,7 +403,7 @@ class link_library_plugin {
 		$link_library_60_update = get_option( 'LinkLibrary60Update' );
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 			
-		if ( isset( $_POST['ll60reupdate'] ) ) {
+		if ( isset( $_GET['ll60reupdate'] ) ) {
 			global $wpdb;
 
 			$wpdb->get_results ( 'DELETE a,b,c
@@ -1003,6 +1003,9 @@ class link_library_plugin {
 		$singlelinkid = '';
 		$showonecatonlyoverride = false;
 		$taglistoverride = '';
+		$maxlinksoverride = '';
+		$linkorderoverride = '';
+		$linkdirectionoverride = '';
 
 		extract( shortcode_atts( array(
 			'categorylistoverride' => '',
@@ -1014,7 +1017,10 @@ class link_library_plugin {
 			'settings' => '',
 			'singlelinkid' => '',
 			'showonecatonlyoverride' => '',
-			'taglistoverride' => ''
+			'taglistoverride' => '',
+			'maxlinksoverride' => '',
+			'linkorderoverride' => '',
+			'linkdirectionoverride' => ''
 		), $atts ) );
 
 		if ( empty( $settings ) && !isset( $_POST['settings'] ) ) {
@@ -1042,6 +1048,24 @@ class link_library_plugin {
 
         if ( !empty( $taglistoverride ) ) {
         	$options['taglistoverride'] = $taglistoverride;
+		}
+
+        if ( !empty( $maxlinksoverride ) ) {
+        	$options['maxlinks'] = $maxlinksoverride;
+		}
+
+        if ( !empty( $linkorderoverride ) ) {
+        	$validlinkorder = array( 'name', 'id', 'random', 'date', 'hits', 'scpo' );
+        	if ( in_array( $linkorderoverride, $validlinkorder ) ) {
+		        $options['linkorder'] = $linkorderoverride;
+			}
+		}
+
+        if ( !empty( $linkdirectionoverride ) ) {
+        	$validlinkdirection = array( 'ASC', 'DESC' );
+        	if ( in_array( $linkdirectionoverride, $validlinkdirection ) ) {
+        		$options['linkdirection'] = $linkdirectionoverride;
+			}
 		}
 
 		if ( !empty( $categorylistoverride ) ) {

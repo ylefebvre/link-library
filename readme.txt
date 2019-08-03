@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.2 =
+* Added new shortcode parameters to be able to override the number of links to be displayed, the order in which links are displayed and the direction of that order. All new parameters are documented in the first tab of the library configurations page.
+
 = 6.3.1 =
 * Add new shortcode parameter taglistoverride allowing users to specify a comma-separated list of tags to filter links with
 
