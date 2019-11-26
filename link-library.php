@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.3.3
+Version: 6.3.4
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -270,6 +270,8 @@ class link_library_plugin {
 
         add_action( 'wp_enqueue_scripts', array( $this, 'll_register_script' ) );
 
+		add_filter( 'posts_where', array( $this, 'll_posts_where' ), 10, 2 );
+
 		// Load text domain for translation of admin pages and text strings
 		load_plugin_textdomain( 'link-library', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
@@ -282,6 +284,19 @@ class link_library_plugin {
 		add_action('auth_redirect', array( $this, 'add_pending_count_filter') ); // modify esc_attr on auth_redirect
 		add_action('admin_menu', array( $this, 'esc_attr_restore' ) ); // restore on admin_menu (very soon)
 	}
+
+	function ll_posts_where( $where, $query ) {
+		global $wpdb;
+
+		$starts_with = $query->get( 'link_starts_with' );
+
+		if ( $starts_with ) {
+			$where .= " AND $wpdb->posts.post_title LIKE '$starts_with%'";
+		}
+
+		return $where;
+	}
+
 
 	function add_pending_count_filter() {
 		add_filter('attribute_escape', array( $this, 'remove_esc_attr_and_count' ), 20, 2);
@@ -1012,6 +1027,8 @@ class link_library_plugin {
 			'taglabel' => __( 'Tag', 'link-library' ),
 			'showpricefilters' => true,
 			'pricelabel' => __( 'Price', 'link-library' ),
+			'alphabeticlabel' => __( 'Link Name', 'link-library' ),
+			'showalphabeticfilters' => true,
 			'settings' => ''
 		), $atts ) );
 
@@ -1037,7 +1054,7 @@ class link_library_plugin {
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-tag-filter-sc.php';
-		return RenderLinkLibraryFilterBox( $this, $genoptions, $options, $settings, $includetagsids, $excludetagsids, $showtagfilters, $taglabel, $showpricefilters, $pricelabel );
+		return RenderLinkLibraryFilterBox( $this, $genoptions, $options, $settings, $includetagsids, $excludetagsids, $showtagfilters, $taglabel, $showpricefilters, $pricelabel, $showalphabeticfilters, $alphabeticlabel );
 	}
 	
 	/********************************************** Function to Process [link-library] shortcode *********************************************/

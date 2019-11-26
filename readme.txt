@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.4 =
+* Added new element to filters shortcode to be able to filter based on first letter of links
+
 = 6.3.3 =
 * Added import and export fields for link tags
 
