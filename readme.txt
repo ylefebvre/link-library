@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.5 =
+* Added edit links in results of reciprocal link checker, broken link checker and duplicate link checker
+
 = 6.3.4 =
 * Added new element to filters shortcode to be able to filter based on first letter of links
 
