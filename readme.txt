@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.7 =
+* Changed FAQ link to open in new tab
+
 = 6.3.6 =
 * Edit links in reciprocal link checker, broken link checker and duplicate link checker now open in new tab
 * Valid links in reciprocal and broken link checkers are no longer displayed. Only links with issues
