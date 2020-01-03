@@ -6490,14 +6490,14 @@ function link_library_reciprocal_link_checker() {
 					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_url );
 				}
 
+				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && strpos( $reciprocal_result, 'exists' ) !== false ) {
+					continue;
+				}
+
 				echo '<a href="' . $link_url . '">' . get_the_title() . '</a>: ';
 
 				if ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_notfound' ) {
 					echo '<span style="color: #FF0000">' . __( 'Not Found', 'link-library' ) . '</span>';
-				} elseif ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) {
-					echo '<span style="color: #00FF00">' . __( 'OK', 'link-library' ) . '</span><br />';
-				} elseif ( 'broken' == $check_type && strpos( $reciprocal_result, 'exists' ) !== false ) {
-					echo '<span style="color: #00FF00">' . __( 'Link valid', 'link-library' ) . '</span>';
 				} elseif ( $reciprocal_result == 'error_403' && $recipcheckdelete403 == true ) {
 					wp_delete_post( get_the_ID() );
 					echo '<span style="color: #FF0000">' . __( 'Error 403: Link Deleted', 'link-library' ) . '</span>';
@@ -6507,7 +6507,7 @@ function link_library_reciprocal_link_checker() {
 					echo '<span style="color: #FF0000">' . __( 'Website Unreachable', 'link-library' ) . '</span>';
 				}
 
-				echo ' - <a href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => get_the_ID() ), admin_url( 'post.php' ) ) );
+				echo ' - <a target="linkedit' . get_the_ID() . '" href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => get_the_ID() ), admin_url( 'post.php' ) ) );
 				echo '">(' . __('Edit', 'link-library') . ')</a><br />';
 			}
 
