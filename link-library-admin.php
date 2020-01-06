@@ -986,7 +986,7 @@ class link_library_plugin_admin {
 				<script type="text/javascript">
 					var currentlinkindex = 1;
 					function testlink() {
-						jQuery.ajax({
+						jQuery.ajax({f
 							type   : 'POST',
 							url    : '<?php echo admin_url( 'admin-ajax.php' ); ?>',
 							data   : {
@@ -6491,6 +6491,7 @@ function link_library_reciprocal_link_checker() {
 				}
 
 				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && strpos( $reciprocal_result, 'exists' ) !== false ) {
+					echo '<div class="nextcheckitem"></div>';
 					continue;
 				}
 

@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.8 =
+* Fix problem with changes to link checker tools where check stops
+
 = 6.3.7 =
 * Changed FAQ link to open in new tab
 
