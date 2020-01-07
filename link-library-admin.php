@@ -986,7 +986,7 @@ class link_library_plugin_admin {
 				<script type="text/javascript">
 					var currentlinkindex = 1;
 					function testlink() {
-						jQuery.ajax({f
+						jQuery.ajax({
 							type   : 'POST',
 							url    : '<?php echo admin_url( 'admin-ajax.php' ); ?>',
 							data   : {

@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.9 =
+* Fixed typo that prevented link checker tools from working
+
 = 6.3.8 =
 * Fix problem with changes to link checker tools where check stops
 
