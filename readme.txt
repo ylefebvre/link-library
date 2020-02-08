@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.10 =
+* Added ability to sort links by their updated date in admin
+
 = 6.3.9 =
 * Fixed typo that prevented link checker tools from working
 

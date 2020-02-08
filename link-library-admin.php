@@ -6187,11 +6187,11 @@ class link_library_plugin_admin {
 			if ( !empty( $link_updated ) ) {
 				$date_diff = time() - intval( $link_updated );
 
-				if ( $date_diff < 604800 ) {
-					echo '<strong>** RECENTLY UPDATED **</strong><br />';
-				}
-
 				echo date( "Y-m-d H:i", $link_updated );
+
+				if ( $date_diff < 604800 ) {
+					echo '<br /><strong>** RECENTLY UPDATED **</strong>';
+				}
 			}
 		} elseif ( 'link_library_url' == $column ) {
 			$link_url = esc_url( get_post_meta( get_the_ID(), 'link_url', true ) );
@@ -6234,6 +6234,7 @@ class link_library_plugin_admin {
 	}
 
 	function ll_column_sortable( $columns ) {
+		$columns['link_library_updated'] = 'link_library_updated';
 		$columns['link_library_url'] = 'link_library_url';
 		$columns['link_library_rating'] = 'link_library_rating';
 
@@ -6245,7 +6246,11 @@ class link_library_plugin_admin {
 			return $vars;
 		}
 
-		if ( isset( $vars['orderby'] ) && 'link_library_url' == $vars['orderby'] ) {
+		if ( isset( $vars['orderby'] ) && 'link_library_updated' == $vars['orderby'] ) {
+			$vars = array_merge( $vars, array(
+				'meta_key' => 'link_updated',
+				'orderby' => 'meta_value' ) );
+		} elseif ( isset( $vars['orderby'] ) && 'link_library_url' == $vars['orderby'] ) {
 			$vars = array_merge( $vars, array(
 				'meta_key' => 'link_url',
 				'orderby' => 'meta_value' ) );
@@ -6491,7 +6496,11 @@ function link_library_reciprocal_link_checker() {
 				}
 
 				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && strpos( $reciprocal_result, 'exists' ) !== false ) {
-					echo '<div class="nextcheckitem"></div>';
+					echo '<div class="nextcheckitem">';
+					$number_of_links = wp_count_posts( 'link_library_links' );
+					$current_link_index = $_POST['index'];
+					echo $number_of_links;
+					echo '</div>';
 					continue;
 				}
 
@@ -6511,8 +6520,6 @@ function link_library_reciprocal_link_checker() {
 				echo ' - <a target="linkedit' . get_the_ID() . '" href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => get_the_ID() ), admin_url( 'post.php' ) ) );
 				echo '">(' . __('Edit', 'link-library') . ')</a><br />';
 			}
-
-			echo '<div class="nextcheckitem"></div>';
 		} else {
 			if ( 'reciprocal' == $check_type ) {
 				echo __( 'There are no links with reciprocal links associated with them', 'link-library' ) . ".<br />";
