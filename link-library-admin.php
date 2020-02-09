@@ -981,40 +981,60 @@ class link_library_plugin_admin {
 					} else {
 						_e( 'Broken Link Checker Report', 'link-library' );
 					}
-				?></strong><br /><br />
+				?></strong><br />
+				<span class="loadingicon"><img src="<?php echo plugins_url( 'icons/Ajax-loader.gif', __FILE__ ); ?> " /></span><span class="processinglinks">Processing Link <span class="currentlinknumber">0</span> / <span class="totallinknumber">
+				<?php
+				$post_count = wp_count_posts( 'link_library_links' );
+				$total_post_count = $post_count->publish + $post_count->future + $post_count->draft + $post_count->pending + $post_count->private;
+				echo $total_post_count;
+				?>
+				</span></span>
+				<br />
 				<div class="nextcheckitem"></div>
 				<script type="text/javascript">
 					var currentlinkindex = 1;
-					function testlink() {
-						jQuery.ajax({
-							type   : 'POST',
-							url    : '<?php echo admin_url( 'admin-ajax.php' ); ?>',
-							data   : {
-								action      : 'link_library_recipbrokencheck',
-								_ajax_nonce : '<?php echo wp_create_nonce( 'link_library_recipbrokencheck' ); ?>',
-								mode        : '<?php if ( $_GET['message'] == '2' ) { echo 'reciprocal'; } elseif ( $_GET['message'] == 3 ) { echo 'broken'; } ?>',
-								index		: currentlinkindex,
-								RecipCheckAddress: jQuery('#recipcheckaddress').val(),
-								recipcheckdelete403 : jQuery('#recipcheckdelete403').is(':checked')
-							},
-							success: function (data) {
-								if (data != '' ) {
-									if ( ( data != 'There are no links with reciprocal links associated with them.<br />' && data != 'There are no links to check.<br />' ) || currentlinkindex == 1 ) {
-										jQuery('.nextcheckitem').replaceWith(data);
-									}
+					var linkcheckflag = 0;
+					var maxlinks = <?php echo $total_post_count; ?>;
 
-									if ( data != 'There are no links with reciprocal links associated with them.<br />' && data != 'There are no links to check.<br />' ) {
-										currentlinkindex++;
-										testlink();
+					linkloop = setInterval( function(){ testlink(); }, 3000 );
+
+					function testlink() {
+						if ( linkcheckflag == 0 ) {
+							linkcheckflag = 1;
+
+							jQuery('.currentlinknumber').html( currentlinkindex );
+
+							jQuery.ajax({
+								type   : 'POST',
+								url    : '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+								data   : {
+									action      : 'link_library_recipbrokencheck',
+									_ajax_nonce : '<?php echo wp_create_nonce( 'link_library_recipbrokencheck' ); ?>',
+									mode        : '<?php if ( $_GET['message'] == '2' ) { echo 'reciprocal'; } elseif ( $_GET['message'] == 3 ) { echo 'broken'; } ?>',
+									index		: currentlinkindex,
+									RecipCheckAddress: jQuery('#recipcheckaddress').val(),
+									recipcheckdelete403 : jQuery('#recipcheckdelete403').is(':checked')
+								},
+								success: function (data) {
+									if (data != '' ) {
+										if ( ( data != 'There are no links with reciprocal links associated with them.<br />' && data != 'There are no links to check.<br />' ) || currentlinkindex == 1 ) {
+											jQuery('.nextcheckitem').replaceWith(data);
+										}
+
+										if ( data != 'There are no links with reciprocal links associated with them.<br />' && data != 'There are no links to check.<br />' ) {
+											currentlinkindex++;
+											if ( currentlinkindex > maxlinks ) {
+												clearInterval( linkloop );
+												jQuery( '.loadingicon' ).html( '' );
+												jQuery( '.processinglinks' ).html( 'All links processed' );
+											}
+											linkcheckflag = 0;
+										}
 									}
 								}
-							}
-						});
+							});
+						}
 					}
-
-					jQuery( document ).ready(function() {
-						testlink();
-					});
 				</script>
 				</p></div>
 			<?php } elseif ( isset( $_GET['message'] ) && $_GET['message'] == '4' ) {
@@ -6496,11 +6516,7 @@ function link_library_reciprocal_link_checker() {
 				}
 
 				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && strpos( $reciprocal_result, 'exists' ) !== false ) {
-					echo '<div class="nextcheckitem">';
-					$number_of_links = wp_count_posts( 'link_library_links' );
-					$current_link_index = $_POST['index'];
-					echo $number_of_links;
-					echo '</div>';
+					echo '<div class="nextcheckitem"></div>';
 					continue;
 				}
 

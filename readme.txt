@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.11 =
+* Improvements to broken link and reciprocal link checkers
+
 = 6.3.10 =
 * Added ability to sort links by their updated date in admin
 
