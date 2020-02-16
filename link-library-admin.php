@@ -3280,9 +3280,7 @@ class link_library_plugin_admin {
 		<?php _e( 'If the stylesheet editor is empty after upgrading, reset to the default stylesheet using the button below or copy/paste your backup stylesheet into the editor.', 'link-library' ); ?>
 		<br /><br />
 
-		<textarea name='fullstylesheet' id='fullstylesheet' style='font-family:Courier' rows="30" cols="100">
-			<?php echo stripslashes( $genoptions['fullstylesheet'] ); ?>
-		</textarea>
+		<textarea name='fullstylesheet' id='fullstylesheet' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( $genoptions['fullstylesheet'] ); ?></textarea>
 		<div>
 			<input type="submit" name="submitstyle" value="<?php _e( 'Submit', 'link-library' ); ?>" /><span style='padding-left: 650px'><input type="submit" name="resetstyle" value="<?php _e( 'Reset to default', 'link-library' ); ?>" /></span>
 		</div>

@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.3.12 =
+* Corrected bug where extra spaces were added to the first line of the stylesheet editor content
+
 = 6.3.11 =
 * Improvements to broken link and reciprocal link checkers
 
