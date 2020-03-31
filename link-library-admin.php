@@ -1204,7 +1204,7 @@ class link_library_plugin_admin {
 				// close postboxes that should be closed
 				$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
 				// postboxes setup
-				postboxes.add_postbox_toggles('<?php 
+				postboxes.add_postbox_toggles('<?php
 				if ($_GET['page'] == 'link-library-settingssets')
 					{echo $pagehooksettingssets;}
 				elseif ($_GET['page'] == 'link-library-moderate')
@@ -1343,7 +1343,7 @@ class link_library_plugin_admin {
 		$row              = 0;
 		$successfulimport = 0;
 		$successfulupdate = 0;
-		
+
 		if ( isset( $_POST['importlinks'] ) ) {
 			wp_defer_term_counting( true );
 			wp_defer_comment_counting( true );
@@ -1408,7 +1408,7 @@ class link_library_plugin_admin {
 								}
 							}
 						}
-						
+
 						if ( ( isset( $import_columns['Tag Slugs'] ) && !empty( $data[$import_columns['Tag Slugs']] ) ) ) {
 							$new_link_tags_slugs_array = array();
 							if ( isset( $import_columns['Tag Slugs'] ) ) {
@@ -1882,7 +1882,7 @@ class link_library_plugin_admin {
 								$link_cats_slugs = implode( ', ', $link_cats_slugs_array );
 							}
 						}
-						
+
 						$link_tags_array = array();
 						$link_tags_slugs_array = array();
 						$link_tags = wp_get_post_terms( get_the_ID(), 'link_library_tags' );

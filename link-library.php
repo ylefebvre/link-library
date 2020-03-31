@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.3.12
+Version: 6.4
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -229,7 +229,7 @@ class link_library_plugin {
 			ll_reset_options( 1, 'list', 'return_and_set' );
 			ll_reset_gen_settings( 'return_and_set' );
 		}
-        
+
 		// Add short codes
         add_shortcode( 'link-library', array( $this, 'link_library_func' ) );
 		add_shortcode( 'link-library-cats', array( $this, 'link_library_cats_func' ) );
@@ -412,12 +412,12 @@ class link_library_plugin {
 
 		add_feed( 'linklibraryfeed', 'link_library_generate_rss_feed' );
 	}
-	
+
 	function ll_update_60() {
-	
+
 		$link_library_60_update = get_option( 'LinkLibrary60Update' );
 		$genoptions = get_option( 'LinkLibraryGeneral' );
-			
+
 		if ( isset( $_GET['ll60reupdate'] ) ) {
 			global $wpdb;
 
@@ -443,17 +443,32 @@ class link_library_plugin {
 			if ( ( false == $link_library_60_update && !empty( $genoptions ) ) ) {
 				require plugin_dir_path( __FILE__ ) . 'link-library-update-60.php';
 				link_library_60_update( $this );
-			}	
-		}		
+			}
+		}
 	}
 
 	function permalink_structure( $post_link, $post, $leavename, $sample ) {
-		if ( !empty( $post_link ) && false !== strpos( $post_link, '%link_library_category%' ) ) {
-			$link_cat_type_term = get_the_terms( $post->ID, 'link_library_category' );
-			if ( !empty( $link_cat_type_term ) ) {
-				$post_link = str_replace( '%link_library_category%', array_pop( $link_cat_type_term )->slug, $post_link );
+
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+		if ( $post->post_type = 'link_library_links' ) {
+			if ( !$genoptions['publicly_queryable'] ) {
+				$link_url = get_post_meta( $post->ID, 'link_url', true );
+
+				if ( !empty( $link_url ) ) {
+					$post_link = $link_url;
+				}
+			} else {
+				if ( !empty( $post_link ) && false !== strpos( $post_link, '%link_library_category%' ) ) {
+					$link_cat_type_term = get_the_terms( $post->ID, 'link_library_category' );
+					if ( !empty( $link_cat_type_term ) ) {
+						$post_link = str_replace( '%link_library_category%', array_pop( $link_cat_type_term )->slug, $post_link );
+					}
+				}
 			}
 		}
+
 		return $post_link;
 	}
 
@@ -605,7 +620,7 @@ class link_library_plugin {
     function ll_register_script() {
         wp_register_script( 'form-validator', plugins_url( '/form-validator/jquery.form-validator.min.js' , __FILE__ ), array( 'jquery' ), '1.0.0', true );
     }
-    
+
     function db_prefix() {
 		global $wpdb;
 		if ( method_exists( $wpdb, 'get_blog_prefix' ) ) {
@@ -630,12 +645,12 @@ class link_library_plugin {
 
 		return $protocols;
 	}
-    
+
     	/******************************************** Print style data to header *********************************************/
 
 	function ll_rss_link() {
 		global $llstylesheet, $rss_settings;
-		
+
 		if ( !empty( $rss_settings ) ) {
 			$settingsname = 'LinkLibraryPP' . $rss_settings;
 			$options = get_option( $settingsname );
@@ -687,7 +702,7 @@ class link_library_plugin {
 
 		return $title;
 	}
-    
+
     	/************************************* Function to add to rewrite rules for permalink support **********************************/
 	function ll_insertMyRewriteRules( $rules ) {
 		$newrules = array();
@@ -698,7 +713,7 @@ class link_library_plugin {
 			for ( $i = 1; $i <= $genoptions['numberstylesets']; $i++ ) {
 				$settingsname = 'LinkLibraryPP' . $i;
 				$options = get_option( $settingsname );
-				
+
 				if ( $options['enablerewrite'] && !empty( $options['rewritepage'] ) ) {
 					if ( is_multisite() ) {
 						$newrules['(' . $options['rewritepage'] . ')/(.+?)$'] = 'index.php?pagename=$matches[2]&cat_name=$matches[3]';
@@ -774,9 +789,9 @@ class link_library_plugin {
 	function LinkLibrary() {
         return __( 'Link Library no longer supports calling this function with individual arguments. Please use the admin panel to configure Link Library and the do_shortcode function to use Link Library output in your code.', 'link-library' );
 	}
-	
+
 	/********************************************** Function to Process [link-library-cats] shortcode *********************************************/
-	
+
 	function link_library_cats_func( $atts ) {
 		$categorylistoverride = '';
 		$excludecategoryoverride = '';
@@ -864,7 +879,7 @@ class link_library_plugin {
 
 		return ( true == $genoptions['debugmode'] ? $timeoutputstart : '' ) . RenderLinkLibraryCategories( $this, $genoptions, $options, $settings )  . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
 	}
-	
+
 	/********************************************** Function to Process [link-library-search] shortcode *********************************************/
 
 	function link_library_search_func($atts) {
@@ -893,7 +908,7 @@ class link_library_plugin {
         require_once plugin_dir_path( __FILE__ ) . 'render-link-library-search-sc.php';
 		return RenderLinkLibrarySearchForm( $options );
 	}
-	
+
 	/********************************************** Function to Process [link-library-add-link] shortcode *********************************************/
 
 	function link_library_addlink_func($atts, $content, $code) {
@@ -927,7 +942,7 @@ class link_library_plugin {
 			$settingsname = 'LinkLibraryPP1';
 			$options = get_option( $settingsname );
 		}
-				
+
 		if ( !empty( $categorylistoverride ) ) {
             $options['categorylist_cpt'] = $categorylistoverride;
         } elseif ( !empty( $options['addlinkcatlistoverride'] ) ) {
@@ -1056,7 +1071,7 @@ class link_library_plugin {
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-tag-filter-sc.php';
 		return RenderLinkLibraryFilterBox( $this, $genoptions, $options, $settings, $includetagsids, $excludetagsids, $showtagfilters, $taglabel, $showpricefilters, $pricelabel, $showalphabeticfilters, $alphabeticlabel );
 	}
-	
+
 	/********************************************** Function to Process [link-library] shortcode *********************************************/
 
 	function link_library_func( $atts = '' ) {
@@ -1289,7 +1304,7 @@ class link_library_plugin {
 				$continuesearch = true;
 				$searchpos = 0;
 				$settingsetids = array();
-				
+
 				while ( $continuesearch ) {
 					$linklibrarypos = stripos( $post->post_content, 'link-library ', $searchpos );
 					if ( !$linklibrarypos ) {
@@ -1320,26 +1335,26 @@ class link_library_plugin {
 							$settingconfigpos = stripos( $post->post_content, 'settings=', $linklibrarypos );
 							if ( $settingconfigpos && $settingconfigpos < $shortcodeend ) {
 								$settingset = substr( $post->post_content, $settingconfigpos + 9, $shortcodeend - $settingconfigpos - 9 );
-									
+
 								$settingsetids[] = trim($settingset,'"');
 
 							} else if ( 0 == count($settingsetids) ) {
 								$settingsetids[] = 1;
 							}
 						}
-					}	
+					}
 				}
 			}
-			
+
 			if ( $settingsetids ) {
 				foreach ( $settingsetids as $settingsetid ) {
 					$settingsname = 'LinkLibraryPP' . $settingsetid;
 					$options = get_option( $settingsname );
-					
+
 					if ( $options['showonecatonly'] ) {
 						$load_jquery = true;
 					}
-			
+
 					if ( $options['rsspreview'] || ( isset( $options['enable_link_popup'] ) && $options['enable_link_popup'] ) ) {
 						$load_thickbox = true;
 					}
@@ -1347,10 +1362,10 @@ class link_library_plugin {
 					if ($options['publishrssfeed'] == true) {
 						global $rss_settings;
 						$rss_settings = $settingsetid;
-					}	
+					}
 				}
 			}
-				
+
 			if ( !empty( $genoptions['includescriptcss'] ) ) {
 				$pagelist = explode ( ',', $genoptions['includescriptcss'] );
                 $loadscripts = false;
@@ -1361,22 +1376,22 @@ class link_library_plugin {
                          ( is_page( $pageid ) ) ) {
                         $load_jquery = true;
 						$load_thickbox = true;
-						$load_style = true;                        
+						$load_style = true;
 					}
-				}   
+				}
 			}
 		}
-		
+
 		if ( $load_style ) {
 			$llstylesheet = true;
 		} else {
 			$llstylesheet = false;
 		}
-	 
+
 		if ( $load_jquery ) {
 			wp_enqueue_script( 'jquery' );
 		}
-			
+
 		if ( $load_thickbox ) {
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_style ( 'thickbox' );
@@ -1385,7 +1400,7 @@ class link_library_plugin {
 		if ( $load_recaptcha && $genoptions['captchagenerator'] ) {
 			wp_enqueue_script( 'google_recaptcha', 'https://www.google.com/recaptcha/api.js', array(), false, true );
 		}
-	 
+
 		return $posts;
 	}
 
@@ -1420,7 +1435,7 @@ class link_library_plugin {
 		}
 		return $template_path;
 	}
-	
+
 	function ll_get_string_between($string, $start, $end){
 		$string = ' ' . $string;
 		$ini = strpos($string, $start);
@@ -1429,7 +1444,7 @@ class link_library_plugin {
 		$len = strpos($string, $end, $ini) - $ini;
 		return substr($string, $ini, $len);
 	}
-	
+
 	function ll_replace_all_between( $beginning, $end, $string, $replace ) {
 		$beginningPos = strpos($string, $beginning);
 		$endPos = strpos($string, $end);
@@ -1486,7 +1501,7 @@ class link_library_plugin {
 
 				$content = str_replace( '[link_price]', $link_price, $content );
 				$content = $this->ll_replace_all_between( '[currency]', '[/currency]', $content, $link_price_currency );
-				
+
 				if ( floatval( $link_price ) > 0.0 ) {
 					$content = str_replace( '[link_price_or_free]', $link_price, $content );
 					$content = $this->ll_replace_all_between( '[currency_or_free]', '[/currency_or_free]', $content, $link_price_currency_or_free );

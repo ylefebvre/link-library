@@ -32,21 +32,24 @@ All pages are generated using different configurations all managed by Link Libra
 To get a basic Link Library list showing on one of your Wordpress pages:<br />
 1. In the Wordpress Admin, create a new page and type the following text, where # should be replaced by the Settings Set number:<br />
    [link-library settings=#]
-   
+
 1. To add a list of categories to jump to a certain point in the list, add the following text to your page:<br />
    [link-library-cats settings=#]<br />
-   
+
 1. To add a search box to your Link Library list, add the following text to your page:<br />
    [link-library-search]
-   
+
 1. To add a form for users to be able to submit new links:<br />
    [link-library-addlink settings=#]
-   
+
 In addition to specifying a library, categories to be displayed can be specified using addition keywords. Read the FAQ for more information on this topic.
-   
+
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 6.4 =
+* Permalinks for links now use the link URL is links are set not to be accessible publicly
 
 = 6.3.12 =
 * Corrected bug where extra spaces were added to the first line of the stylesheet editor content
@@ -1405,7 +1408,7 @@ Further configuration is available under the Link Library Settings panel.
 = 5.4 =
 * Redesigned user submission processing code to send post data to external php file and redirect back after data storage and validation
 
-= 5.3.3 = 
+= 5.3.3 =
 * Fixed duplicate check on user-submitted links
 * Fixed problem with other plugins causing shortcode to be evaluated multiple times, resulting in multiple links submission
 
