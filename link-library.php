@@ -9,7 +9,7 @@ Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
 
 A plugin for the blogging MySQL/PHP-based WordPress.
-Copyright 2019 Yannick Lefebvre
+Copyright 2020 Yannick Lefebvre
 
 Translations:
 French Translation courtesy of Luc Capronnier
