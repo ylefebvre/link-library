@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.4.2 =
+* Fixed issue with free price filter
+
 = 6.4.1 =
 * Corrects issue with custom post type permalinks introduced in version 6.4
 
