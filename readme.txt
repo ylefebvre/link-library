@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.4.3 =
+* Fixed bug with link category description being displayed twice
+* Added missing div tag to search results
+
 = 6.4.2 =
 * Fixed issue with free price filter
 

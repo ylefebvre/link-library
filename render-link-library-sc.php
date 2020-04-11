@@ -480,7 +480,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 	$searchterms = '';
 
 	if ( isset($_GET['searchll'] ) && !empty( $_GET['searchll'] ) && empty( $singlelinkid ) ) {
-		$searchstring = $_GET['searchll'];		
+		$searchstring = $_GET['searchll'];
 		$searchstringcopy = $searchstring;
 		$searchterms  = array();
 
@@ -500,7 +500,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		if ( ! empty( $searchstringcopy ) ) {
 			$searchterms = array_merge( $searchterms, explode( " ", $searchstringcopy ) );
 		}
-		
+
 		if ( !empty( $searchstring ) ) {
 			$mode = 'search';
 			$showlinksonclick = false;
@@ -968,7 +968,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 										}
 									}
 
-									if ( $showcategorydesclinks ) {
+									if ( $showcategorydesclinks && ( 'left' == $catdescpos || 'right' == $catdescpos ) ) {
 										$catlink .= '<span class="linklistcatnamedesc">';
 										$linkitem['description'] = str_replace( '[', '<', $link_category->description );
 										$linkitem['description'] = str_replace( ']', '>', $linkitem['description'] );
@@ -2224,7 +2224,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 	}
 
 	if ( isset( $_GET['searchll'] ) && $linkcount == 1 && $level == 0 ) {
-		$output .= $searchnoresultstext . "\n";
+		$output .= '<span class="nolinksfoundallcats">' . $searchnoresultstext . "</span>\n";
 	}
 
 	if ( $usethumbshotsforimages && $level == 0 ) {
