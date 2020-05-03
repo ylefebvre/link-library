@@ -226,6 +226,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            }
             }
 
+            $linkcount = 0;
+            $totallinkcount = 0;
+
             foreach ( $link_categories as $catname ) {
 
 	            $childcatparams =  array( 'taxonomy' => 'link_library_category', 'child_of' => $catname->term_id );
@@ -295,7 +298,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            }
 
 	            $the_link_query = new WP_Query( $link_query_args );
-	            $linkcount = $the_link_query->post_count;
+	            $linkcount += $the_link_query->post_count;
 	            wp_reset_postdata();
 
                 // Display the category name
@@ -426,8 +429,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 				                $linksperpage = 5;
 			                }
 
-			                $pageposition = ( $linkcount + 1 ) / $linksperpage;
+			                $pageposition = ( $totallinkcount + 1 ) / $linksperpage;
 			                $ceilpageposition = ceil( $pageposition );
+
 			                if ( 0 == $ceilpageposition && !isset( $_GET['linkresultpage'] ) ) {
 				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 					                $cattext = '<a href="';
@@ -533,6 +537,8 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 if ( $num_columns > 0 && 'table' == $flatlist && ( 0 == $countcat % $num_columns ) && $level == 0 ) {
                     $output .= "</tr>\n";
                 }
+
+                $totallinkcount += $the_link_query->post_count;
             }
 
             if ( $num_columns > 0 && 'table' == $flatlist && ( 3 == $countcat % $num_columns ) && $level == 0) {

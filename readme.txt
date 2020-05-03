@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.4.4 =
+* Sub-categories now work with expansion and collapse
+* Before and after tags now more consistently output, especially if there is no value in the field
+* Fix for category list with pagination mode enabled
+
 = 6.4.3 =
 * Fixed bug with link category description being displayed twice
 * Added missing div tag to search results

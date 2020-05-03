@@ -6096,7 +6096,7 @@ class link_library_plugin_admin {
 						 * presume it needs http:// prepended (unless a relative
 						 * link starting with /, # or ? or a php file).
 						 */
-						if ( strpos( $submitted_url, ':' ) === false && ! preg_match( '/^[a-z0-9-]+?\.php/i', $submitted_url ) ) {
+						if ( !empty( $submitted_url ) && strpos( $submitted_url, ':' ) === false && ! preg_match( '/^[a-z0-9-]+?\.php/i', $submitted_url ) ) {
 							$submitted_url = 'https://' . $submitted_url;
 						}
 					}
