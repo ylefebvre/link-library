@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.4.6 =
+* Fixed issue with image display introduced by 6.4.4
+
 = 6.4.5 =
 * Fixed layout issues introduced by 6.4.4 update
 

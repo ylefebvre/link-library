@@ -1636,7 +1636,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( ( $show_images && !$shownameifnoimage ) || ( $show_images && $shownameifnoimage && !empty( $linkitem['link_image'] ) ) || $usethumbshotsforimages ) {
 													$imageoutput .= stripslashes( $beforeimage );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_image'] ) ) ) {
 
 														if ( !empty( $linkitem['link_image'] ) || $usethumbshotsforimages ) {
@@ -1691,23 +1691,22 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															}
 
 														}
-
-														if ( ( !empty( $imageoutput ) || ( $usethumbshotsforimages && !empty( $thumbshotscid ) ) ) && $show_images ) {
-															$current_cat_output .= $imageoutput;
-														}
-														
 													}
-													
+
 													$imageoutput .= stripslashes( $afterimage );
+
+													if ( ( !empty( $imageoutput ) || ( $usethumbshotsforimages && !empty( $thumbshotscid ) ) ) && $show_images ) {
+														$current_cat_output .= $imageoutput;
+													}
 												}
 
-												break;												
+												break;
 
 											case 2: 	//------------------ Name Output --------------------
-												
+
 												if ( ( $showname && 2 == $arrayelements ) || ( $show_images && $shownameifnoimage && empty( $linkitem['link_image'] ) && !$usethumbshotsforimages && 1 == $arrayelements ) ) {
 													$current_cat_output .= stripslashes( $beforelink );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $name ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimename = microtime ( true );
@@ -1755,9 +1754,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render name section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimename ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterlink );
-												}												
+												}
 
 												break;
 
@@ -1765,7 +1764,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $showdate ) {
 													$current_cat_output .= $between . stripslashes( $beforedate );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_updated'] ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimedate = microtime ( true );
@@ -1780,7 +1779,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														}
 													}
 													$current_cat_output .= stripslashes( $afterdate );
-												}												
+												}
 
 												break;
 
@@ -1788,7 +1787,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $showdescription ) {
 													$current_cat_output .= $between . stripslashes( $beforedesc );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $desc ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimedesc = microtime ( true );
@@ -1800,17 +1799,17 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterdesc );
-												}												
+												}
 
 												break;
 
 											case 5: 	//------------------ Notes Output --------------------
 
-												if ( $shownotes ) {													
+												if ( $shownotes ) {
 													$current_cat_output .= $between . stripslashes( $beforenote );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $descnotes ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimenotes = microtime ( true );
@@ -1822,9 +1821,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render notes section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimenotes ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afternote );
-												}												
+												}
 
 												break;
 
@@ -1832,7 +1831,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $show_rss || $show_rss_icon || $rsspreview ) {
 													$current_cat_output .= stripslashes( $beforerss );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_rss'] ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimerssicon = microtime ( true );
@@ -1858,9 +1857,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render RSS Icon section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerssicon ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterrss );
-												}												
+												}
 
 												if ( $rssfeedinline && $linkitem['link_rss'] ) {
 													if ( $rss_items ) {
@@ -1889,10 +1888,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												break;
 											case 7: 	//------------------ Web Link Output --------------------
 
-												if ( 'false' != $displayweblink ) {													
+												if ( 'false' != $displayweblink ) {
 													$current_cat_output .= $between . stripslashes( $beforeweblink );
-													
-													if 
+
+													if
 												     ( !$nooutputempty ||
 												       ( $nooutputempty && !empty( $the_link ) && 'label' != $displayweblink && '#' != $the_link && 'primary' == $sourceweblink ) ||
 												       ( $nooutputempty && !empty( $the_second_link ) && 'label' != $displayweblink && '#' != $the_second_link && 'secondary' == $sourceweblink ) ||
@@ -1940,16 +1939,16 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render web link section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerweblink ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterweblink );
-												}												
+												}
 
 												break;
 											case 8: 	//------------------ Telephone Output --------------------
 
 												if ( 'false' != $showtelephone ) {
 													$current_cat_output .= $between . stripslashes( $beforetelephone );
-													
+
 												    if ( !$nooutputempty ||
 												       ( $nooutputempty && !empty( $linkitem['link_telephone'] ) && ( 'link' == $showtelephone || 'plain' == $showtelephone ) ) ||
 												       ( $nooutputempty && !empty( $telephonelabel ) && 'label' == $showtelephone )
@@ -1957,7 +1956,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 													{
 														if ( true == $debugmode ) {
 															$starttimertelephone = microtime ( true );
-														}														
+														}
 
 														if ( 'plain' != $showtelephone ) {
 															$current_cat_output .= '<a href="';
@@ -1987,7 +1986,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render telephone section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimertelephone ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $aftertelephone );
 												}
 												break;
@@ -1995,7 +1994,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( 'false' != $showemail ) {
 													$current_cat_output .= $between . stripslashes( $beforeemail );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_email'] ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimeremail = microtime ( true );
@@ -2034,16 +2033,16 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render e-mail section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimeremail ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afteremail );
-												}												
+												}
 
 												break;
 											case 10: 	//------------------ Link Hits Output --------------------
 
 												if ( $showlinkhits ) {
 													$current_cat_output .= $between . stripslashes( $beforelinkhits );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_visits'] ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimerhits = microtime ( true );
@@ -2055,9 +2054,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render link hits section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerhits ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterlinkhits );
-												}												
+												}
 
 												break;
 
@@ -2065,7 +2064,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $showrating ) {
 													$current_cat_output .= $between . stripslashes( $beforelinkrating );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_rating'] ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimerrating = microtime ( true );
@@ -2077,9 +2076,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render link rating section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerrating ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterlinkrating );
-												}												
+												}
 
 												break;
 
@@ -2087,7 +2086,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $showlargedescription ) {
 													$current_cat_output .= $between . stripslashes( $beforelargedescription );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $textfield ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimerlargedesc = microtime ( true );
@@ -2099,9 +2098,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render link large description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerlargedesc ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterlargedescription );
-												}												
+												}
 
 												break;
 
@@ -2109,7 +2108,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $showsubmittername ) {
 													$current_cat_output .= $between . stripslashes( $beforesubmittername );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_submitter_name'] ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimersubmittername = microtime ( true );
@@ -2121,13 +2120,13 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render link large description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimersubmittername ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $aftersubmittername );
-												}												
+												}
 
 												break;
 
-											case 14: 	//------------------ Category Description Output --------------------					
+											case 14: 	//------------------ Category Description Output --------------------
 
 												if ( isset( $linkitem['category_description'] ) ) {
 													$linkitem['category_description'] = str_replace( '[', '<', $linkitem['category_description'] );
@@ -2138,7 +2137,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $showcatdesc ) {
 													$current_cat_output .= $between . stripslashes( $beforecatdesc );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['category_description'] ) ) ) {
 
 														if ( true == $debugmode ) {
@@ -2151,9 +2150,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render category description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $aftercatdesc );
-												}												
+												}
 
 												break;
 
@@ -2163,7 +2162,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 												if ( $showlinktags ) {
 													$current_cat_output .= $between . stripslashes( $beforelinktags );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $link_tags ) ) ) {
 
 														if ( true == $debugmode ) {
@@ -2180,17 +2179,17 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render category description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterlinktags );
-												}												
+												}
 
 												break;
-												
-											case 16: 	//------------------ Link Price Output --------------------												
+
+											case 16: 	//------------------ Link Price Output --------------------
 
 												if ( $showlinkprice ) {
 													$current_cat_output .= $between . stripslashes( $beforelinkprice );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && '' !== $linkitem['link_price'] ) ) {
 														if ( true == $debugmode ) {
 															$starttimersubmittername = microtime ( true );
@@ -2214,17 +2213,17 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render link large description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimersubmittername ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $afterlinkprice );
-												}												
+												}
 
 												break;
 
 											case 17: 	//------------------ Category Name Output --------------------
-									
+
 												if ( $showcatname ) {
 													$current_cat_output .= $between . stripslashes( $beforecatname );
-													
+
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['category_name'] ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimedesc = microtime ( true );
@@ -2236,9 +2235,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= "\n<!-- Time to render category name section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
 														}
 													}
-													
+
 													$current_cat_output .= stripslashes( $aftercatname );
-												}												
+												}
 
 												break;
 										}
