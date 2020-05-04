@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.4.5 =
+* Fixed layout issues introduced by 6.4.4 update
+
 = 6.4.4 =
 * Sub-categories now work with expansion and collapse
 * Before and after tags now more consistently output, especially if there is no value in the field
