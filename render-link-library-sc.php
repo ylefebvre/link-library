@@ -975,7 +975,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 										} /* elseif ( $catlinkspermalinksmode ) {
 											var_dump( 'Generating cat link' );
 										} */
-										$catlink .= $link_category->name;
+										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
 										if ( !empty( $caturl ) ) {
 											$catlink .= '</a>';
 										}
@@ -1064,7 +1064,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											$catlink .= '<a href="' . site_url() . '/' . $rewritepage . $cat_path . '">';
 										}
-										$catlink .= $link_category->name;
+										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
 										if ( !empty( $caturl ) || ( $catlinkspermalinksmode && !empty( $rewritepage ) ) ) {
 											$catlink .= '</a>';
 										}
@@ -1087,7 +1087,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											$catlink .= '>';
 										}
-										$catlink .= $link_category->name;
+										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
 										if ( !empty( $caturl ) ) {
 											$catlink .= '</a>';
 										}
@@ -1736,7 +1736,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 														$current_cat_output .= $name;
 
-														if ( ( 'primary' == $sourcename && $the_link != '#') || ( 'secondary' == $sourcename && $the_second_link != '#' ) ) {
+														if ( ( 'primary' == $sourcename && $the_link != '#') || ( 'secondary' == $sourcename && $the_second_link != '#' ) || ( 'permalink' == $sourcename && $the_permalink != '#' ) ) {
 															$current_cat_output .= '</a>';
 														}
 

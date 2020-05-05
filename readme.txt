@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.4.7 =
+* Add tags around all possible instances of category name
+* Fix to properly close link tags when linking to dedicated page
+
 = 6.4.6 =
 * Fixed issue with image display introduced by 6.4.4
 
