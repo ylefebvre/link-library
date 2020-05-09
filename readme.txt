@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.4.8 =
+* Fixed bug with using a search box defined in a library with a number higher than 1
+
 = 6.4.7 =
 * Add tags around all possible instances of category name
 * Fix to properly close link tags when linking to dedicated page
