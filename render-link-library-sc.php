@@ -142,6 +142,8 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 		}
 
 		for ( $counter = 1; $counter <= $numberofpages; $counter++ ) {
+			$dotabove = false;
+			$dotbelow = false;
 			if ( $counter <= 2 || $counter >= $numberofpages - 1 || ( $counter <= $pagenumber + 2 && $counter >= $pagenumber - 2 ) ) {
 				if ( $counter != $pagenumber ) {
 					$paginationoutput .= '<span class="unselectedpage">';
@@ -185,9 +187,6 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 
 				$paginationoutput .= '</a></span>';
 			}
-
-			$dotabove = false;
-			$dotbelow = false;
 
 			if ( $counter >= 2 && $counter < $pagenumber - 2 && false == $dotbelow ) {
 				$dotbelow = true;

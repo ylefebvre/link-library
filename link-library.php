@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.4.8
+Version: 6.4.9
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -188,16 +188,47 @@ function ll_expand_posts_search( $search, $query ) {
 	global $wpdb;
 
 	if ( $query->query_vars['post_type'] == 'link_library_links' && !empty( $query->query['s'] ) ) {
-		$sql    = "
+
+		$query_words = explode( ' ', $query->query['s'] );
+		if ( ! empty( $query_words ) ) {
+			$number_of_words = sizeof( $query_words );
+			if ( $number_of_words > 5 ) {
+				$number_of_words = 5;
+			}
+
+			$sql = "
             or exists (
                 select * from {$wpdb->postmeta} where post_id={$wpdb->posts}.ID
                 and meta_key in ( 'link_description', 'link_notes', 'link_textfield', 'link_url' )
-                and meta_value like %s
+                 ";
+
+			for ( $counter = 0; $counter < $number_of_words; $counter ++ ) {
+				$sql .= 'and meta_value like %s ';
+			}
+
+			$sql .= "
             )
-        ";
-		$like   = '%' . $wpdb->esc_like($query->query['s']) . '%';
-		$search = preg_replace("#\({$wpdb->posts}.post_title LIKE [^)]+\)\K#",
-			$wpdb->prepare($sql, $like), $search);
+        	";
+
+			$like = array();
+
+			foreach ( $query_words as $index => $query_word ) {
+				$like[ $index ] = '%' . $wpdb->esc_like( $query_words[ $index ] ) . '%';
+			}
+
+			if ( 1 == $number_of_words ) {
+				$search = preg_replace( "#\({$wpdb->posts}.post_title LIKE [^)]+\)\K#", $wpdb->prepare( $sql, $like[0] ), $search );
+			} elseif ( 2 == $number_of_words ) {
+				$search = preg_replace( "#\({$wpdb->posts}.post_title LIKE [^)]+\)\K#", $wpdb->prepare( $sql, $like[0], $like[1] ), $search );
+			} elseif ( 3 == $number_of_words ) {
+				$search = preg_replace( "#\({$wpdb->posts}.post_title LIKE [^)]+\)\K#", $wpdb->prepare( $sql, $like[0], $like[1], $like[2] ), $search );
+			} elseif ( 4 == $number_of_words ) {
+				$search = preg_replace( "#\({$wpdb->posts}.post_title LIKE [^)]+\)\K#", $wpdb->prepare( $sql, $like[0], $like[1], $like[2], $like[3] ), $search );
+			} elseif ( 5 == $number_of_words ) {
+				$search = preg_replace( "#\({$wpdb->posts}.post_title LIKE [^)]+\)\K#", $wpdb->prepare( $sql, $like[0], $like[1], $like[2], $like[3], $like[4] ), $search );
+			}
+
+		}
 	}
 
 	return $search;

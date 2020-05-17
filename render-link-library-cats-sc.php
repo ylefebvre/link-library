@@ -226,10 +226,10 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            }
             }
 
-            $linkcount = 0;
             $totallinkcount = 0;
 
             foreach ( $link_categories as $catname ) {
+	            $linkcount = 0;
 
 	            $childcatparams =  array( 'taxonomy' => 'link_library_category', 'child_of' => $catname->term_id );
 
@@ -298,7 +298,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            }
 
 	            $the_link_query = new WP_Query( $link_query_args );
-	            $linkcount += $the_link_query->post_count;
+	            $linkcount = $the_link_query->post_count;
 	            wp_reset_postdata();
 
                 // Display the category name
