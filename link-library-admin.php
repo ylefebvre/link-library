@@ -511,13 +511,6 @@ class link_library_plugin_admin {
 			if ( $thumbshotsactive && empty( $genoptions['thumbshotscid'] ) && $genoptions['thumbnailgenerator'] == 'thumbshots' ) {
 				add_action( 'admin_notices', array( $this, 'll_thumbshots_warning' ) );
 			}
-
-			if ( ( !isset( $genoptions['ll_60_welcome'] ) || !$genoptions['ll_60_welcome'] ) && !isset( $_GET['dismiss_ll_60_welcome'] ) ) {
-				add_action( 'admin_notices', array( $this, 'll_60_welcome' ) );
-			} elseif ( ( !isset( $genoptions['ll_60_welcome'] ) || !$genoptions['ll_60_welcome'] ) && isset( $_GET['dismiss_ll_60_welcome'] ) ) {
-				$genoptions['ll_60_welcome'] = true;
-				update_option( 'LinkLibraryGeneral', $genoptions );
-			}
 		}
 
 		global $typenow;
@@ -574,11 +567,6 @@ class link_library_plugin_admin {
 	function ll_thumbshots_warning() {
 		echo "
         <div id='ll-warning' class='updated fade'><p><strong>" . __( 'Link Library: Missing Thumbshots API Key', 'link-library' ) . "</strong></p> <p>" . __( 'One of your link libraries is configured to use Thumbshots for link thumbails, but you have not entered your Thumbshots.com API Key. Please visit Thumbshots.com to apply for a free or paid account and enter your API in the Link Library admin panel.', 'link-library' ) . " <a href='" . esc_url( add_query_arg( array( 'page' => 'link-library' ), admin_url( 'admin.php' ) ) ) . "'>" . __( 'Jump to Link Library admin', 'link-library' ) . "</a></p></div>";
-	}
-
-	function ll_60_welcome() {
-		echo "
-        <div id='ll-warning' class='updated fade'><p><strong>" . __( 'Welcome to Link Library 6.0', 'link-library' ) . "</strong></p> <p>" . __( 'After many months of beta testing, Link Library 6.0 has finally been released. I hope you will appreciate the new version. If you run into any issues, please use the official plugin forum to ask questions. If you have major issues that prevents your site from working correctly, you can revert back to the previous version until a solution for your issue is available. A link to the previous version is provided below. Here are some of the most commonly asked questions after the upgrade:<br /><br /><strong>FAQ</strong><br /><br />Q: My links have been duplicated one or more times. My links no longer have categories assigned to them.<br />A: Go to the <strong>General Options</strong> section of Link Library and press the <strong>Re-import links</strong> button<br /><br />Q: I can see my links in admin, but they no longer appear on site.<br />A: You are probably using some options with your <strong>[link-library]</strong> shortcode to determine which categories will be displayed. The category IDs have changed when your links were imported into the new version of Link Library. You will need to get the new IDs from the <strong>Categories</strong> page and update your shortcodes.<br /><br />Q: Where did my Links widget go?!?<br />A: The Links widget that you were using was actually not part of Link Library, but part of the core WordPress Link Manager, which Link Library was previously based on. As such, Link Library is no longer compatible with that widget. To create a widget displaying links, you can use the new Link Library widget and select one of your library configurations. If you need your links in the widget to look different from your main list of links, go to General Options to increase your number of libraries, then configure your new library and select it in the widget configuration.', 'link-library' ) . "<br /><br /><a target='_blank' href='https://wordpress.org/support/plugin/link-library'>" . __( 'Link Library Support Forum', 'link-library' ) . "</a><br /><a target='_blank' href='https://downloads.wordpress.org/plugin/link-library.LinkLibrary_5.9.15.8.zip'>" . __( 'Download previous version of Link Library', 'link-library' ) . "</a><br /><br /><a class='button' href='" . esc_url( add_query_arg( array( 'post_type' => 'link_library_links', 'dismiss_ll_60_welcome' => 1 ), admin_url( 'edit.php' ) ) ) . "'>Dismiss this message</a></p></div>";
 	}
 
 	function ll_missing_categories() {
@@ -1164,7 +1152,7 @@ class link_library_plugin_admin {
 									$this->general_save_meta_box();
 
 								} elseif ( $_GET['page'] == 'link-library-settingssets' ) {
-									//$this->display_accessibe_ad();
+									$this->display_accessibe_ad();
 									$this->settingssets_selection_meta_box( $data );
 									$this->display_menu( 'settingsset' );
 									$this->settingssets_usage_meta_box( $data );
@@ -2865,7 +2853,7 @@ class link_library_plugin_admin {
 							</table>
 						</div><br /><br />
 				<?php } ?>
-					<!-- <a href="http://test.com"><img src='<?php echo plugins_url( 'icons/Accessibe.png', __FILE__ ); ?>'> -->
+					<a href="https://accessibe.go2cloud.org/SHL"><img src='<?php echo plugins_url( 'icons/Accessibe.png', __FILE__ ); ?>'>
 				</td>
 		</table>
 		</div>
@@ -3332,7 +3320,7 @@ class link_library_plugin_admin {
 	<?php }
 
 	function display_accessibe_ad() { ?>
-		<div style="float: right"><a href="http://test.com"><img src='<?php echo plugins_url( 'icons/Accessibe.png', __FILE__ ); ?>'></div>
+		<div class="accessibebanner"><a href="https://accessibe.go2cloud.org/SHL"><img src='<?php echo plugins_url( 'icons/AccessibeBanner.png', __FILE__ ); ?>'></div>
 	<?php }
 
 	function settingssets_usage_meta_box( $data ) {

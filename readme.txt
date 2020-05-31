@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.5 =
+* Removed Link Library 6.0 upgrade message from admin
+* Fix for Plain Web Address Web link not displaying secondary address correctly
+* Fix issue with pagination
+
 = 6.4.9 =
 * Search improvements. When searching for multiple terms in Link Library, it will search for these terms separately in the link description, large description and notes instead of only looking for them next to each other
 * Fixed issue with link counts in category list

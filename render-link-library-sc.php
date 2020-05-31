@@ -141,9 +141,9 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 			$paginationoutput .= '<span class="previousnextinactive">' . __('Previous', 'link-library') . '</span>';
 		}
 
+		$dotabove = false;
+		$dotbelow = false;
 		for ( $counter = 1; $counter <= $numberofpages; $counter++ ) {
-			$dotabove = false;
-			$dotbelow = false;
 			if ( $counter <= 2 || $counter >= $numberofpages - 1 || ( $counter <= $pagenumber + 2 && $counter >= $pagenumber - 2 ) ) {
 				if ( $counter != $pagenumber ) {
 					$paginationoutput .= '<span class="unselectedpage">';
@@ -1902,7 +1902,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														}
 
 														if ( 'addressonly' == $displayweblink ) {
-															$current_cat_output .= $the_link;
+															if ( 'primary' == $sourceweblink || empty( $sourceweblink ) ) {
+																$current_cat_output .= $the_link;
+															} elseif ( 'secondary' == $sourceweblink ) {
+																$current_cat_output .= $the_second_link;
+															}
 														} else {
 															$current_cat_output .= '<a href="';
 
