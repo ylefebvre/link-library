@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.5.1 =
+* New ads are now removed if you choose to hide donation links
+* Ad no longer blocks selections from drop-down lists
+
 = 6.5 =
 * Removed Link Library 6.0 upgrade message from admin
 * Fix for Plain Web Address Web link not displaying secondary address correctly

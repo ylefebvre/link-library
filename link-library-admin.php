@@ -1152,7 +1152,9 @@ class link_library_plugin_admin {
 									$this->general_save_meta_box();
 
 								} elseif ( $_GET['page'] == 'link-library-settingssets' ) {
-									$this->display_accessibe_ad();
+									if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) {
+										$this->display_accessibe_ad();
+									}
 									$this->settingssets_selection_meta_box( $data );
 									$this->display_menu( 'settingsset' );
 									$this->settingssets_usage_meta_box( $data );
@@ -2839,8 +2841,9 @@ class link_library_plugin_admin {
 						</tr>
 					</table>
 				</td>
-				<td style='padding: 8px; border: 1px solid #cccccc;vertical-align:top !important;'>
 				<?php if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) { ?>
+				<td style='padding: 8px; border: 1px solid #cccccc;vertical-align:top !important;'>
+				
 						<div style="width: 400px"><h3>Support the author - Second Edition</h3><br />
 							<table>
 								<tr>
@@ -2852,9 +2855,10 @@ class link_library_plugin_admin {
 								</tr>
 							</table>
 						</div><br /><br />
-				<?php } ?>
+				
 					<a href="https://accessibe.go2cloud.org/SHL"><img src='<?php echo plugins_url( 'icons/Accessibe.png', __FILE__ ); ?>'>
 				</td>
+				<?php } ?>
 		</table>
 		</div>
 
@@ -3320,7 +3324,7 @@ class link_library_plugin_admin {
 	<?php }
 
 	function display_accessibe_ad() { ?>
-		<div class="accessibebanner"><a href="https://accessibe.go2cloud.org/SHL"><img src='<?php echo plugins_url( 'icons/AccessibeBanner.png', __FILE__ ); ?>'></div>
+		<div class="accessibebanner"><a href="https://accessibe.go2cloud.org/SHL"><img src='<?php echo plugins_url( 'icons/AccessibeBanner.png', __FILE__ ); ?>'></a></div>
 	<?php }
 
 	function settingssets_usage_meta_box( $data ) {
