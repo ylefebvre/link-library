@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.5.2 =
+* Integrated Shrink the Web and Pagepeeker thmbnail generation services
+* Added option to display either the Updated date or the publication date for links
+
 = 6.5.1 =
 * New ads are now removed if you choose to hide donation links
 * Ad no longer blocks selections from drop-down lists

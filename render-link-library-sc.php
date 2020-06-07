@@ -1664,6 +1664,16 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 																	if ( !empty( $thumbshotscid ) ) {
 																		$imageoutput .= '<img src="http://images.thumbshots.com/image.aspx?cid=' . rawurlencode( $thumbshotscid ) . '&v=1&w=120&url=' . $the_link . '"';
 																	}
+																} elseif ( $thumbnailgenerator == 'pagepeeker' ) {
+																	if ( empty( $pagepeekerid ) ) {
+																		$imageoutput .= '<img src="http://free.pagepeeker.com/v2/thumbs.php?size=' . $pagepeekersize . '&url=' . $the_link . '"';
+																	} else {
+																		$imageoutput .= '<img src="http://api.pagepeeker.com/v2/thumbs.php?size=' . $pagepeekersize . '&url=' . $the_link . '"';
+																	}
+																} elseif ( 'shrinktheweb' == $thumbnailgenerator ) {
+																	if ( !empty( $shrinkthewebaccesskey ) ) {
+																		$imageoutput .= '<img src="http://images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=' . rawurlencode( $shrinkthewebaccesskey ) . '&stwsize=' . $stwthumbnailsize . '&stwurl=' . $the_link . '"';
+																	}
 																}
 															} else if ( !$usethumbshotsforimages || ( $usethumbshotsforimages && $uselocalimagesoverthumbshots && !empty( $linkitem['link_image'] ) ) ) {
 																if ( strpos( $linkitem['link_image'], 'http' ) !== false ) {
@@ -1769,7 +1779,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$starttimedate = microtime ( true );
 														}
 
-														$formatteddate = date_i18n( get_option( 'links_updated_date_format' ), intval( $linkitem['link_updated'] ) );
+														if ( 'linkupdated' == $datesource ) {
+															$formatteddate = date_i18n( get_option( 'links_updated_date_format' ), intval( $linkitem['link_updated'] ) );
+														} else {
+															$formatteddate = date_i18n( get_option( 'links_updated_date_format' ), get_the_time( 'U', false, get_the_ID(), false ) );
+														}
 
 														$current_cat_output .= $formatteddate;
 
@@ -2343,6 +2357,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			$output .= '<div class="llthumbshotsnotice"><a href="http://www.robothumb.com" target="_blank">' . __( 'Screenshots by Robothumb', 'link-library' ) . '</a></div>';
 		} elseif ( $thumbnailgenerator == 'thumbshots' ) {
 			$output .= '<div class="llthumbshotsnotice"><a href="http://www.thumbshots.com" target="_blank" title="Thumbnails Screenshots by Thumbshots">' . __( 'Thumbnail Screenshots by Thumbshots', 'link-library' ) . '</a></div>';
+		} elseif ( $thumbnailgenerator == 'Shrink the Web' ) {
+			$output .= '<div class="llthumbshotsnotice"><a href="http://www.shrinktheweb.com" target="_blank" title="Thumbnails Screenshots by Shrink the Web">' . __( 'Thumbnail Screenshots by Shrink the Web', 'link-library' ) . '</a></div>';
+		} elseif ( $thumbnailgenerator == 'Page Peeker' ) {
+			$output .= '<div class="llthumbshotsnotice"><a href="http://www.shrinktheweb.com" target="_blank" title="Thumbnails Screenshots by Page Peeker">' . __( 'Thumbnail Screenshots by Page Peeker', 'link-library' ) . '</a></div>';
 		}
 	}
 
