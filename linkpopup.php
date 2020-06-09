@@ -79,21 +79,23 @@ function link_library_popup_content( $my_link_library_plugin ) {
             $imageoutput .= '" id="link-' . $link_data->ID . '" class="track_this_link ' . ( $link_featured ? 'featured' : '' ). '" ' . $rel . $title . $target. '>';
 
             if ( $options['usethumbshotsforimages'] ) {
+	            $protocol = is_ssl() ? 'https://' : 'http://';
+
 	            if ( $generaloptions['thumbnailgenerator'] == 'robothumb' ) {
-		            $imageoutput .= '<img src="http://www.robothumb.com/src/?url=' . $the_link . '&size=' . $generaloptions['thumbnailsize'] . '"';
+		            $imageoutput .= '<img src="' . $protocol . 'www.robothumb.com/src/?url=' . $the_link . '&size=' . $generaloptions['thumbnailsize'] . '"';
 	            } elseif ( $generaloptions['thumbnailgenerator'] == 'thumbshots' ) {
 		            if ( !empty( $generaloptions['thumbshotscid'] ) ) {
-			            $imageoutput .= '<img src="http://images.thumbshots.com/image.aspx?cid=' . rawurlencode( $generaloptions['thumbshotscid'] ) . '&v=1&w=120&url=' . $the_link . '"';
+			            $imageoutput .= '<img src="' . $protocol . 'images.thumbshots.com/image.aspx?cid=' . rawurlencode( $generaloptions['thumbshotscid'] ) . '&v=1&w=120&url=' . $the_link . '"';
 		            }
 	            } elseif ( $generaloptions['thumbnailgenerator'] == 'pagepeeker' ) {
 		            if ( empty( $pagepeekerid ) ) {
-			            $imageoutput .= '<img src="http://free.pagepeeker.com/v2/thumbs.php?size=' . $generaloptions['pagepeekersize'] . '&url=' . $the_link . '"';
+			            $imageoutput .= '<img src="' . $protocol . 'free.pagepeeker.com/v2/thumbs.php?size=' . $generaloptions['pagepeekersize'] . '&url=' . $the_link . '"';
 		            } else {
-			            $imageoutput .= '<img src="http://api.pagepeeker.com/v2/thumbs.php?size=' . $generaloptions['pagepeekersize'] . '&url=' . $the_link . '"';
+			            $imageoutput .= '<img src="' . $protocol . 'api.pagepeeker.com/v2/thumbs.php?size=' . $generaloptions['pagepeekersize'] . '&url=' . $the_link . '"';
 		            }
 	            } elseif ( 'shrinktheweb' == $generaloptions['thumbnailgenerator'] ) {
 		            if ( !empty( $shrinkthewebaccesskey ) ) {
-			            $imageoutput .= '<img src="http://images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=' . rawurlencode( $generaloptions['shrinkthewebaccesskey'] ) . '&stwsize=' . $generaloptions['stwthumbnailsize'] . '&stwurl=' . $the_link . '"';
+			            $imageoutput .= '<img src="' . $protocol . 'images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=' . rawurlencode( $generaloptions['shrinkthewebaccesskey'] ) . '&stwsize=' . $generaloptions['stwthumbnailsize'] . '&stwurl=' . $the_link . '"';
 		            }
 	            }
             } elseif ( strpos( $link_image, 'http' ) !== false ) {

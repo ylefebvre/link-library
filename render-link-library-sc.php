@@ -1658,21 +1658,23 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$imageoutput .= '" id="link-' . $linkitem['proper_link_id'] . '" class="' . ( $enable_link_popup ? 'thickbox' : 'track_this_link' ) . ' ' . ( $linkitem['link_featured'] ? 'featured' : '' ). '" ' . $linkitem['link_rel'] . $title . $target. '>';
 
 															if ( $usethumbshotsforimages && ( !$uselocalimagesoverthumbshots || empty( $uselocalimagesoverthumbshots ) || ( $uselocalimagesoverthumbshots && empty( $linkitem['link_image'] ) ) ) ) {
+																$protocol = is_ssl() ? 'https://' : 'http://';
+
 																if ( $thumbnailgenerator == 'robothumb' ) {
-																	$imageoutput .= '<img src="http://www.robothumb.com/src/?url=' . $the_link . '&size=' . $generaloptions['thumbnailsize'] . '"';
+																	$imageoutput .= '<img src="' . $protocol . 'www.robothumb.com/src/?url=' . $the_link . '&size=' . $generaloptions['thumbnailsize'] . '"';
 																} elseif ( $thumbnailgenerator == 'thumbshots' ) {
 																	if ( !empty( $thumbshotscid ) ) {
-																		$imageoutput .= '<img src="http://images.thumbshots.com/image.aspx?cid=' . rawurlencode( $thumbshotscid ) . '&v=1&w=120&url=' . $the_link . '"';
+																		$imageoutput .= '<img src="' . $protocol . 'images.thumbshots.com/image.aspx?cid=' . rawurlencode( $thumbshotscid ) . '&v=1&w=120&url=' . $the_link . '"';
 																	}
 																} elseif ( $thumbnailgenerator == 'pagepeeker' ) {
 																	if ( empty( $pagepeekerid ) ) {
-																		$imageoutput .= '<img src="http://free.pagepeeker.com/v2/thumbs.php?size=' . $pagepeekersize . '&url=' . $the_link . '"';
+																		$imageoutput .= '<img src="' . $protocol . 'free.pagepeeker.com/v2/thumbs.php?size=' . $pagepeekersize . '&url=' . $the_link . '"';
 																	} else {
-																		$imageoutput .= '<img src="http://api.pagepeeker.com/v2/thumbs.php?size=' . $pagepeekersize . '&url=' . $the_link . '"';
+																		$imageoutput .= '<img src="' . $protocol . 'api.pagepeeker.com/v2/thumbs.php?size=' . $pagepeekersize . '&url=' . $the_link . '"';
 																	}
 																} elseif ( 'shrinktheweb' == $thumbnailgenerator ) {
 																	if ( !empty( $shrinkthewebaccesskey ) ) {
-																		$imageoutput .= '<img src="http://images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=' . rawurlencode( $shrinkthewebaccesskey ) . '&stwsize=' . $stwthumbnailsize . '&stwurl=' . $the_link . '"';
+																		$imageoutput .= '<img src="' . $protocol . 'images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=' . rawurlencode( $shrinkthewebaccesskey ) . '&stwsize=' . $stwthumbnailsize . '&stwurl=' . $the_link . '"';
 																	}
 																}
 															} else if ( !$usethumbshotsforimages || ( $usethumbshotsforimages && $uselocalimagesoverthumbshots && !empty( $linkitem['link_image'] ) ) ) {

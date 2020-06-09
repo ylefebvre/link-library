@@ -389,24 +389,26 @@ class link_library_plugin_admin {
 	function ll_get_link_image( $url, $name, $mode, $linkid, $cid, $filepath, $filepathtype, $thumbnailsize, $thumbnailgenerator ) {
 		if ( $url != "" && $name != "" ) {
 			if ( $mode == 'thumb' || $mode == 'thumbonly' ) {
+				$protocol = is_ssl() ? 'https://' : 'http://';
+
 				if ( $thumbnailgenerator == 'robothumb' ) {
-					$genthumburl = "http://www.robothumb.com/src/?url=" . esc_html( $url ) . "&size=" . $thumbnailsize;
+					$genthumburl = $protocol . "www.robothumb.com/src/?url=" . esc_html( $url ) . "&size=" . $thumbnailsize;
 				} elseif ( $thumbnailgenerator == 'pagepeeker' ) {
 					if ( empty( $cid ) ) {
-						$genthumburl = "http://free.pagepeeker.com/v2/thumbs.php?size=" . $thumbnailsize . "&url=" . esc_html( $url );
+						$genthumburl = $protocol . "free.pagepeeker.com/v2/thumbs.php?size=" . $thumbnailsize . "&url=" . esc_html( $url );
 					} else {
-						$genthumburl = "http://api.pagepeeker.com/v2/thumbs.php?size=" . $thumbnailsize . "&url=" . esc_html( $url );
+						$genthumburl = $protocol . "api.pagepeeker.com/v2/thumbs.php?size=" . $thumbnailsize . "&url=" . esc_html( $url );
 					}
 				} elseif ( $thumbnailgenerator == 'shrinktheweb' ) {
-					$genthumburl = "http://images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=" . $cid . "&stwsize=" . $thumbnailsize . "&stwurl=" . esc_html( $url );
+					$genthumburl .= $protocol . "images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=" . $cid . "&stwsize=" . $thumbnailsize . "&stwurl=" . esc_html( $url );
 				} elseif ( $thumbnailgenerator == 'thumbshots' ) {
 					if ( !empty ( $cid ) ) {
-						$genthumburl = "http://images.thumbshots.com/image.aspx?cid=" . rawurlencode( $cid ) . "&v1=w=120&url=" . esc_html( $url );
+						$genthumburl = $protocol . "images.thumbshots.com/image.aspx?cid=" . rawurlencode( $cid ) . "&v1=w=120&url=" . esc_html( $url );
 					}
 				}
 
 			} elseif ( $mode == 'favicon' || $mode == 'favicononly' ) {
-				$genthumburl = "http://www.google.com/s2/favicons?domain=" . $url;
+				$genthumburl = $protocol . "www.google.com/s2/favicons?domain=" . $url;
 			}
 
 			$uploads = wp_upload_dir();
