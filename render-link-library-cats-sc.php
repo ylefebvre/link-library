@@ -467,7 +467,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
                 if ( !$showcategorydescheaders || ( $showcategorydescheaders && ( 'right' == $catlistdescpos || empty( $catlistdescpos ) ) ) ) {
 	                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
-		                $catitem .= '<div class="linkcatname">';
+		                $catitem .= '<span class="linkcatname">';
 	                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 		                $space_str = "&nbsp;&nbsp;&nbsp;";
 		                $catitem .= str_repeat( $space_str, $level );
@@ -477,7 +477,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
 	                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
-		                $catitem .= '</div>';
+		                $catitem .= '</span>';
 	                }
                 }
 
@@ -491,7 +491,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
                 if ( $showcategorydescheaders && 'left' == $catlistdescpos ) {
 	                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
-		                $catitem .= '<div class="linkcatname">';
+		                $catitem .= '<span class="linkcatname">';
 	                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 	                	$space_str = "&nbsp;&nbsp;&nbsp;";
 	                	$catitem .= str_repeat( $space_str, $level );
@@ -500,7 +500,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
-	                $catitem .= '</div>';
+	                $catitem .= '</span>';
                 }
 
                 if ( $linkcount > 0 ) {

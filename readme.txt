@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.5.4 =
+* Fixed issue with category unordered list not rendering correctly in Firefox
+
 = 6.5.3 =
 * Fix to load thumbnails using appropriate protocol (http or https) based on site protocol
 
