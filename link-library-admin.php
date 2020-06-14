@@ -344,7 +344,7 @@ class link_library_plugin_admin {
 			}
 		}
 
-		if ( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'link-library-general-options' ) || $_GET['page'] == 'link-library-settingssets' || $_GET['page'] == 'link-library-moderate' || $_GET['page'] == 'link-library-stylesheet' || $_GET['page'] == 'link-library-reciprocal' ) ) {
+		if ( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'link-library-general-options' ) || $_GET['page'] == 'link-library-settingssets' || $_GET['page'] == 'link-library-moderate' || $_GET['page'] == 'link-library-stylesheet' || $_GET['page'] == 'link-library-reciprocal' || $_GET['page'] == 'link-library-accessibe' ) ) {
 			wp_enqueue_style( 'LibraryLibraryAdminStyle', plugins_url( 'link-library-admin.css', __FILE__ ) );
 		}
 	}
@@ -651,7 +651,7 @@ class link_library_plugin_admin {
 	//extend the admin menu
 	function on_admin_menu() {
 		//add our own option page, you can also add it to different sections or use your own one
-		global $pagehookmoderate, $pagehooksettingssets, $pagehookstylesheet, $pagehookreciprocal;
+		global $pagehookmoderate, $pagehooksettingssets, $pagehookstylesheet, $pagehookreciprocal, $pagehookaccessibe;
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
@@ -695,6 +695,8 @@ class link_library_plugin_admin {
 
 		$pagehooksettingssets = add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'Configurations', 'link-library' ), __( 'Library Configurations', 'link-library' ), $admin_capability, 'link-library-settingssets', array( $this, 'on_show_page' ) );
 
+		$pagehookaccessibe = add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Accessibe', 'Accessibe', $admin_capability, 'link-library-accessibe', array( $this, 'on_show_page' ) );
+
 		if ( $linkmoderatecount == 0 ) {
 			$pagehookmoderate = add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'Moderate', 'link-library' ), __( 'Moderate', 'link-library' ), $admin_capability, 'link-library-moderate', array( $this, 'on_show_page' ) );
 		} else {
@@ -713,6 +715,7 @@ class link_library_plugin_admin {
 		add_action( 'load-' . $pagehookmoderate, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehookstylesheet, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehookreciprocal, array( $this, 'on_load_page' ) );
+		add_action( 'load-' . $pagehookaccessibe, array( $this, 'on_load_page' ) );
 	}
 
 	//will be executed if wordpress core detects this page has to be rendered
@@ -1055,6 +1058,8 @@ class link_library_plugin_admin {
 				$this->link_library_duplicate_link_checker( $this );
 				echo "</p></div>";
 			}
+		} elseif ( $_GET['page'] == 'link-library-accessibe' ) {
+			$formvalue = 'save_link_library_accessibe';
 		}
 
 		$data               = array();
@@ -1205,6 +1210,8 @@ class link_library_plugin_admin {
 									do_meta_boxes( $pagehookstylesheet, 'normal', $data );
 								} elseif ( $_GET['page'] == 'link-library-reciprocal' ) {
 									do_meta_boxes( $pagehookreciprocal, 'normal', $data );
+								} elseif ( $_GET['page'] == 'link-library-accessibe' ) {
+									$this->display_accessibe_page( $data );
 								}
 								?>
 							</div>
@@ -1229,6 +1236,8 @@ class link_library_plugin_admin {
 					{echo $pagehookstylesheet;}
 				elseif ($_GET['page'] == 'link-library-reciprocal')
 					{echo $pagehookreciprocal;}
+				elseif ($_GET['page'] == 'link-library-accessibe')
+					{echo $pagehookstylesheet;}
 				?>');
 			});
 			//]]>
@@ -3411,6 +3420,19 @@ class link_library_plugin_admin {
 
 	function display_accessibe_ad() { ?>
 		<div class="accessibebanner"><a href="https://accessibe.go2cloud.org/SHL"><img src='<?php echo plugins_url( 'icons/AccessibeBanner.png', __FILE__ ); ?>'></a></div>
+	<?php }
+
+	function display_accessibe_page( $data ) { ?>
+
+	<div class="accessibead" style="width: 50%; background-color: #fff; padding: 20px; text-align: center">
+		<img src="<?php echo plugins_url( 'icons/AccessibeLogoLarge.png', __FILE__ ) ?>" style="max-width: 100%" />
+		<h1 style="font-size: 30px">The Forefront of <strong>Web Accessibility</strong> Technology</h1>
+		accessiBe is the first and only fully automated web accessibility technology that complies with the WCAG 2.1 and keeps your website accessible at all times.<br /><br />
+
+		<a href="https://accessibe.go2cloud.org/SHL"><div class="button button-primary"><span class="large_text">Get started now</span><br />7-day FREE trial</div></a>
+		<a href="https://accessibe.go2cloud.org/aff_c?offer_id=5&aff_id=8&url_id=7"><div class="button button-primary"><span class="mid_text">Run a free accesssibility test<br /> on your site</span></div></a>
+	</div>
+
 	<?php }
 
 	function settingssets_usage_meta_box( $data ) {

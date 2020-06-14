@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.5.5 =
+* Added menu item promoting Accessibe service
+
 = 6.5.4 =
 * Fixed issue with category unordered list not rendering correctly in Firefox
 
