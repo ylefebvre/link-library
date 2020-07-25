@@ -2692,7 +2692,7 @@ class link_library_plugin_admin {
 							</td>
 						</tr>
 						<tr>
-							<td><?php _e( 'Category selection method', 'link-library' ); ?></td>
+							<td class="lltooltip" title="<?php _e( 'Changes how categories to be displayed are selected in library configurations. Specifying through a comma-separated list allows user to specify order to display the categories, when used in conjunction with the Results Order option' ); ?>"><?php _e( 'Category selection method', 'link-library' ); ?></td>
 							<td><select id="catselectmethod" name="catselectmethod">
 									<option value="commalist" <?php selected( $genoptions['catselectmethod'], 'commalist' ); ?>><?php _e( 'Comma-separated ID list', 'link-library' ); ?>
 									<option value="multiselectlist" <?php selected( $genoptions['catselectmethod'], 'multiselectlist' ); ?>><?php _e( 'Multi-select List', 'link-library' ); ?>
@@ -2812,7 +2812,7 @@ class link_library_plugin_admin {
 						<tr class="pagepeekerid" <?php if ( $genoptions['thumbnailgenerator'] != 'pagepeeker' ) {
 							echo 'style="display:none;"';
 						} ?>>
-							<td><?php _e( 'PagePeeker API Key (for paid account holders)' ); ?>
+							<td><?php _e( 'PagePeeker API Key (for paid or free unbranded accounts)' ); ?>
 							</td>
 							<td colspan='4' class='lltooltip' title='<?php _e( 'Pagepeeker API Key for premium thumbnail generation', 'link-library' ); ?>'>
 								<input type="text" id="pagepeekerid" name="pagepeekerid" size="20" value="<?php echo $genoptions['pagepeekerid']; ?>" />
@@ -3430,7 +3430,7 @@ class link_library_plugin_admin {
 		accessiBe is the first and only fully automated web accessibility technology that complies with the WCAG 2.1 and keeps your website accessible at all times.<br /><br />
 
 		<a href="https://accessibe.go2cloud.org/SHL"><div class="button button-primary"><span class="large_text">Get started now</span><br />7-day FREE trial</div></a>
-		<a href="https://accessibe.go2cloud.org/aff_c?offer_id=5&aff_id=8&url_id=7"><div class="button button-primary"><span class="mid_text">Run a free accesssibility test<br /> on your site</span></div></a>
+		<a href="https://accessibe.go2cloud.org/aff_c?offer_id=5&aff_id=8&url_id=7"><div class="button button-primary"><span class="large_text">FREE accesssibility test</span></div></a>
 	</div>
 
 	<?php }

@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.5.6 =
+* Fixed option to not display any tooltip on Link Name
+* Add spaces between tags
+
 = 6.5.5 =
 * Added menu item promoting Accessibe service
 

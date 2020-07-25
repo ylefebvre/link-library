@@ -1740,6 +1740,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 															if ( 'description' == $tooltipname && !empty( $desc ) ) {
 																$title = ' title="' . $desc . '"';
+															} else {
+																$title = '';
 															}
 
 															$current_cat_output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="' . ( $enable_link_popup ? 'thickbox' : 'track_this_link' ) . ' ' . ( $linkitem['link_featured'] ? ' featured' : '' ). '" ' . $linkitem['link_rel'] . $title . $target. '>';
@@ -2192,7 +2194,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														foreach ( $link_tags as $link_tag ) {
 															$link_tags_array[] = $link_tag->name;
 														}
-														$current_cat_output .= implode( ',', $link_tags_array );
+														$current_cat_output .= implode( ', ', $link_tags_array );
 
 														if ( true == $debugmode ) {
 															$current_cat_output .= "\n<!-- Time to render category description section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
