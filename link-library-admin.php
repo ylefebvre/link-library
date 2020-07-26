@@ -388,9 +388,9 @@ class link_library_plugin_admin {
 
 	function ll_get_link_image( $url, $name, $mode, $linkid, $cid, $filepath, $filepathtype, $thumbnailsize, $thumbnailgenerator ) {
 		if ( $url != "" && $name != "" ) {
-			if ( $mode == 'thumb' || $mode == 'thumbonly' ) {
-				$protocol = is_ssl() ? 'https://' : 'http://';
+			$protocol = is_ssl() ? 'https://' : 'http://';
 
+			if ( $mode == 'thumb' || $mode == 'thumbonly' ) {
 				if ( $thumbnailgenerator == 'robothumb' ) {
 					$genthumburl = $protocol . "www.robothumb.com/src/?url=" . esc_html( $url ) . "&size=" . $thumbnailsize;
 				} elseif ( $thumbnailgenerator == 'pagepeeker' ) {
@@ -406,7 +406,6 @@ class link_library_plugin_admin {
 						$genthumburl = $protocol . "images.thumbshots.com/image.aspx?cid=" . rawurlencode( $cid ) . "&v1=w=120&url=" . esc_html( $url );
 					}
 				}
-
 			} elseif ( $mode == 'favicon' || $mode == 'favicononly' ) {
 				$genthumburl = $protocol . "www.google.com/s2/favicons?domain=" . $url;
 			}
@@ -2248,7 +2247,7 @@ class link_library_plugin_admin {
 					'beforecatlist1', 'beforecatlist2', 'beforecatlist3', 'catnameoutput', 'linkaddfrequency',
 					'defaultsinglecat_cpt', 'rsspreviewcount', 'rssfeedinlinecount', 'linksperpage', 'catdescpos',
 					'catlistdescpos', 'rsspreviewwidth', 'rsspreviewheight', 'numberofrssitems',
-					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource'
+					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement'
 				)
 				as $option_name
 			) {
@@ -2257,7 +2256,7 @@ class link_library_plugin_admin {
 				}
 			}
 
-			foreach ( array( 'categorylist_cpt', 'excludecategorylist_cpt' ) as $option_name ) {
+			foreach ( array( 'categorylist_cpt', 'excludecategorylist_cpt', 'taglist_cpt', 'excludetaglist_cpt' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) {
 						$options[$option_name] = str_replace( "\"", "'", strtolower( $_POST[$option_name] ) );
@@ -3643,7 +3642,7 @@ class link_library_plugin_admin {
 					</td>
 				</tr>
 				<tr>
-					<td class="lltooltip" title="<?php _e( 'Leave Empty to see all categories', 'link-library' ); ?><br /><br /><?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric category IDs', 'link-library' ); ?><br /><br /><?php _e( 'To find the IDs, go to the Link Categories admin page, place the mouse above a category name and look for its ID in the address shown in your browsers status bar. For example', 'link-library' ); ?>: 2,4,56">
+					<td class="lltooltip" title="<?php _e( 'Leave Empty to see all categories', 'link-library' ); ?><br /><br /><?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric category IDs', 'link-library' ); ?><br /><br /><?php _e( 'To find the IDs, go to the Link Categories admin page. For example', 'link-library' ); ?>: 2,4,56">
 						<?php if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) {
 							_e( 'Categories to be displayed (Empty=All)', 'link-library' );
 						} else if ( $genoptions['catselectmethod'] == 'multiselectlist' ) {
@@ -3667,8 +3666,6 @@ class link_library_plugin_admin {
 
 						</td>
 					<?php } ?>
-				</tr>
-				<tr>
 					<td class="lltooltip" title="<?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric category IDs that should not be shown', 'link-library' ); ?><br /><br /><?php _e( 'For example', 'link-library' ); ?>: 5,34,43">
 						<?php _e( 'Categories to be excluded', 'link-library' ); ?>
 					</td>
@@ -3681,9 +3678,53 @@ class link_library_plugin_admin {
 						$excludecategorylistarray = explode( ',', $options['excludecategorylist_cpt'] );
 						?>
 						<td>
-							<?php echo $this->render_category_list( $top_categories, 'excludecategorylist_cpt', 0, $excludecategorylistarray, $options['direction'] ); ?>
+							<?php echo $this->render_category_list( $top_categories, 'excludecategorylist_cpt', 0, $excludecategorylistarray, $options['direction'] ); ?><br />
 							<?php _e( 'No Exclusions', 'link-library' ); ?>
 							<input type="checkbox" id="noexclusions" name="noexclusions" <?php checked( empty( $options['excludecategorylist_cpt'] ) ); ?>/>
+
+						</td>
+					<?php } ?>
+				</tr>
+				<tr>
+					<td class="lltooltip" title="<?php _e( 'Leave Empty to see all tags', 'link-library' ); ?><br /><br /><?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric tag IDs', 'link-library' ); ?><br /><br /><?php _e( 'To find the IDs, go to the Link Categories admin page. For example', 'link-library' ); ?>: 2,4,56">
+						<?php if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) {
+							_e( 'Tags to be displayed (Empty=All)', 'link-library' );
+						} else if ( $genoptions['catselectmethod'] == 'multiselectlist' ) {
+							_e( 'Tags to be displayed', 'link-library' );
+						} ?>
+					</td>
+					<?php if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) { ?>
+						<td class="lltooltip" title="<?php _e( 'Leave Empty to see all tags', 'link-library' ); ?><br /><br /><?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric tag IDs', 'link-library' ); ?><br /><br /><?php _e( 'For example', 'link-library' ); ?>: 2,4,56">
+							<input type="text" id="taglist_cpt" name="taglist_cpt" size="40" value="<?php echo $options['taglist_cpt']; ?>" />
+						</td>
+						<?php
+					} else {
+						$top_tags = get_terms( 'link_library_tags', array( 'orderby' => 'name', 'order' => $options['direction'], 'parent' => 0, 'hide_empty' => false ) );
+
+						$taglistarray = explode( ',', $options['taglist_cpt'] );
+						?>
+						<td>
+							<?php echo $this->render_category_list( $top_tags, 'taglist_cpt', 0, $taglistarray, $options['direction'] ); ?>
+							<?php _e( 'Show all tags', 'link-library' ); ?>
+							<input type="checkbox" id="nospecifictags" name="nospecifictags" <?php checked( empty( $options['taglist_cpt'] ) ); ?>/>
+
+						</td>
+					<?php } ?>
+					<td class="lltooltip" title="<?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric tag IDs that should not be shown', 'link-library' ); ?><br /><br /><?php _e( 'For example', 'link-library' ); ?>: 5,34,43">
+						<?php _e( 'Tags to be excluded', 'link-library' ); ?>
+					</td>
+					<?php if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) { ?>
+						<td class="lltooltip" title="<?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric tag IDs that should not be shown', 'link-library' ); ?><br /><br /><?php _e( 'For example', 'link-library' ); ?>: 5,34,43">
+							<input type="text" id="excludetaglist_cpt" name="excludetaglist_cpt" size="40" value="<?php echo $options['excludetaglist_cpt']; ?>" />
+						</td>
+						<?php
+					} else {
+						$excludetaglistarray = explode( ',', $options['excludetaglist_cpt'] );
+						?>
+						<td>
+							<?php echo $this->render_category_list( $top_tags, 'excludetaglist_cpt', 0, $excludetaglistarray, $options['direction'] ); ?><br />
+							<?php _e( 'No Exclusions', 'link-library' ); ?>
+							<input type="checkbox" id="notagexclusions" name="notagexclusions" <?php checked( empty( $options['excludetaglist_cpt'] ) ); ?>/>
 
 						</td>
 					<?php } ?>
@@ -3854,6 +3895,30 @@ class link_library_plugin_admin {
 					}
 					else {
 						jQuery('#excludecategorylist_cpt').prop('disabled', false);
+					}
+				});
+			});
+
+			jQuery(document).ready(function () {
+				jQuery('#nospecifictags').click(function () {
+					if (jQuery("#nospecifictags").is(":checked")) {
+						jQuery('#taglist_cpt').prop('disabled', 'disabled');
+						jQuery("#taglist_cpt").val([]);
+					}
+					else {
+						jQuery('#taglist_cpt').prop('disabled', false);
+					}
+				});
+			});
+
+			jQuery(document).ready(function () {
+				jQuery('#notagexclusions').click(function () {
+					if (jQuery("#notagexclusions").is(":checked")) {
+						jQuery('#excludetaglist_cpt').prop('disabled', 'disabled');
+						jQuery("#excludetaglist_cpt").val([]);
+					}
+					else {
+						jQuery('#excludetaglist_cpt').prop('disabled', false);
 					}
 				});
 			});
@@ -4037,6 +4102,7 @@ class link_library_plugin_admin {
 						<option value="id"<?php selected ( $options['linkorder'] == 'id' ); ?>><?php _e( 'Order by ID', 'link-library' ); ?></option>
 						<option value="random"<?php selected( $options['linkorder'] == 'random' ); ?>><?php _e( 'Order randomly', 'link-library' ); ?></option>
 						<option value="date"<?php selected( $options['linkorder'] == 'date' ); ?>><?php _e( 'Order by updated date', 'link-library' ); ?></option>
+						<option value="pubdate"<?php selected( $options['linkorder'] == 'pubdate' ); ?>><?php _e( 'Order by publication date', 'link-library' ); ?></option>
 						<option value="hits"<?php selected( $options['linkorder'] == 'hits' ); ?>><?php _e( 'Order by number of link visits', 'link-library' ); ?></option>
 						<option value="scpo"<?php selected( $options['linkorder'] == 'scpo' ); ?>><?php _e( 'Order specified using Simple Custom Post Order plugin', 'link-library' ); ?></option>
 					</select>
@@ -4753,7 +4819,12 @@ class link_library_plugin_admin {
 							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed after Link Tags', 'link-library' ); ?>'>
 								<input type="text" id="afterlinktags" name="afterlinktags" size="22" value="<?php echo stripslashes( $options['afterlinktags'] ); ?>" />
 							</td>
-							<td style='background: #FFF'></td>
+							<td style='background: #FFF'>
+								<select name="taglinks" id="taglinks" style="width:200px;">
+									<option value="inactive"<?php selected( $options['taglinks'], 'inactive' ); ?>><?php _e( 'Tag links inactive', 'link-library' ); ?></option>
+									<option value="active"<?php selected( $options['taglinks'], 'active' ); ?>><?php _e( 'Tag links active', 'link-library' ); ?></option>
+								</select>
+							</td>
 							<td style='background: #FFF'></td>
 						</tr>
 						<?php break;
@@ -5987,12 +6058,11 @@ class link_library_plugin_admin {
 								_ajax_nonce : '<?php echo wp_create_nonce( 'link_library_generate_image' ); ?>',
 								name        : linkname,
 								url         : linkurl,
+								cid         : '<?php echo $genoptions['thumbshotscid']; ?>',
 								mode        : 'favicononly',
 								filepath    : 'link-library-favicons',
 								filepathtype: 'absolute',
 								linkid      : <?php if( isset( $link->ID ) ) { echo $link->ID; } else { echo "''"; }?>
-
-
 							},
 							success: function (data) {
 								if (data != '') {
@@ -6176,20 +6246,33 @@ class link_library_plugin_admin {
 								break;
 							}
 
-							$wpFileType = wp_check_filetype( $submitted_url, null);
+							global $wpdb;
+							$upload_dir_pos = strpos( $submitted_url, wp_upload_dir()['baseurl'] );
 
-							$attachment = array(
-								'post_mime_type' => $wpFileType['type'],  // file type
-								'post_title' => sanitize_file_name( $submitted_url ),  // sanitize and use image name as file name
-								'post_content' => '',  // could use the image description here as the content
-								'post_status' => 'inherit'
-							);
+							if ( $upload_dir_pos !== false ) {
+								$relative_file_path = substr( $submitted_url, strlen ( wp_upload_dir()['baseurl'] ) + 1 );
+							}
 
-							// insert and return attachment id
-							$attachmentId = wp_insert_attachment( $attachment, $submitted_url, $link_id );
-							$attachmentData = wp_generate_attachment_metadata( $attachmentId, $submitted_url );
-							wp_update_attachment_metadata( $attachmentId, $attachmentData );
-							set_post_thumbnail( $link_id, $attachmentId );
+							$query = "SELECT ID FROM {$wpdb->posts} WHERE guid='$submitted_url'";
+							$attachmentId = intval($wpdb->get_var($query));
+
+							if ( empty( $attachmentId ) ) {
+								$wpFileType = wp_check_filetype( $submitted_url, null);
+
+								$attachment = array(
+									'post_mime_type' => $wpFileType['type'],  // file type
+									'post_title' => sanitize_file_name( $submitted_url ),  // sanitize and use image name as file name
+									'post_content' => '',  // could use the image description here as the content
+									'post_status' => 'inherit'
+								);
+
+								// insert and return attachment id
+								$attachmentId = wp_insert_attachment( $attachment, $submitted_url, $link_id );
+								$attachmentData = wp_generate_attachment_metadata( $attachmentId, $submitted_url );
+								wp_update_attachment_metadata( $attachmentId, $attachmentData );
+							} else {
+								set_post_thumbnail( $link_id, $attachmentId );
+							}
 						}
 					}
 
@@ -6304,8 +6387,8 @@ class link_library_plugin_admin {
 		$columns['link_library_tags'] = 'Tags';
 		$columns['link_library_rating'] = 'Rating';
 		$columns['link_library_visits'] = 'Hits';
+		$columns['date'] = 'Publication Date';
 		unset( $columns['comments'] );
-		unset( $columns['date'] );
 		return $columns;
 	}
 

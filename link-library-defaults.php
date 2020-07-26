@@ -277,6 +277,9 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['linkimagelabel']                  = __( 'Link Image (jpg, jpeg, png)', 'link-library' ) ;
 	$options['showaddlinkimage']                = 'hide';
 	$options['datesource']                      = 'updateddate';
+	$options['taglist_cpt']                     = '';
+	$options['excludetaglist_cpt']              = '';
+	$options['taglinks']                        = 'inactive';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

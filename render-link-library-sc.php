@@ -741,14 +741,14 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					}
 				}
 
-				if ( !empty( $taglistoverride ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
+				if ( !empty( $taglist_cpt ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
 
 					$tag_array = array();
 
 					if ( ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
 						$tag_array = explode( '.', $_GET['link_tags'] );
-					} elseif( !empty( $taglistoverride ) ) {
-						$tag_array = explode( ',', $taglistoverride );
+					} elseif( !empty( $taglist_cpt ) ) {
+						$tag_array = explode( ',', $taglist_cpt );
 					}
 
 					// YL: Make this an option
@@ -762,11 +762,38 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							'field' => 'slug',
 							'terms' => $tag_array,
 						);
-					} elseif ( !empty( $taglistoverride ) ) {
+					} elseif ( !empty( $taglist_cpt ) ) {
 						$link_query_args['tax_query'][] = array(
 							'taxonomy' => 'link_library_tags',
 							'field' => 'id',
 							'terms' => $tag_array,
+						);
+					}
+
+					if ( sizeof( $link_query_args['tax_query'] ) > 1 ) {
+						$link_query_args['tax_query']['relation'] = 'AND';
+					}
+				}
+
+				if ( !empty( $excludetaglist_cpt ) ) {
+
+					$exclude_tag_array = array();
+
+					if( !empty( $excludetaglist_cpt ) ) {
+						$exclude_tag_array = explode( ',', $excludetaglist_cpt );
+					}
+
+					// YL: Make this an option
+					if ( !empty( $exclude_tag_array ) ) {
+						$showlinksonclick = false;
+					}
+
+					if ( !empty( $excludetaglist_cpt ) ) {
+						$link_query_args['tax_query'][] = array(
+							'taxonomy' => 'link_library_tags',
+							'field' => 'id',
+							'terms' => $exclude_tag_array,
+							'operator' => 'NOT IN'
 						);
 					}
 
@@ -820,6 +847,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				} elseif ( 'date' == $linkorder ) {
 					$link_query_args['meta_query']['link_updated_clause'] = array( 'key' => 'link_updated' );
 					$link_query_args['orderby']['link_updated_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( 'pubdate' == $linkorder ) {
+					$link_query_args['orderby'] = 'publish_date';
+					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'price' == $linkorder ) {
 					$link_query_args['meta_query']['link_price_clause'] = array( 'key' => 'link_price' );
 					$link_query_args['orderby']['link_price_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
@@ -2191,8 +2221,18 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														}
 
 														$link_tags_array = array();
+														global $wp;
+
 														foreach ( $link_tags as $link_tag ) {
-															$link_tags_array[] = $link_tag->name;
+															$pageID = get_queried_object_id();
+															$argumentarray = array ( 'link_tags' => $link_tag->slug );
+															$targetaddress = esc_url( add_query_arg( $argumentarray ), home_url( $wp->request ) );
+															if ( $taglinks == 'active' ) {
+																$link_tags_array[] = '<a href="' . $targetaddress . '">' . $link_tag->name . '</a>';
+															} else {
+																$link_tags_array[] = $link_tag->name;
+															}
+
 														}
 														$current_cat_output .= implode( ', ', $link_tags_array );
 

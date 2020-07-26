@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.5.5
+Version: 6.5.6
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -897,6 +897,50 @@ class link_library_plugin {
 			}
 		}
 
+		if ( !empty( $taglistoverride ) ) {
+			$options['taglist_cpt'] = $taglistoverride;
+
+			$update_list = false;
+			$tag_list_array = explode( ',', $taglistoverride );
+			foreach( $tag_list_array as $index => $tag_text ) {
+				if ( !is_numeric( $tag_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $tag_text, 'link_library_tags' );
+
+					if ( $matched_term ) {
+						$tag_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $tag_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['taglist_cpt'] = implode( ',', $tag_list_array );
+			}
+		}
+
+		if ( !empty( $excludecategoryoverride ) ) {
+			$options['excludetaglist_cpt'] = $excludetagoverride;
+
+			$update_list = false;
+			$exclude_tag_list_array = explode( ',', $excludetagoverride );
+			foreach( $exclude_tag_list_array as $index => $tag_text ) {
+				if ( !is_numeric( $tag_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $tag_text, 'link_library_tags' );
+
+					if ( $matched_term ) {
+						$exclude_tag_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $exclude_tag_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['excludetaglist_cpt'] = implode( ',', $exclude_category_list_array );
+			}
+		}
+
 		if ( $genoptions['debugmode'] ) {
 			$mainoutputstarttime = microtime( true );
 			$timeoutputstart = "\n<!-- Start Link Library Cats Time: " . $mainoutputstarttime . "-->\n";
@@ -1137,6 +1181,7 @@ class link_library_plugin {
 			'singlelinkid' => '',
 			'showonecatonlyoverride' => '',
 			'taglistoverride' => '',
+			'excludetagoverride' => '',
 			'maxlinksoverride' => '',
 			'linkorderoverride' => '',
 			'linkdirectionoverride' => ''
@@ -1180,10 +1225,6 @@ class link_library_plugin {
 
 		if ( !empty( $rssoverride ) ) {
 			$options['show_rss'] = $rssoverride;
-		}
-
-		if ( !empty( $taglistoverride ) ) {
-			$options['taglistoverride'] = $taglistoverride;
 		}
 
 		if ( !empty( $maxlinksoverride ) ) {
@@ -1244,7 +1285,51 @@ class link_library_plugin {
 				}
 			}
 			if ( $update_list ) {
-				$options['categorylist_cpt'] = implode( ',', $exclude_category_list_array );
+				$options['excludecategorylist_cpt'] = implode( ',', $exclude_category_list_array );
+			}
+		}
+
+		if ( !empty( $taglistoverride ) ) {
+			$options['taglist_cpt'] = $taglistoverride;
+
+			$update_list = false;
+			$tag_list_array = explode( ',', $taglistoverride );
+			foreach( $tag_list_array as $index => $tag_text ) {
+				if ( !is_numeric( $tag_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $tag_text, 'link_library_tags' );
+
+					if ( $matched_term ) {
+						$tag_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $tag_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['taglist_cpt'] = implode( ',', $tag_list_array );
+			}
+		}
+
+		if ( !empty( $excludecategoryoverride ) ) {
+			$options['excludetaglist_cpt'] = $excludetagoverride;
+
+			$update_list = false;
+			$exclude_tag_list_array = explode( ',', $excludetagoverride );
+			foreach( $exclude_tag_list_array as $index => $tag_text ) {
+				if ( !is_numeric( $tag_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $tag_text, 'link_library_tags' );
+
+					if ( $matched_term ) {
+						$exclude_tag_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $exclude_tag_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['excludetaglist_cpt'] = implode( ',', $exclude_category_list_array );
 			}
 		}
 

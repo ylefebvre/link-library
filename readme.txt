@@ -49,8 +49,14 @@ Further configuration is available under the Link Library Settings panel.
 == Changelog ==
 
 = 6.5.6 =
+* Added support for tag selection in Common section of library configuration
+* Added new sort option for links to sort based on publication date
 * Fixed option to not display any tooltip on Link Name
 * Add spaces between tags
+* Fixed issue with favicon generation not working when editing individual links
+* Fixed issue with duplicate images created in media library when assigning images to links
+* Added some better tooltips in admin
+* Reciprocal link validation will not longer be done if the field is set to be displayed, but not required
 
 = 6.5.5 =
 * Added menu item promoting Accessibe service
