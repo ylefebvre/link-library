@@ -34,11 +34,11 @@ function RenderLinkLibrarySearchForm( $libraryoptions ) {
 	} elseif ( isset( $_GET['p'] ) && !empty( $_GET['p'] ) ) {
 		$output .= '<input type="hidden" name="p" value="' . $_GET['p'] . '" />';
 	}
-	
+
 	if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
 		$output .= '<input type="hidden" name="link_price" value="' . $_GET['link_price'] . '" />';
 	}
-	
+
 	if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 		$output .= '<input type="hidden" name="link_tags" value="' . $_GET['link_tags'] . '" />';
 	}
@@ -52,6 +52,11 @@ function RenderLinkLibrarySearchForm( $libraryoptions ) {
 	$output .= "</div>\n";
 	$output .= "</form>\n\n";
 
+	$resetaddress = get_permalink();
+	if ( !empty( $searchresultsaddress ) ) {
+		$resetaddress = $searchresultsaddress;
+	}
+
 	$output .= "<script type='text/javascript'>\n";
 	$output .= "jQuery(document).ready(function () {\n";
 	$output .= "\tjQuery('#searchbutton').click(function () {\n";
@@ -63,7 +68,7 @@ function RenderLinkLibrarySearchForm( $libraryoptions ) {
 	$output .= "\t\t}\n";
 	$output .= "\t});\n";
 	$output .= "\tjQuery('#resetbutton').click(function () {\n";
-	$output .= "\t\twindow.location.href = '" . get_permalink() . "';\n";
+	$output .= "\t\twindow.location.href = '" . $resetaddress . "';\n";
 	$output .= "\t\treturn false;\n";
 	$output .= "\t});\n";
 	$output .= "});\n";

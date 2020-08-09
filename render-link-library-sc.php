@@ -1769,7 +1769,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															}
 
 															if ( 'description' == $tooltipname && !empty( $desc ) ) {
-																$title = ' title="' . $desc . '"';
+																$title = ' title="' . $cleandesc . '"';
 															} else {
 																$title = '';
 															}
