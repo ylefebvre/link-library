@@ -280,6 +280,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['taglist_cpt']                     = '';
 	$options['excludetaglist_cpt']              = '';
 	$options['taglinks']                        = 'inactive';
+	$options['catlistchildcatdepthlimit']       = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

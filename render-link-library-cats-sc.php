@@ -509,7 +509,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		            $output .= "</option>\n";
 	            }
 
-                if ( $cat_has_children ) {
+                if ( $cat_has_children && ( empty( $catlistchildcatdepthlimit ) || ( !empty( $catlistchildcatdepthlimit ) && intval( $catlistchildcatdepthlimit ) - 1 > $level ) ) ) {
 	                $output .= RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $catname->term_id, $level + 1 );
                 }
 

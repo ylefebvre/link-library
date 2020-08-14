@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.5.8 =
+* Added option to limit depth of categories hierarchy levels for category list
+
 = 6.5.7 =
 * Fixed issue with link tooltips having HTML code when search results are found in description
 * Fixed issue where the Reset Search button did not use the search form submission URL

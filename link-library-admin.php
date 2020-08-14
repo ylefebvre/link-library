@@ -2247,7 +2247,7 @@ class link_library_plugin_admin {
 					'beforecatlist1', 'beforecatlist2', 'beforecatlist3', 'catnameoutput', 'linkaddfrequency',
 					'defaultsinglecat_cpt', 'rsspreviewcount', 'rssfeedinlinecount', 'linksperpage', 'catdescpos',
 					'catlistdescpos', 'rsspreviewwidth', 'rsspreviewheight', 'numberofrssitems',
-					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement'
+					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement'
 				)
 				as $option_name
 			) {
@@ -4001,6 +4001,14 @@ class link_library_plugin_admin {
 							<option value="right"<?php selected( $options['catlistdescpos'] == 'right' ); ?>><?php _e( 'Right', 'link-library' ); ?></option>
 							<option value="left"<?php selected( $options['catlistdescpos'] == 'left' ); ?>><?php _e( 'Left', 'link-library' ); ?></option>
 						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<?php _e( 'Child category depth limit', 'link-library' ); ?>
+					</td>
+					<td>
+						<input type="text" id="catlistchildcatdepthlimit" name="catlistchildcatdepthlimit" size="2" value="<?php echo $options['catlistchildcatdepthlimit']; ?>" />
 					</td>
 				</tr>
 				<tr>
