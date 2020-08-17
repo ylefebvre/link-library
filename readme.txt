@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6 =
+* Fix editor issue in WP 5.5
+
 = 6.5.8 =
 * Added option to limit depth of categories hierarchy levels for category list
 

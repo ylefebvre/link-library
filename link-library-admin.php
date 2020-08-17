@@ -5962,7 +5962,7 @@ class link_library_plugin_admin {
 				// Uploading files
 				var file_frame;
 
-				jQuery('.upload_image_button').live('click', function (event) {
+				jQuery('.upload_image_button').on('click', function (event) {
 
 					event.preventDefault();
 
