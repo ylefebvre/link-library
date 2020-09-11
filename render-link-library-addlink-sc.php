@@ -80,6 +80,8 @@ function addlink_render_category_list( $categories, $select_name, $depth, $order
 function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $code ) {
 
     wp_enqueue_script( 'form-validator' );
+    wp_enqueue_script( 'tiptip' );
+	wp_enqueue_style( 'tiptipstyle', plugins_url( '/tiptip/tipTip.css', __FILE__ ) );
     $output = '';
 
     $generaloptions = wp_parse_args( $generaloptions, ll_reset_gen_settings( 'return' ) );
@@ -284,13 +286,24 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             $linknamelabel = __( 'Link name', 'link-library' );
         }
 
-        $output .= '<tr><th>' . $linknamelabel . '</th><td><input data-validation="required length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="link_name" id="link_name" value="' . ( isset( $_GET['addlinkname'] ) ? esc_html( stripslashes( $_GET['addlinkname'] ), '1' ) : '') . "\" /></td></tr>\n";
+        $output .= '<tr><th>' . $linknamelabel . '</th><td ';
+        if ( !empty( $linknametooltip ) ) {
+        	$output .= 'class="lltooltip" title="' . $linknametooltip . '"';
+        }
+
+        $output .= '><input data-validation="required length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="link_name" id="link_name" value="' . ( isset( $_GET['addlinkname'] ) ? esc_html( stripslashes( $_GET['addlinkname'] ), '1' ) : '') . "\" /></td></tr>\n";
 
         if ( empty( $linkaddrlabel ) ) {
             $linkaddrlabel = __( 'Link address', 'link-library' );
         }
 
-        $output .= '<tr><th>' . $linkaddrlabel . '</th><td><input ';
+        $output .= '<tr><th>' . $linkaddrlabel . '</th><td ';
+
+	    if ( !empty( $linkaddrtooltip ) ) {
+		    $output .= 'class="lltooltip" title="' . $linkaddrtooltip . '"';
+	    }
+
+        $output .= '><input ';
         if ( !$addlinknoaddress ) {
             $output .= 'data-validation="required url length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, URL', 'link-library' ) . '" ';
         }
@@ -301,7 +314,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linkrsslabel = __( 'Link RSS', 'link-library' );
             }
 
-            $output .= '<tr><th>' . $linkrsslabel . '</th><td><input ';
+            $output .= '<tr><th>' . $linkrsslabel . '</th><td ';
+
+	        if ( !empty( $linkrsstooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linkrsstooltip . '"';
+	        }
+
+            $output .= '><input ';
 
             if ( 'required' == $showaddlinkrss ) {
                 $requiredtext = ' required';
@@ -361,7 +380,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 	$output .= __( 'Use control-click (Windows) or command-click (Mac) to select multiple', 'link-library' );
                 	$output .= '</span>';
                 }
-                $output .= '</th><td>';
+                $output .= '</th><td ';
+
+	            if ( !empty( $linkcattooltip ) ) {
+		            $output .= 'class="lltooltip" title="' . $linkcattooltip . '"';
+	            }
+
+                $output .= '>';
 
 	            $output .= addlink_render_category_list( $linkcats, 'link_category', 0, 'ASC', $libraryoptions );
 
@@ -382,7 +407,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 	                $output .= 'style="display: none;"';
                 }
 
-                $output .= '><th>' .  $linkcustomcatlabel . '</th><td><input type="text" name="link_user_category" id="link_user_category" value="' . ( isset( $_GET['addlinkusercat'] ) ? esc_html( stripslashes( $_GET['addlinkusercat'] ), '1' ) : '') . "\" /></td></tr>\n";
+                $output .= '><th>' .  $linkcustomcatlabel . '</th><td ';
+
+	            if ( !empty( $linkusercattooltip ) ) {
+		            $output .= 'class="lltooltip" title="' . $linkusercattooltip . '"';
+	            }
+
+                $output .= '><input type="text" name="link_user_category" id="link_user_category" value="' . ( isset( $_GET['addlinkusercat'] ) ? esc_html( stripslashes( $_GET['addlinkusercat'] ), '1' ) : '') . "\" /></td></tr>\n";
             }
         }
 
@@ -404,7 +435,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 			    $output .= __( 'Use control-click (Windows) or command-click (Mac) to select multiple', 'link-library' );
 			    $output .= '</span>';
 
-			    $output .= '</th><td>';
+			    $output .= '</th><td ';
+
+			    if ( !empty( $linktagtooltip ) ) {
+				    $output .= 'class="lltooltip" title="' . $linktagtooltip . '"';
+			    }
+
+			    $output .= '>';
 			    $output .= '<SELECT name="link_tags[]" id="link_tags" ';
 
 			    $number_of_tags = sizeof( $linktags );
@@ -440,7 +477,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 				    $output .= 'style="display: none;"';
 			    }
 
-			    $output .= '><th>' .  $linkcustomtaglabel . '</th><td><input type="text" name="link_user_tags" id="link_user_tags" value="' . ( isset( $_GET['addlinkusertags'] ) ? esc_html( stripslashes( $_GET['addlinkusertags'] ), '1' ) : '') . "\" /></td></tr>\n";
+			    $output .= '><th>' .  $linkcustomtaglabel . '</th><td ';
+
+			    if ( !empty( $linkusertagtooltip ) ) {
+				    $output .= 'class="lltooltip" title="' . $linkusertagtooltip . '"';
+			    }
+
+			    $output .= '><input type="text" name="link_user_tags" id="link_user_tags" value="' . ( isset( $_GET['addlinkusertags'] ) ? esc_html( stripslashes( $_GET['addlinkusertags'] ), '1' ) : '') . "\" /></td></tr>\n";
 		    }
 	    }
 
@@ -450,9 +493,15 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linkdesclabel = __( 'Link description', 'link-library' );
             }
 
-            $output .= '<tr><th>' . $linkdesclabel . '</th><td><input ';
+            $output .= '<tr><th>' . $linkdesclabel . '</th><td ';
 
-            if ( 'required' == $showaddlinkrss ) {
+	        if ( !empty( $linkdesctooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linkdesctooltip . '"';
+	        }
+
+            $output .= '><input ';
+
+            if ( 'required' == $showaddlinkdesc ) {
                 $requiredtext = ' required';
             } else {
                 $requiredtext = '';
@@ -468,7 +517,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linklargedesclabel = __( 'Large description', 'link-library' );
             }
 
-            $output .= '<tr><th style="vertical-align: top">' . $linklargedesclabel . '</th><td><textarea ';
+            $output .= '<tr><th style="vertical-align: top">' . $linklargedesclabel . '</th><td ';
+
+	        if ( !empty( $largedesctooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $largedesctooltip . '"';
+	        }
+
+            $output .= '><textarea ';
 
             if ( 'required' == $showuserlargedescription ) {
                 $output .= 'data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
@@ -482,7 +537,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linknoteslabel = __( 'Link notes', 'link-library' );
             }
 
-            $output .= '<tr><th>' . $linknoteslabel . '</th><td>';
+            $output .= '<tr><th>' . $linknoteslabel . '</th><td ';
+
+	        if ( !empty( $linknotestooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linknotestooltip . '"';
+	        }
+
+            $output .= '>';
 
             if ( !$usetextareaforusersubmitnotes || empty( $usetextareaforusersubmitnotes ) ) {
                 $output .= '<input ';
@@ -518,7 +579,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 			    $linkimagelabel = __( 'Link Image (jpg, jpeg, png)', 'link-library' );
 		    }
 
-		    $output .= '<tr><th>' . $linkimagelabel . '</th><td>';
+		    $output .= '<tr><th>' . $linkimagelabel . '</th><td ';
+
+		    if ( !empty( $linkimagetooltip ) ) {
+			    $output .= 'class="lltooltip" title="' . $linkimagetooltip . '"';
+		    }
+
+		    $output .= '>';
 		    $output .= '<input type="file" name="linkimage" id="linkimage">';
 
 		    $output .= "</td></tr>\n";
@@ -529,7 +596,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linkreciprocallabel = __( 'Reciprocal Link', 'link-library' );
             }
 
-            $output .= '<tr><th>' . $linkreciprocallabel . '</th><td><input ';
+            $output .= '<tr><th>' . $linkreciprocallabel . '</th><td ';
+
+	        if ( !empty( $linkreciptooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linkreciptooltip . '"';
+	        }
+
+            $output .= '><input ';
 
             if ( 'required' == $showaddlinkrss ) {
                 $requiredtext = ' required url';
@@ -547,7 +620,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linksecondurllabel = __( 'Secondary Address', 'link-library' );
             }
 
-            $output .= '<tr><th>' . $linksecondurllabel . '</th><td><input ';
+            $output .= '<tr><th>' . $linksecondurllabel . '</th><td ';
+
+	        if ( !empty( $linksecondtooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linksecondtooltip . '"';
+	        }
+
+            $output .= '><input ';
 
             if ( 'required' == $showaddlinkrss ) {
                 $requiredtext = ' required';
@@ -565,7 +644,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linktelephonelabel = __( 'Telephone', 'link-library' );
             }
 
-            $output .= '<tr><th>' . $linktelephonelabel . '</th><td><input ';
+            $output .= '<tr><th>' . $linktelephonelabel . '</th><td ';
+
+	        if ( !empty( $linktelephonetooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linktelephonetooltip . '"';
+	        }
+
+            $output .= '><input ';
 
             if ( 'required' == $showaddlinkrss ) {
                 $requiredtext = ' required';
@@ -583,7 +668,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linkemaillabel = __( 'E-mail', 'link-library' );
             }
 
-            $output .= '<tr><th>' . $linkemaillabel . '</th><td><input ';
+            $output .= '<tr><th>' . $linkemaillabel . '</th><td ';
+
+	        if ( !empty( $linkemailtooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linkemailtooltip . '"';
+	        }
+
+            $output .= '><input ';
 
             if ( 'required' == $showaddlinkrss ) {
                 $requiredtext = ' required';
@@ -614,7 +705,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 	        if ( 'show' != $showlinksubmittername && 'required' != $showlinksubmittername ) {
 		        $output .= ' style="display:none"';
 	        }
-	        $output .= '><th>' . $linksubmitternamelabel . '</th><td><input ';
+	        $output .= '><th>' . $linksubmitternamelabel . '</th><td ';
+
+	        if ( !empty( $submitternametooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $submitternametooltip . '"';
+	        }
+
+	        $output .= '><input ';
 
             if ( 'required' == $showaddlinkrss ) {
                 $requiredtext = ' required';
@@ -645,7 +742,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 	        if ( 'show' != $showaddlinksubmitteremail && 'required' != $showaddlinksubmitteremail ) {
 		        $output .= ' style="display:none"';
 	        }
-	        $output .= '><th>' . $linksubmitteremaillabel . '</th><td><input ';
+	        $output .= '><th>' . $linksubmitteremaillabel . '</th><td ';
+
+	        if ( !empty( $submitteremailtooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $submitteremailtooltip . '"';
+	        }
+
+	        $output .= '><input ';
 
             if ( 'required' == $showaddlinkrss ) {
                 $requiredtext = ' required';
@@ -663,7 +766,13 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $linksubmittercommentlabel = __( 'Submitter Comment', 'link-library' );
             }
 
-            $output .= '<tr><th style="vertical-align: top;">' . $linksubmittercommentlabel . '</th><td><textarea ';
+            $output .= '<tr><th style="vertical-align: top;">' . $linksubmittercommentlabel . '</th><td ';
+
+	        if ( !empty( $submittercommenttooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $submittercommenttooltip . '"';
+	        }
+
+            $output .= '><textarea ';
 
             if ( 'required' == $showlinksubmittercomment ) {
                 $output .= 'data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
@@ -696,7 +805,12 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         $output .= "</form>\n\n";
 
         $output .= "<script type='text/javascript'>\n";
+
         $output .= "\tjQuery( document ).ready( function() {\n";
+
+	    $output .= "jQuery('.lltooltip').each(function () {\n";
+	    $output .= "\tjQuery(this).tipTip();\n";
+	    $output .= "});\n";
 
         $output .= "\tvar LinkLibraryValidationLanguage = {\n";
         $output .= "\t\terrorTitle: '" . addslashes( __( 'Form submission failed!', 'link-library' ) ) . "',\n";

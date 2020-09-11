@@ -679,15 +679,15 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 		}
 
 		if ( isset( $_POST['ll_submittername'] ) && $_POST['ll_submittername'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinksubmitname', rawurlencode( $captureddata['ll_submittername'] ), $redirectaddress );
+			$redirectaddress = add_query_arg( 'll_submittername', rawurlencode( $captureddata['ll_submittername'] ), $redirectaddress );
 		}
 
 		if ( isset( $_POST['ll_submitteremail'] ) && $_POST['ll_submitteremail'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinksubmitemail', rawurlencode( $captureddata['ll_submitteremail'] ), $redirectaddress );
+			$redirectaddress = add_query_arg( 'll_submitteremail', rawurlencode( $captureddata['ll_submitteremail'] ), $redirectaddress );
 		}
 
 		if ( isset( $_POST['ll_submittercomment'] ) && $_POST['ll_submittercomment'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinksubmitcomment', rawurlencode( $captureddata['ll_submittercomment'] ), $redirectaddress );
+			$redirectaddress = add_query_arg( 'll_submittercomment', rawurlencode( $captureddata['ll_submittercomment'] ), $redirectaddress );
 		}
 
 		if ( isset( $_POST['ll_customcaptchaanswer'] ) && $_POST['ll_customcaptchaanswer'] != '' ) {

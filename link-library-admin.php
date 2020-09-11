@@ -423,7 +423,55 @@ class link_library_plugin_admin {
 			}
 
 			$img    = $uploads['basedir'] . "/" . $filepath . "/" . $linkid . '.png';
-			$status = file_put_contents( $img, @file_get_contents( $genthumburl ) );
+			if ( $thumbnailgenerator != 'google' || $mode == 'favicon' || $mode == 'favicononly' ) {
+				$status = file_put_contents( $img, @file_get_contents( $genthumburl ) );
+			} elseif ( $thumbnailgenerator == 'google' && ( $mode == 'thumb' || $mode == 'thumbonly' ) ) {
+				$screenshot = file_get_contents('https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=' . esc_html( $url ));
+				$data_whole = json_decode($screenshot);
+
+				if (isset($data_whole->error) || empty($screenshot)) {
+					if (!(substr($url, 0, 4) == 'http')) {
+						$url2 = 'https%3A%2F%2F' . $url;
+						$screenshot = file_get_contents('https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url='.$url2);
+						$data_whole = json_decode($screenshot);
+					}
+				}
+				if (isset($data_whole->error) || empty($screenshot)) {
+					if (!(substr($url, 0, 3) == 'www')) {
+						$url3 = 'https%3A%2F%2F' . 'www.' . $url;
+						$screenshot = file_get_contents('https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url='.$url3);
+						$data_whole = json_decode($screenshot);
+					}
+				}
+				if (isset($data_whole->error)) {
+					$status = false;
+				} else {
+					if (isset($data_whole->lighthouseResult->audits->{'final-screenshot'}->details->data)) {
+						$data = $data_whole->lighthouseResult->audits->{'final-screenshot'}->details->data;
+						$data = str_replace('data:image/jpeg;base64','',$data);
+
+						$data = str_replace('_', '/', $data);
+						$data = str_replace('-', '+', $data);
+						$base64img = str_replace('data:image/jpeg;base64,', '', $data);
+
+						$data   		  = base64_decode($data);
+						$upload_dir       = $uploads['basedir'] . '/' . $filepath; // Set upload folder
+						$image_data       = $data; // img data
+						$unique_file_name = wp_unique_filename( $uploads['basedir'] . '/' . $filepath, $linkid . '.png' ); // Generate unique name
+						$filename         = basename( $unique_file_name ); // Create image file name
+
+						// Create the image  file on the server
+						file_put_contents( $img, $image_data );
+
+						$exists = file_exists($tmp);
+						$status = true;
+					} else {
+						$status = false;
+					}
+
+				}
+
+			}
 
 			if ( $status !== false ) {
 				if ( $filepathtype == 'absolute' || empty( $filepathtype ) ) {
@@ -1909,6 +1957,8 @@ class link_library_plugin_admin {
 
 						$link_tags_array = array();
 						$link_tags_slugs_array = array();
+						$link_tags_string = '';
+						$link_tags_slugs = '';
 						$link_tags = wp_get_post_terms( get_the_ID(), 'link_library_tags' );
 						if ( $link_tags ) {
 							foreach ( $link_tags as $link_tag ) {
@@ -2289,7 +2339,10 @@ class link_library_plugin_admin {
 					'beforecatdesc', 'aftercatdesc', 'displayastable', 'extraquerystring', 'emailextracontent', 'beforelinktags', 'afterlinktags', 'beforelinkprice', 'afterlinkprice', 'linkcurrency',
 					'toppagetext', 'updatedlabel', 'weblinktarget', 'linktagslabel', 'showaddlinktags', 'addlinktaglistoverride', 'linkcustomtaglabel',
 					'addlinkcustomtag', 'linkcustomtaglistentry', 'maxlinkspercat', 'linkaddrdefvalue', 'userlinkcatselectionlabel', 'dropdownselectionprompttext',
-					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage'
+					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage', 'linknametooltip', 'linkaddrtooltip', 'linkrsstooltip',
+					'linkcattooltip', 'linkusercattooltip', 'linkusertagtooltip', 'linkdesctooltip', 'linknotestooltip', 'linkimagetooltip', 'linkreciptooltip',
+					'linksecondtooltip', 'linktelephonetooltip', 'linkemailtooltip', 'submitternametooltip', 'submitteremailtooltip',
+					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2759,6 +2812,7 @@ class link_library_plugin_admin {
 									<option value="shrinktheweb" <?php selected( $genoptions['thumbnailgenerator'], 'shrinktheweb' ); ?>>Shrink The Web
 									<option value="pagepeeker" <?php selected( $genoptions['thumbnailgenerator'], 'pagepeeker' ); ?>>PagePeeker
 									<option value="thumbshots" <?php selected( $genoptions['thumbnailgenerator'], 'thumbshots' ); ?>>Thumbshots.org
+									<option value="google" <?php selected( $genoptions['thumbnailgenerator'], 'google' ); ?>>Google PageSpeed
 								</select>
 							</td>
 						</tr>
@@ -5370,6 +5424,12 @@ class link_library_plugin_admin {
 			</td>
 			<td style='width: 20px'></td>
 			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link address default value', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkaddrdefvalue" name="linkaddrdefvalue" size="30" value="<?php echo $options['linkaddrdefvalue']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Link name label', 'link-library' ); ?></td>
 			<?php if ( $options['linknamelabel'] == "" ) {
 				$options['linknamelabel'] = __( 'Link Name', 'link-library' );
@@ -5378,6 +5438,11 @@ class link_library_plugin_admin {
 				<input type="text" id="linknamelabel" name="linknamelabel" size="30" value="<?php echo $options['linknamelabel']; ?>" />
 			</td>
 			<td style='width: 20px'></td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link name tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linknametooltip" name="linknametooltip" size="30" value="<?php echo $options['linknametooltip']; ?>" />
+			</td>
 		</tr>
 		<tr>
 			<td style='width:200px'><?php _e( 'Link address label', 'link-library' ); ?></td>
@@ -5389,6 +5454,12 @@ class link_library_plugin_admin {
 			</td>
 			<td style='width: 20px'></td>
 			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link address tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkaddrtooltip" name="linkaddrtooltip" size="30" value="<?php echo $options['linkaddrtooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Link RSS label', 'link-library' ); ?></td>
 			<?php if ( $options['linkrsslabel'] == "" ) {
 				$options['linkrsslabel'] = __( 'Link RSS', 'link-library' );
@@ -5403,11 +5474,10 @@ class link_library_plugin_admin {
 					<option value="required"<?php selected( $options['showaddlinkrss'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
 			</td>
-		</tr>
-		<tr>
-			<td style='width:200px'><?php _e( 'Link address default value', 'link-library' ); ?></td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link RSS tooltip', 'link-library' ); ?></td>
 			<td>
-				<input type="text" id="linkaddrdefvalue" name="linkaddrdefvalue" size="30" value="<?php echo $options['linkaddrdefvalue']; ?>" />
+				<input type="text" id="linkrsstooltip" name="linkrsstooltip" size="30" value="<?php echo $options['linkrsstooltip']; ?>" />
 			</td>
 		</tr>
 		<tr>
@@ -5459,6 +5529,12 @@ class link_library_plugin_admin {
 			</td>
 		</tr>
 		<tr>
+			<td style='width:200px'><?php _e( 'Link category tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkcattooltip" name="linkcattooltip" size="30" value="<?php echo $options['linkcattooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'User-submitted category', 'link-library' ); ?></td>
 			<?php if ( $options['linkcustomcatlabel'] == "" ) {
 				$options['linkcustomcatlabel'] = __( 'User-submitted category', 'link-library' );
@@ -5483,6 +5559,12 @@ class link_library_plugin_admin {
 			<td style='width:200px'></td>
 		</tr>
 		<tr>
+			<td style='width:200px'><?php _e( 'User-defined category tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkusercattooltip" name="linkusercattooltip" size="30" value="<?php echo $options['linkusercattooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Tags label', 'link-library' ); ?></td>
 			<?php if ( empty( $options['linktagslabel'] ) ) {
 				$options['linktagslabel'] = __( 'Link Tags', 'link-library' );
@@ -5501,6 +5583,12 @@ class link_library_plugin_admin {
 			<td colspan=3 class='lltooltip' title='<?php _e( 'Comma-seperated list of tag IDs to be displayed in category selection box (e.g. 1,5,4)', 'link-library' ); ?>'>
 				<input type="text" id="addlinktaglistoverride" name="addlinktaglistoverride" size="50" value="<?php echo $options['addlinktaglistoverride']; ?>" />
 			<td style='width:200px'></td>
+		</tr>
+		<tr>
+			<td style='width:200px'><?php _e( 'Link tags tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linktagtooltip" name="linktagtooltip" size="30" value="<?php echo $options['linktagtooltip']; ?>" />
+			</td>
 		</tr>
 		<tr>
 			<td style='width:200px'><?php _e( 'User-submitted tags label', 'link-library' ); ?></td>
@@ -5527,6 +5615,12 @@ class link_library_plugin_admin {
 			<td style='width:200px'></td>
 		</tr>
 		<tr>
+			<td style='width:200px'><?php _e( 'User-defined tags tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkusertagtooltip" name="linkusertagtooltip" size="30" value="<?php echo $options['linkusertagtooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Link description label', 'link-library' ); ?></td>
 			<?php if ( $options['linkdesclabel'] == "" ) {
 				$options['linkdesclabel'] = __( 'Link Description', 'link-library' );
@@ -5542,6 +5636,12 @@ class link_library_plugin_admin {
 				</select>
 			</td>
 			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link description tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkdesctooltip" name="linkdesctooltip" size="30" value="<?php echo $options['linkdesctooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Link notes label', 'link-library' ); ?></td>
 			<?php if ( $options['linknoteslabel'] == "" ) {
 				$options['linknoteslabel'] = __( 'Link Notes', 'link-library' );
@@ -5555,6 +5655,11 @@ class link_library_plugin_admin {
 					<option value="show"<?php selected( $options['showaddlinknotes'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
 					<option value="required"<?php selected( $options['showaddlinknotes'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
+			</td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link notes tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linknotestooltip" name="linknotestooltip" size="30" value="<?php echo $options['linknotestooltip']; ?>" />
 			</td>
 		</tr>
 		<tr>
@@ -5580,6 +5685,11 @@ class link_library_plugin_admin {
 					<option value="show"<?php selected( $options['showaddlinkimage'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
 					<option value="required"<?php selected( $options['showaddlinkimage'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
+			</td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link image tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkimagetooltip" name="linkimagetooltip" size="30" value="<?php echo $options['linkimagetooltip']; ?>" />
 			</td>
 		</tr>
 		<tr>
@@ -5609,6 +5719,12 @@ class link_library_plugin_admin {
 				</select>
 			</td>
 			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Reciprocal Link tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkreciptooltip" name="linkreciptooltip" size="30" value="<?php echo $options['linkreciptooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Secondary Address label', 'link-library' ); ?></td>
 			<?php if ( $options['linksecondurllabel'] == "" ) {
 				$options['linksecondurllabel'] = __( 'Secondary Address', 'link-library' );
@@ -5622,6 +5738,11 @@ class link_library_plugin_admin {
 					<option value="show"<?php selected( $options['showaddlinksecondurl'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
 					<option value="required"<?php selected( $options['showaddlinksecondurl'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
+			</td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Secondary Address tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linksecondtooltip" name="linksecondtooltip" size="30" value="<?php echo $options['linksecondtooltip']; ?>" />
 			</td>
 		</tr>
 		<tr>
@@ -5640,6 +5761,12 @@ class link_library_plugin_admin {
 				</select>
 			</td>
 			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link Telephone tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linktelephonetooltip" name="linktelephonetooltip" size="30" value="<?php echo $options['linktelephonetooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Link E-mail label', 'link-library' ); ?></td>
 			<?php if ( $options['linkemaillabel'] == "" ) {
 				$options['linkemaillabel'] = __( 'E-mail', 'link-library' );
@@ -5653,6 +5780,11 @@ class link_library_plugin_admin {
 					<option value="show"<?php selected( $options['showaddlinkemail'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
 					<option value="required"<?php selected( $options['showaddlinkemail'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
+			</td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link E-mail tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkemailtooltip" name="linkemailtooltip" size="30" value="<?php echo $options['linkemailtooltip']; ?>" />
 			</td>
 		</tr>
 		<tr>
@@ -5671,6 +5803,12 @@ class link_library_plugin_admin {
 				</select>
 			</td>
 			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Submitter Name tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="submitternametooltip" name="submitternametooltip" size="30" value="<?php echo $options['submitternametooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Link Submitter E-mail label', 'link-library' ); ?></td>
 			<?php if ( $options['linksubmitteremaillabel'] == "" ) {
 				$options['linksubmitteremaillabel'] = __( 'Submitter E-mail', 'link-library' );
@@ -5684,6 +5822,11 @@ class link_library_plugin_admin {
 					<option value="show"<?php selected( $options['showaddlinksubmitteremail'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
 					<option value="required"<?php selected( $options['showaddlinksubmitteremail'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
+			</td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Submitter E-mail tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="submitteremailtooltip" name="submitteremailtooltip" size="30" value="<?php echo $options['submitteremailtooltip']; ?>" />
 			</td>
 		</tr>
 		<tr>
@@ -5702,6 +5845,12 @@ class link_library_plugin_admin {
 				</select>
 			</td>
 			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Submitter Comment tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="submittercommenttooltip" name="submittercommenttooltip" size="30" value="<?php echo $options['submittercommenttooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Large Description Label', 'link-library' ); ?></td>
 			<?php if ( $options['linklargedesclabel'] == "" ) {
 				$options['linklargedesclabel'] = __( 'Large Description', 'link-library' );
@@ -5715,6 +5864,11 @@ class link_library_plugin_admin {
 					<option value="show"<?php selected( $options['showuserlargedescription'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
 					<option value="required"<?php selected( $options['showuserlargedescription'] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
 				</select>
+			</td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Large Description tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="largedesctooltip" name="largedesctooltip" size="30" value="<?php echo $options['largedesctooltip']; ?>" />
 			</td>
 		</tr>
 		<tr>

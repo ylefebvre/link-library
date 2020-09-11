@@ -281,6 +281,24 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['excludetaglist_cpt']              = '';
 	$options['taglinks']                        = 'inactive';
 	$options['catlistchildcatdepthlimit']       = '';
+	$options['linknametooltip']                 = '';
+	$options['linkaddrtooltip']                 = '';
+	$options['linkrsstooltip']                  = '';
+	$options['linkcattooltip']                  = '';
+	$options['linkusercattooltip']              = '';
+	$options['linktagtooltip']                  = '';
+	$options['linkusertagtooltip']              = '';
+	$options['linkdesctooltip']                 = '';
+	$options['linknotestooltip']                = '';
+	$options['linkimagetooltip']                = '';
+	$options['linkreciptooltip']                = '';
+	$options['linksecondtooltip']               = '';
+	$options['linktelephonetooltip']            = '';
+	$options['linkemailtooltip']                = '';
+	$options['submitternametooltip']            = '';
+	$options['submitteremailtooltip']           = '';
+	$options['submittercommenttooltip']         = '';
+	$options['largedesctooltip']                = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

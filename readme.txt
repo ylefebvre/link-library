@@ -3,7 +3,7 @@ Contributors: jackdewey
 Donate link: https://ylefebvre.home.blog/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
-Tested up to: 5.5
+Tested up to: 5.5.1
 Stable tag: trunk
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
@@ -48,8 +48,14 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.1 =
+* Added new option field for user submission form to specify tooltips to be displayed when user hovers over the fields
+* Fixed issue with export all links function not working if no tags are assigned
+* Fixed issue with some form fields not being re-displayed is captcha is wrong
+* Fixed issue with form validation not working with description field is set to required
+
 = 6.6 =
-* Fix editor issue in WP 5.5
+* Fixed editor issue in WP 5.5
 
 = 6.5.8 =
 * Added option to limit depth of categories hierarchy levels for category list
