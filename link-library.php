@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.6.1
+Version: 6.6.2
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -800,7 +800,18 @@ class link_library_plugin {
 				return 'error_403';
 			}
 		} elseif ( $response['response']['code'] == '200' ) {
-			if ( empty( $RecipCheckAddress ) ) {
+
+			$link_url_without_protocol = str_replace( 'http://', '', $external_link );
+			$link_url_without_protocol = str_replace( 'https://', '', $link_url_without_protocol );
+			$link_url_without_protocol = rtrim( $link_url_without_protocol, '/' );
+
+			$response_url_without_protocol = str_replace( 'http://', '', $response['http_response']->get_response_object()->url );
+			$response_url_without_protocol = str_replace( 'https://', '', $response_url_without_protocol );
+			$response_url_without_protocol = rtrim( $response_url_without_protocol, '/' );
+
+			if ( $link_url_without_protocol != $response_url_without_protocol ) {
+				return 'exists_redirected';
+			} else if ( empty( $RecipCheckAddress ) ) {
 				return 'exists_notfound';
 			} elseif ( strpos( $response['body'], $RecipCheckAddress ) === false ) {
 				return 'exists_notfound';
@@ -1780,5 +1791,15 @@ class Link_Library_Widget extends WP_Widget {
 		echo do_shortcode( '[link-library settings="' . $selected_library . '"]');
 
 		echo $after_widget;
+	}
+}
+
+if ( ! function_exists('ll_write_log')) {
+	function ll_write_log ( $log )  {
+		if ( is_array( $log ) || is_object( $log ) ) {
+			error_log( print_r( $log, true ) );
+		} else {
+			error_log( $log );
+		}
 	}
 }

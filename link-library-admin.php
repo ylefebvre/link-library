@@ -6869,14 +6869,16 @@ function link_library_reciprocal_link_checker() {
 					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_url );
 				}
 
-				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && strpos( $reciprocal_result, 'exists' ) !== false ) {
+				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && $reciprocal_result != 'exists_redirected' && strpos( $reciprocal_result, 'exists' ) !== false ) {
 					echo '<div class="nextcheckitem"></div>';
 					continue;
 				}
 
 				echo '<a href="' . $link_url . '">' . get_the_title() . '</a>: ';
 
-				if ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_notfound' ) {
+				if ( 'broken' == $check_type && $reciprocal_result == 'exists_redirected' ) {
+					echo '<span style="color: #FF0000">' . __( 'Redirected to a different address', 'link-library' ) . '</span>';
+				} elseif ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_notfound' ) {
 					echo '<span style="color: #FF0000">' . __( 'Not Found', 'link-library' ) . '</span>';
 				} elseif ( $reciprocal_result == 'error_403' && $recipcheckdelete403 == true ) {
 					wp_delete_post( get_the_ID() );

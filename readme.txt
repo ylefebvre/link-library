@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.2 =
+* Improved broken link checked to identify redirections to new URLs
+
 = 6.6.1 =
 * Added new option field for user submission form to specify tooltips to be displayed when user hovers over the fields
 * Fixed issue with export all links function not working if no tags are assigned
