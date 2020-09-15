@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.3 =
+* Renamed ll_write_log function to linklibrary_write_log function to avoid potential conflicts with other plugins.
+
 = 6.6.2 =
 * Improved broken link checked to identify redirections to new URLs
 
