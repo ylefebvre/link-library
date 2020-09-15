@@ -6891,6 +6891,8 @@ function link_library_reciprocal_link_checker() {
 
 				echo ' - <a target="linkedit' . get_the_ID() . '" href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => get_the_ID() ), admin_url( 'post.php' ) ) );
 				echo '">(' . __('Edit', 'link-library') . ')</a><br />';
+
+				echo '<div class="nextcheckitem"></div>';
 			}
 		} else {
 			if ( 'reciprocal' == $check_type ) {

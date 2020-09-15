@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.4 =
+* Fixed issue with broken link checker only reporting first error
+
 = 6.6.3 =
 * Renamed ll_write_log function to linklibrary_write_log function to avoid potential conflicts with other plugins.
 
