@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.5 =
+* Added button to open media library dialog for link URL selection. Allows you to upload a media item and easily link to it
+
 = 6.6.4 =
 * Fixed issue with broken link checker only reporting first error
 

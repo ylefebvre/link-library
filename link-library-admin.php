@@ -6022,7 +6022,9 @@ class link_library_plugin_admin {
 		<table style="width:100%">
 			<tr>
 				<td style="width:20%"><?php _e( 'Web Address', 'link-library' ); ?></td>
-				<td><input type="text" style="width:100%" id="link_url" type="link_url" name="link_url" value="<?php echo $link_url; ?>" tabindex="1"></td>
+				<td><input type="text" style="width:70%" id="link_url" type="link_url" name="link_url" value="<?php echo $link_url; ?>" tabindex="1">
+				<input type="button" class="upload_link_item_button" value="<?php _e( 'Assign link from media item', 'link-library' ); ?>"></td>
+				
 			</tr>
 			<tr>
 				<td style="width:20%"><?php _e( 'Description', 'link-library' ); ?></td>
@@ -6145,6 +6147,38 @@ class link_library_plugin_admin {
 
 						jQuery('#current_link_image').replaceWith("<div id='current_link_image'><img src='" + attachment.url + "' /></div>");
 						jQuery('#current_link_image').fadeIn('fast');
+					});
+
+					// Finally, open the modal
+					file_frame.open();
+				});
+				
+				jQuery('.upload_link_item_button').on('click', function (event) {
+
+					event.preventDefault();
+
+					// If the media frame already exists, reopen it.
+					if (file_frame) {
+						file_frame.open();
+						return;
+					}
+
+					// Create the media frame.
+					file_frame = wp.media.frames.file_frame = wp.media({
+						title   : jQuery(this).data('uploader_title'),
+						button  : {
+							text: jQuery(this).data('uploader_button_text')
+						},
+						multiple: false  // Set to true to allow multiple files to be selected
+					});
+
+					// When an image is selected, run a callback.
+					file_frame.on('select', function () {
+						// We set multiple to false so only get one image from the uploader
+						attachment = file_frame.state().get('selection').first().toJSON();
+
+						// Do something with attachment.id and/or attachment.url here
+						jQuery('#link_url').val(attachment.url);
 					});
 
 					// Finally, open the modal
