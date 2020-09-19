@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.6.5
+Version: 6.6.6
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -1004,11 +1004,13 @@ class link_library_plugin {
 		$settings = '';
 		$categorylistoverride = '';
 		$excludecategoryoverride = '';
+		$addlinkdefaultcatoverride = '';
 
 		extract(shortcode_atts(array(
 			'settings' => '',
 			'categorylistoverride' => '',
-			'excludecategoryoverride' => ''
+			'excludecategoryoverride' => '',
+			'addlinkdefaultcatoverride' => ''
 		), $atts));
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
@@ -1040,6 +1042,10 @@ class link_library_plugin {
 
 		if ( !empty( $excludecategoryoverride ) ) {
 			$options['excludecategorylist_cpt'] = $excludecategoryoverride;
+		}
+
+		if ( !empty( $addlinkdefaultcatoverride ) ) {
+			$options['addlinkdefaultcat'] = $addlinkdefaultcatoverride;
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-addlink-sc.php';
@@ -1181,6 +1187,7 @@ class link_library_plugin {
 		$maxlinksoverride = '';
 		$linkorderoverride = '';
 		$linkdirectionoverride = '';
+		$addlinkdefaultcatoverride = '';
 
 		extract( shortcode_atts( array(
 			'categorylistoverride' => '',
@@ -1196,7 +1203,8 @@ class link_library_plugin {
 			'excludetagoverride' => '',
 			'maxlinksoverride' => '',
 			'linkorderoverride' => '',
-			'linkdirectionoverride' => ''
+			'linkdirectionoverride' => '',
+			'addlinkdefaultcatoverride' => ''
 		), $atts ) );
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );

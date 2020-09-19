@@ -1,4 +1,4 @@
-﻿=== Link Library ===
+﻿﻿=== Link Library ===
 Contributors: jackdewey
 Donate link: https://ylefebvre.home.blog/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
@@ -47,6 +47,11 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 6.6.6 =
+* Added multi select lists in the Moderation screen to allow users to assign one or more tags or categories to user-submitted links, or make changes to the ones assigned by users
+* Added ability to upload a file for the link to point to instead of specifying a URL
+* Added new option to [link-library-addlink] shortcode to override default category in category list (addlinkdefaultcatoverride)
 
 = 6.6.5 =
 * Added button to open media library dialog for link URL selection. Allows you to upload a media item and easily link to it

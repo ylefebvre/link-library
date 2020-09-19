@@ -248,13 +248,21 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 	            $output .= '<div class="llmessage">' . __('Link rejected. Invalid reciprocal link.', 'link-library') . '</div>';
             } elseif ( 25 == $_GET['addlinkmessage'] ) {
 	            $output .= '<div class="llmessage">' . $libraryoptions['linkimagelabel'] . __(' is a required field', 'link-library') . '</div>';
+            } elseif ( 26 == $_GET['addlinkmessage'] ) {
+	            $output .= '<div class="llmessage">' . $libraryoptions['linkfilelabel'] . __(' is a required field', 'link-library') . '</div>';
+            } elseif ( 27 == $_GET['addlinkmessage'] ) {
+	            $output .= '<div class="llmessage">' . __( 'Invalid image file extension', 'link-library') . '</div>';
+            } elseif ( 28 == $_GET['addlinkmessage'] ) {
+	            $output .= '<div class="llmessage">' . __( 'Invalid link file extension', 'link-library') . '</div>';
+            } elseif ( 29 == $_GET['addlinkmessage'] ) {
+	            $output .= '<div class="llmessage">' . __( 'A link file with this name already exists', 'link-library') . '</div>';
             }
         }
     }
 
     if ( ( 'link-library-addlink' == $code || 'addlink-link-library' == $code ) && ( ( $addlinkreqlogin && current_user_can( 'read' ) ) || !$addlinkreqlogin ) ) {
         $output .= '<form enctype="multipart/form-data" method="post" id="lladdlink" action="">';
-        $output .= '<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />';
+        $output .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . wp_max_upload_size() . '" />';
 
         $output .= wp_nonce_field( 'LL_ADDLINK_FORM', '_wpnonce', true, false );
         $output .= '<input type="hidden" name="thankyouurl" value="' . $linksubmissionthankyouurl . '" />';
@@ -293,21 +301,38 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
         $output .= '><input data-validation="required length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="link_name" id="link_name" value="' . ( isset( $_GET['addlinkname'] ) ? esc_html( stripslashes( $_GET['addlinkname'] ), '1' ) : '') . "\" /></td></tr>\n";
 
-        if ( empty( $linkaddrlabel ) ) {
-            $linkaddrlabel = __( 'Link address', 'link-library' );
+        if ( $showaddlinkfile == 'hide' ) {
+	        if ( empty( $linkaddrlabel ) ) {
+		        $linkaddrlabel = __( 'Link address', 'link-library' );
+	        }
+
+	        $output .= '<tr><th>' . $linkaddrlabel . '</th><td ';
+
+	        if ( !empty( $linkaddrtooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linkaddrtooltip . '"';
+	        }
+
+	        $output .= '><input ';
+	        if ( !$addlinknoaddress ) {
+		        $output .= 'data-validation="required url length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, URL', 'link-library' ) . '" ';
+	        }
+	        $output .= 'type="text" name="link_url" id="link_url" value="' . ( isset( $_GET['addlinkurl'] ) ? esc_html( stripslashes( $_GET['addlinkurl'] ), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
+        } elseif ( $showaddlinkfile == 'show' ) {
+	        if ( empty( $linkfilelabel ) ) {
+		        $linkfilelabel = __( 'Link File', 'link-library' );
+	        }
+
+	        $output .= '<tr><th>' . $linkfilelabel . '</th><td ';
+
+	        if ( !empty( $linkfiletooltip ) ) {
+		        $output .= 'class="lltooltip" title="' . $linkfiletooltip . '"';
+	        }
+
+	        $output .= '>';
+	        $output .= '<input type="file" name="linkfile" id="linkfile" data-validation="required" data-validation-error-msg-required="' . __( 'Need to upload a file', 'link-library' ) . '">';
+
+	        $output .= "</td></tr>\n";
         }
-
-        $output .= '<tr><th>' . $linkaddrlabel . '</th><td ';
-
-	    if ( !empty( $linkaddrtooltip ) ) {
-		    $output .= 'class="lltooltip" title="' . $linkaddrtooltip . '"';
-	    }
-
-        $output .= '><input ';
-        if ( !$addlinknoaddress ) {
-            $output .= 'data-validation="required url length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, URL', 'link-library' ) . '" ';
-        }
-        $output .= 'type="text" name="link_url" id="link_url" value="' . ( isset( $_GET['addlinkurl'] ) ? esc_html( stripslashes( $_GET['addlinkurl'] ), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
 
         if ( 'show' == $showaddlinkrss || 'required' == $showaddlinkrss) {
             if ( empty( $linkrsslabel ) ) {

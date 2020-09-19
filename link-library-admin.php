@@ -70,6 +70,8 @@ class link_library_plugin_admin {
 		}
 
 		add_action( 'wp_ajax_link_library_recipbrokencheck', 'link_library_reciprocal_link_checker' );
+
+		add_filter( 'wp_dropdown_cats', 'wp_dropdown_cats_multiple', 10, 2 );
 	}
 
 	function is_edit_page( $new_edit = null ) {
@@ -2342,7 +2344,7 @@ class link_library_plugin_admin {
 					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage', 'linknametooltip', 'linkaddrtooltip', 'linkrsstooltip',
 					'linkcattooltip', 'linkusercattooltip', 'linkusertagtooltip', 'linkdesctooltip', 'linknotestooltip', 'linkimagetooltip', 'linkreciptooltip',
 					'linksecondtooltip', 'linktelephonetooltip', 'linkemailtooltip', 'submitternametooltip', 'submitteremailtooltip',
-					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip'
+					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2477,6 +2479,24 @@ class link_library_plugin_admin {
 				$link_data = get_post( $approved_link );
 
 				if ( !empty( $link_data ) ) {
+					if ( isset( $_POST['link_category_' . $approved_link] ) && !empty( $_POST['link_category_' . $approved_link] ) ) {
+						wp_set_post_terms( $approved_link, $_POST['link_category_' . $approved_link], 'link_library_category' );
+					} elseif ( !isset( $_POST['link_category_' . $approved_link] ) ) {
+						wp_delete_object_term_relationships( $approved_link, 'link_library_category' );
+					}
+
+					if ( isset( $_POST['link_tags_' . $approved_link] ) && !empty( $_POST['link_tags_' . $approved_link] ) ) {
+						$link_terms_array = array();
+						foreach ( $_POST['link_tags_' . $approved_link] as $tag_id ) {
+							$link_tag = get_term_by( 'ID', $tag_id, 'link_library_tags' );
+							$link_terms_array[] = $link_tag->name;
+
+						}
+						wp_set_post_terms( $approved_link, $link_terms_array, 'link_library_tags' );
+					} elseif ( !isset( $_POST['link_tags_' . $approved_link] ) ) {
+						wp_delete_object_term_relationships( $approved_link, 'link_library_tags' );
+					}
+
 					wp_update_post( array( 'ID' => $approved_link, 'post_status' => 'publish' ) );
 				}
 
@@ -3341,10 +3361,13 @@ class link_library_plugin_admin {
 					$link_description = esc_html( get_post_meta( get_the_ID(), 'link_description', true ) );
 					$link_categories = wp_get_post_terms( get_the_ID(), 'link_library_category' );
 					$link_cat_string = '';
+					$link_cat_id_string = '';
+					$link_cat_IDs = array();
 					if ( !empty( $link_categories ) ) {
 						$link_cat_array = array();
 						foreach ( $link_categories as $link_category ) {
 							$link_cat_array[] = $link_category->name;
+							$link_cat_IDs[] = $link_category->term_id;
 						}
 						if ( !empty( $link_cat_array ) ) {
 							$link_cat_string = implode( ', ', $link_cat_array );
@@ -3353,12 +3376,19 @@ class link_library_plugin_admin {
 						$link_cat_string = 'None Assigned';
 					}
 
+					if ( !empty( $link_cat_IDs ) ) {
+						$link_cat_id_string = implode( ',', $link_cat_IDs );
+					}
+
 					$link_tags = wp_get_post_terms( get_the_ID(), 'link_library_tags' );
 					$link_tags_string = '';
+					$link_tag_id_string = '';
+					$link_tag_IDs = array();
 					if ( !empty( $link_tags ) ) {
 						$link_tags_array = array();
 						foreach ( $link_tags as $link_tag ) {
 							$link_tags_array[] = $link_tag->name;
+							$link_tag_IDs[] = $link_tag->term_id;
 						}
 						if ( !empty( $link_tags_array ) ) {
 							$link_tags_string = implode( ', ', $link_tags_array );
@@ -3367,12 +3397,16 @@ class link_library_plugin_admin {
 						$link_tags_string = 'None Assigned';
 					}
 
+					if ( !empty( $link_tag_IDs ) ) {
+						$link_tag_id_string = implode( ',', $link_tag_IDs );
+					}
+
 					?>
 					<tr style='background: #FFF'>
 						<td><input type="checkbox" name="links[]" value="<?php echo get_the_ID(); ?>" /></td>
 						<td><?php echo "<a title='Edit Link: " . get_the_title() . "' href='" . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => get_the_ID() ), admin_url( 'post.php' ) ) ) . "'>" . get_the_title() . "</a>"; ?></td>
-						<td><?php echo $link_cat_string; ?></td>
-						<td><?php echo $link_tags_string; ?></td>
+						<td><?php wp_dropdown_categories( array( 'taxonomy' => 'link_library_category', 'hierarchical' => true, 'hide_empty' => false, 'multiple' => true, 'selected' => $link_cat_id_string, 'name' => 'link_category_' . get_the_ID() ) ); ?></td>
+						<td><?php wp_dropdown_categories( array( 'taxonomy' => 'link_library_tags', 'hierarchical' => true, 'hide_empty' => false, 'multiple' => true, 'selected' => $link_tag_id_string, 'name' => 'link_tags_' . get_the_ID() ) ); ?></td>
 						<td><?php echo "<a href='" . $link_url . "'>" . $link_url . "</a>"; ?></td>
 						<td><?php echo $link_description; ?></td>
 					</tr>
@@ -3526,6 +3560,10 @@ class link_library_plugin_admin {
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" excludecategoryoverride="28"]</td>
 								<td>Overrides the list of categories to be excluded in the link list, comma-separated list of category IDs</td>
+							</tr>
+							<tr>
+								<td>[link-library settings="<?php echo $settings; ?>" taglistoverride="28"]</td>
+								<td>Overrides the list of tags to be displayed in the link list, comma-separated list of tag IDs</td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" notesoverride=0]</td>
@@ -5460,6 +5498,30 @@ class link_library_plugin_admin {
 			</td>
 		</tr>
 		<tr>
+			<td style='width:200px' class="lltooltip" title="Selecting to display the link file field will hide the link address field since they are mutually exclusive"><?php _e( 'Link file label', 'link-library' ); ?></td>
+			<?php if ( $options['linkfilelabel'] == "" ) {
+				$options['linkfilelabel'] = __( 'Link File', 'link-library' );
+			} ?>
+			<td class="lltooltip" title="Selecting to display the link file field will hide the link address field since they are mutually exclusive">
+				<input type="text" id="linkfilelabel" name="linkfilelabel" size="30" value="<?php echo $options['linkfilelabel']; ?>" />
+			</td>
+			<td style='width: 20px' class="lltooltip" title="Selecting to display the link file field will hide the link address field since they are mutually exclusive"><select name="showaddlinkfile" id="showaddlinkfile" style="width:60px;">
+					<option value="hide"<?php selected( $options['showaddlinkfile'] == 'hide' ); ?>><?php _e( 'Hide', 'link-library' ); ?></option>
+					<option value="show"<?php selected( $options['showaddlinkfile'] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
+				</select></td>
+			<td style='width: 20px'></td>
+			<td style='width:200px'><?php _e( 'Link file tooltip', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkfiletooltip" name="linkfiletooltip" size="30" value="<?php echo $options['linkfiletooltip']; ?>" />
+			</td>
+		</tr>
+		<tr>
+			<td style='width:200px'><?php _e( 'Link file types allowed', 'link-library' ); ?></td>
+			<td>
+				<input type="text" id="linkfileallowedtypes" name="linkfileallowedtypes" size="30" value="<?php echo $options['linkfileallowedtypes']; ?>" />
+			</td>
+		</tr>
+		<tr>
 			<td style='width:200px'><?php _e( 'Link RSS label', 'link-library' ); ?></td>
 			<?php if ( $options['linkrsslabel'] == "" ) {
 				$options['linkrsslabel'] = __( 'Link RSS', 'link-library' );
@@ -6860,6 +6922,22 @@ class link_library_plugin_admin {
 
 		echo '<br />';
 	}
+}
+
+function wp_dropdown_cats_multiple( $output, $r ) {
+
+	if( isset( $r['multiple'] ) && $r['multiple'] ) {
+
+		$output = preg_replace( '/^<select/i', '<select multiple', $output );
+
+		$output = str_replace( "name='{$r['name']}'", "name='{$r['name']}[]'", $output );
+
+		foreach ( array_map( 'trim', explode( ",", $r['selected'] ) ) as $value )
+			$output = str_replace( "value=\"{$value}\"", "value=\"{$value}\" selected", $output );
+
+	}
+
+	return $output;
 }
 
 function link_library_reciprocal_link_checker() {

@@ -299,6 +299,10 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['submitteremailtooltip']           = '';
 	$options['submittercommenttooltip']         = '';
 	$options['largedesctooltip']                = '';
+	$options['linkfilelabel']                   = '';
+	$options['linkfiletooltip']                 = '';
+	$options['showaddlinkfile']                 = 'hide';
+	$options['linkfileallowedtypes']            = 'pdf,zip';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
