@@ -48,6 +48,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.7 =
+* Revamped user submission section of library configuration to implement table approach
+* Added code to fortify LL core
+* Added stylesheet rules to make user-submission form look better on mobile
+* Added option to delete media attachment or local site file assigned as link URL
+
 = 6.6.6 =
 * Added multi select lists in the Moderation screen to allow users to assign one or more tags or categories to user-submitted links, or make changes to the ones assigned by users
 * Added ability to upload a file for the link to point to instead of specifying a URL

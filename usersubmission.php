@@ -93,13 +93,13 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 	} else if ( 'show' == $options['showaddlinkfile'] && !file_exists( $_FILES['linkfile']['tmp_name'] ) ) {
 		$requiredcheck = false;
 		$message = 26;
-	} else if ( file_exists( $_FILES['linkimage']['tmp_name'] ) && !in_array( $image_file_ext, $allowed_image_extensions ) ) {
+	} else if ( isset( $_FILES['linkimage'] ) && file_exists( $_FILES['linkimage']['tmp_name'] ) && !in_array( $image_file_ext, $allowed_image_extensions ) ) {
 		$requiredcheck = false;
 		$message = 27;
-	} else if ( file_exists( $_FILES['linkfile']['tmp_name'] ) && !in_array( $link_file_ext, $allowed_link_file_extensions ) ) {
+	} else if ( isset( $_FILES['linkfile'] ) && file_exists( $_FILES['linkfile']['tmp_name'] ) && !in_array( $link_file_ext, $allowed_link_file_extensions ) ) {
 		$requiredcheck = false;
 		$message = 28;
-	} elseif ( file_exists( $_FILES['linkfile']['tmp_name'] ) && file_exists( $uploads['basedir'] . '/link-library-files/' . $_FILES['linkfile']['name'] ) ) {
+	} elseif ( isset( $_FILES['linkfile'] ) && file_exists( $_FILES['linkfile']['tmp_name'] ) && file_exists( $uploads['basedir'] . '/link-library-files/' . $_FILES['linkfile']['name'] ) ) {
 		$requiredcheck = false;
 		$message = 29;
 	}

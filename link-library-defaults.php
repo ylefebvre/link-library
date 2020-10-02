@@ -363,6 +363,17 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['pagepeekersize']               = 'm';
 	$genoptions['pagepeekerid']                 = '';
 	$genoptions['stwthumbnailsize']             = '120x90';
+	$genoptions['deletelocalfile']              = false;
+	/* $genoptions['customurl1active']             = false;
+	$genoptions['customurl2active']             = false;
+	$genoptions['customurl3active']             = false;
+	$genoptions['customurl4active']             = false;
+	$genoptions['customurl5active']             = false;
+	$genoptions['customurl1label']              = '';
+	$genoptions['customurl2label']              = '';
+	$genoptions['customurl3label']              = '';
+	$genoptions['customurl4label']              = '';
+	$genoptions['customurl5label']              = ''; */
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

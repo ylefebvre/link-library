@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.6.6
+Version: 6.6.7
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -560,6 +560,7 @@ class link_library_plugin {
 			for ( $i = 1; $i <= $genoptions['numberstylesets']; $i++ ) {
 				$settingsname = 'LinkLibraryPP' . $i;
 				$options = get_option( $settingsname );
+				$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 				if ( !empty( $options ) ) {
 					if ( empty( $options['showname'] ) ) {
@@ -686,6 +687,7 @@ class link_library_plugin {
 		if ( !empty( $rss_settings ) ) {
 			$settingsname = 'LinkLibraryPP' . $rss_settings;
 			$options = get_option( $settingsname );
+			$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 			$feedtitle = ( empty( $options['rssfeedtitle'] ) ? __('Link Library Generated Feed', 'link-library') : $options['rssfeedtitle'] );
 
@@ -745,6 +747,7 @@ class link_library_plugin {
 			for ( $i = 1; $i <= $genoptions['numberstylesets']; $i++ ) {
 				$settingsname = 'LinkLibraryPP' . $i;
 				$options = get_option( $settingsname );
+				$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 				if ( $options['enablerewrite'] && !empty( $options['rewritepage'] ) ) {
 					if ( is_multisite() ) {
@@ -859,10 +862,12 @@ class link_library_plugin {
 
 		$settingsname = 'LinkLibraryPP' . $settings;
 		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 		if ( empty( $options ) ) {
 			$settingsname = 'LinkLibraryPP1';
 			$options = get_option( $settingsname );
+			$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 		}
 
 		if ( !empty( $categorylistoverride ) ) {
@@ -988,10 +993,12 @@ class link_library_plugin {
 
 		$settingsname = 'LinkLibraryPP' . $settings;
 		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 		if ( empty( $options ) ) {
 			$settingsname = 'LinkLibraryPP1';
 			$options = get_option( $settingsname );
+			$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-search-sc.php';
@@ -1028,10 +1035,12 @@ class link_library_plugin {
 
 		$settingsname = 'LinkLibraryPP' . $settings;
 		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 		if ( empty( $options ) ) {
 			$settingsname = 'LinkLibraryPP1';
 			$options = get_option( $settingsname );
+			$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 		}
 
 		if ( !empty( $categorylistoverride ) ) {
@@ -1073,10 +1082,12 @@ class link_library_plugin {
 
 		$settingsname = 'LinkLibraryPP' . $settings;
 		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 		if ( empty( $options ) ) {
 			$settingsname = 'LinkLibraryPP1';
 			$options = get_option( $settingsname );
+			$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 		}
 
 		$linkeditoruser = current_user_can( 'manage_options' );
@@ -1157,10 +1168,12 @@ class link_library_plugin {
 
 		$settingsname = 'LinkLibraryPP' . $settings;
 		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 		if ( empty( $options ) ) {
 			$settingsname = 'LinkLibraryPP1';
 			$options = get_option( $settingsname );
+			$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-tag-filter-sc.php';
@@ -1226,10 +1239,12 @@ class link_library_plugin {
 
 		$settingsname = 'LinkLibraryPP' . $settings;
 		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 		if ( empty( $options ) ) {
 			$settingsname = 'LinkLibraryPP1';
 			$options = get_option( $settingsname );
+			$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 		}
 
 		$options['AJAXcatid'] = '';
@@ -1488,6 +1503,7 @@ class link_library_plugin {
 				foreach ( $settingsetids as $settingsetid ) {
 					$settingsname = 'LinkLibraryPP' . $settingsetid;
 					$options = get_option( $settingsname );
+					$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
 					if ( $options['showonecatonly'] ) {
 						$load_jquery = true;
@@ -1775,6 +1791,7 @@ class Link_Library_Widget extends WP_Widget {
 					for ( $counter = 1; $counter <= $numberofsets; $counter ++ ) {
 						$tempoptionname = "LinkLibraryPP" . $counter;
 						$tempoptions          = get_option( $tempoptionname );
+						$tempoptions = wp_parse_args( $tempoptions, ll_reset_options( 1, 'list', 'return' ) );
 
 						echo '<option value="' . $counter . '" ' . selected( $selected_library, $counter ) . '>' . $tempoptions['settingssetname'] . '</option>';
 					}
