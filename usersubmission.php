@@ -242,11 +242,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 				$existinglink = '';
 			}
 
-			var_dump( $existinglink );
-
 			if ( empty( $existinglink ) && ( ( $options['addlinknoaddress'] == false && $captureddata['link_url'] != "" ) || $options['addlinknoaddress'] == true || $options['showaddlinkfile'] ) ) {
-
-				echo 'inside';
 
 				$validcat = false;
 				$newlinkcat = array();
@@ -422,10 +418,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 							wp_set_post_terms( $new_link_ID, $newlinktags, 'link_library_tags', false );
 						}
 
-						echo 'before processing file';
 						if ( isset( $_FILES['linkfile'] ) ) {
-							echo 'processing file';
-
 							if ( file_exists( $_FILES['linkfile']['tmp_name'] ) ) {
 								$file_ext = strtolower( end( explode( '.', $_FILES['linkfile']['name'] ) ) );
 
