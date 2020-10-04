@@ -1197,8 +1197,8 @@ class link_library_plugin_admin {
 
 						#sortable li {
 							list-style: none;
-							margin: 3px;
-							padding: 3px;
+							margin: 5px;
+							padding: 5px 10px 5px 10px;
 							border: #CCCCCC solid 1px;
 							color: #fff;
 							display: inline;
@@ -2349,7 +2349,7 @@ class link_library_plugin_admin {
 					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage', 'linknametooltip', 'linkaddrtooltip', 'linkrsstooltip',
 					'linkcattooltip', 'linkusercattooltip', 'linkusertagtooltip', 'linkdesctooltip', 'linknotestooltip', 'linkimagetooltip', 'linkreciptooltip',
 					'linksecondtooltip', 'linktelephonetooltip', 'linkemailtooltip', 'submitternametooltip', 'submitteremailtooltip',
-					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target'
+					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2370,7 +2370,7 @@ class link_library_plugin_admin {
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
 					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt',
-					'showcatname', 'onelinkperdomain', 'showupdatedtooltip', 'searchtextinsearchbox'
+					'showcatname', 'onelinkperdomain', 'showupdatedtooltip', 'searchtextinsearchbox', 'showuservotes', 'membersonlylinkvotes'
 				)
 				as $option_name
 			) {
@@ -4237,6 +4237,7 @@ function general_custom_fields_meta_box( $data ) {
 						<option value="date"<?php selected( $options['linkorder'] == 'date' ); ?>><?php _e( 'Order by updated date', 'link-library' ); ?></option>
 						<option value="pubdate"<?php selected( $options['linkorder'] == 'pubdate' ); ?>><?php _e( 'Order by publication date', 'link-library' ); ?></option>
 						<option value="hits"<?php selected( $options['linkorder'] == 'hits' ); ?>><?php _e( 'Order by number of link visits', 'link-library' ); ?></option>
+						<option value="uservotes"<?php selected( $options['linkorder'] == 'uservotes' ); ?>><?php _e( 'Order by number of user votes', 'link-library' ); ?></option>
 						<option value="scpo"<?php selected( $options['linkorder'] == 'scpo' ); ?>><?php _e( 'Order specified using Simple Custom Post Order plugin', 'link-library' ); ?></option>
 					</select>
 				</td>
@@ -4496,7 +4497,7 @@ function general_custom_fields_meta_box( $data ) {
 
 			$dragndroparray = explode( ',', $dragndroporder );
 
-			foreach ( range( 1, 22 ) as $new_entry ) {
+			foreach ( range( 1, 23 ) as $new_entry ) {
 				if ( !in_array( $new_entry, $dragndroparray ) ) {
 					$dragndroparray[] = $new_entry;
 				}
@@ -4598,6 +4599,10 @@ function general_custom_fields_meta_box( $data ) {
 							?>
 							<li class="lltooltip" title="<?php echo $genoptions['customurl5label'] ?>" id="22" style='background-color: #23A023'>22</li>
 							<?php } break;
+						case 23:
+								?>
+							<li class="lltooltip" title="<?php _e( 'User Votes', 'link-library' ); ?>" id="23" style='background-color: #23A023'>23</li>
+							<?php  break;
 					}
 				}
 			}
@@ -4650,7 +4655,7 @@ function general_custom_fields_meta_box( $data ) {
 
 		$dragndroparray = explode( ',', $dragndroporder );
 
-		foreach ( range( 1, 22 ) as $new_entry ) {
+		foreach ( range( 1, 23 ) as $new_entry ) {
 			if ( !in_array( $new_entry, $dragndroparray ) ) {
 				$dragndroparray[] = $new_entry;
 			}
@@ -4707,6 +4712,7 @@ function general_custom_fields_meta_box( $data ) {
 									<option value="primary"<?php selected( $options['sourcename'] == "primary" ); ?>><?php _e( 'Primary', 'link-library' ); ?></option>
 									<option value="secondary"<?php selected( $options['sourcename'] == "secondary" ); ?>><?php _e( 'Secondary', 'link-library' ); ?></option>
 									<option value="permalink"<?php selected( $options['sourcename'] == "permalink" ); ?>><?php _e( 'Dedicated page', 'link-library' ); ?></option>
+									<option value="linknameonly"<?php selected( $options['sourcename'] == "linknameonly" ); ?>><?php _e( 'Link name only', 'link-library' ); ?></option>
 								</select>
 							</td>
 						</tr>
@@ -5052,6 +5058,25 @@ function general_custom_fields_meta_box( $data ) {
 							<td style='background: #FFF'><input class="lltooltip" title='<?php _e( 'Target that will be assigned to URL', 'link-library' ); ?>'  type="text" id="customurl<?php echo $customurlfieldid; ?>target" name="customurl<?php echo $customurlfieldid; ?>target" size="22" value="<?php echo stripslashes( $options['customurl' . $customurlfieldid . 'target'] ); ?>" /></td>
 						</tr>
 						<?php } break;
+					case 23: /* -------------------------------- User Votes -------------------------------------------*/
+						?>
+						<tr>
+							<td style='background-color: #23A023;color:#fff' class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before and after the Link Category Name', 'link-library' ); ?>'>23- <?php _e( 'User Votes', 'link-library' ); ?></td>
+							<td style='text-align:center;background: #FFF'>
+								<input type="checkbox" id="showuservotes" name="showuservotes" <?php checked( $options['showuservotes'] ); ?>/>
+							</td>
+							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed before User Votes', 'link-library' ); ?>'>
+								<input type="text" id="beforeuservotes" name="beforeuservotes" size="22" value="<?php echo stripslashes( $options['beforeuservotes'] ); ?>" />
+							</td>
+							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed after User Votes', 'link-library' ); ?>'>
+								<input type="text" id="afteruservotes" name="afteruservotes" size="22" value="<?php echo stripslashes( $options['afteruservotes'] ); ?>" />
+							</td>
+							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Only allow members to vote on links', 'link-library' ); ?>'>
+								<?php _e( 'Only members can rate links', 'link-library' ); ?> <input type="checkbox" id="membersonlylinkvotes" name="membersonlylinkvotes" <?php checked( $options['membersonlylinkvotes'] ); ?>/>
+							</td>
+							<td style='background: #FFF'></td>
+						</tr>
+						<?php break;
 				}
 			}
 		}

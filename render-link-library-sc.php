@@ -858,6 +858,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				} elseif ( 'hits' == $linkorder ) {
 					$link_query_args['meta_query']['link_visits_clause'] = array( 'key' => 'link_visits', 'type' => 'numeric' );
 					$link_query_args['orderby']['link_visits_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( 'uservotes' == $linkorder ) {
+					$link_query_args['meta_query']['link_votes_clause'] = array( 'key' => '_thumbs_rating_up', 'type' => 'numeric' );
+					$link_query_args['orderby']['link_votes_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'scpo' == $linkorder ) {
 					$link_query_args['orderby']['menu_order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				}
@@ -2370,6 +2373,25 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												}
 
 												break;
+											case 23: 	//------------------ User Votes Output --------------------
+
+												if ( $showuservotes && ( !$membersonlylinkvotes || ( $membersonlylinkvotes && is_user_logged_in() ) ) ) {
+													$current_cat_output .= $between . stripslashes( $beforeuservotes );
+
+													if ( true == $debugmode ) {
+														$starttimedesc = microtime ( true );
+													}
+
+													$current_cat_output .= thumbs_rating_getlink();
+
+													if ( true == $debugmode ) {
+														$current_cat_output .= "\n<!-- Time to render category name section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
+													}
+
+													$current_cat_output .= stripslashes( $afteruservotes );
+												}
+
+												break;
 										}
 									}
 								}
@@ -2549,8 +2571,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$output .= "});\n";
 
 		$output .= "});\n";
-		$output .= "</script>";
+		$output .= "</script>\n";
 		unset( $xpath );
+
+		if ( $showuservotes ) {
+			$output .= thumbs_rating_check();
+		}
 	}
 
 	$currentcategory = $currentcategory + 1;

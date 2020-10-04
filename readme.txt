@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.9 =
+* First implementation of user voting system. New block in Advanced page for User Votes. Ability to sort links by number of user votes. Open to user feedback
+* Added new option to display link names only, not as link. Set under source for Link Name field.
+
 = 6.6.8 =
 * Added new section under General Options to add custom URL fields to Link Library. Fields can be enabled and named to appear in all relevant places (Link editor, advanced configuration table for links)
 * Removed debug code from user submission code to avoid issues with headers submitted too early

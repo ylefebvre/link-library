@@ -329,6 +329,10 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['customurl4target']                = '';
 	$options['customurl5target']                = '';
 	$options['searchtextinsearchbox']           = false;
+	$options['showuservotes']                   = false;
+	$options['beforeuservotes']                 = '';
+	$options['afteruservotes']                  = '';
+	$options['membersonlylinkvotes']            = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
