@@ -27,7 +27,15 @@ function RenderLinkLibrarySearchForm( $libraryoptions ) {
 
 	$output .= ">\n";
 	$output .= "<div>\n";
-	$output .= "<input type='text' onfocus=\"this.value=''\" value='" . $searchfieldtext . "' name='searchll' id='searchll' />";
+	$output .= "<input type='text' onfocus=\"this.value=''\" value='";
+
+	if ( $searchtextinsearchbox && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
+		$output .= $_GET['searchll'];
+	} else {
+		$output .= $searchfieldtext;
+	}
+
+	$output .= "' name='searchll' id='searchll' />";
 
 	if ( isset( $_GET['page_id'] ) && !empty( $_GET['page_id'] ) ) {
 		$output .= '<input type="hidden" name="page_id" value="' . $_GET['page_id'] . '" />';

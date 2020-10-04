@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.8 =
+* Added new section under General Options to add custom URL fields to Link Library. Fields can be enabled and named to appear in all relevant places (Link editor, advanced configuration table for links)
+
 = 6.6.7 =
 * Revamped user submission section of library configuration to implement table approach
 * Added code to fortify LL core

@@ -150,7 +150,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['linkcustomcatlabel']            = __( 'User-submitted category', 'link-library' );
 	$options['linkcustomcatlistentry']        = __( 'User-submitted category (define below)', 'link-library' );
 	$options['searchlabel']                   = 'Search';
-	$options['dragndroporder']                = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16';
+	$options['dragndroporder']                = implode( ',', range( 1, 22 ) );
 	$options['showname']                      = true;
 	$options['cattargetaddress']              = '';
 	$options['displayweblink']                = 'false';
@@ -303,6 +303,32 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['linkfiletooltip']                 = '';
 	$options['showaddlinkfile']                 = 'hide';
 	$options['linkfileallowedtypes']            = 'pdf,zip';
+	$options['displaycustomurl1']               = 'false';
+	$options['displaycustomurl2']               = 'false';
+	$options['displaycustomurl3']               = 'false';
+	$options['displaycustomurl4']               = 'false';
+	$options['displaycustomurl5']               = 'false';
+	$options['beforecustomurl1']                = '';
+	$options['beforecustomurl2']                = '';
+	$options['beforecustomurl3']                = '';
+	$options['beforecustomurl4']                = '';
+	$options['beforecustomurl5']                = '';
+	$options['aftercustomurl1']                 = '';
+	$options['aftercustomurl2']                 = '';
+	$options['aftercustomurl3']                 = '';
+	$options['aftercustomurl4']                 = '';
+	$options['aftercustomurl5']                 = '';
+	$options['labelcustomurl1']                 = '';
+	$options['labelcustomurl2']                 = '';
+	$options['labelcustomurl3']                 = '';
+	$options['labelcustomurl4']                 = '';
+	$options['labelcustomurl5']                 = '';
+	$options['customurl1target']                = '';
+	$options['customurl2target']                = '';
+	$options['customurl3target']                = '';
+	$options['customurl4target']                = '';
+	$options['customurl5target']                = '';
+	$options['searchtextinsearchbox']           = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
@@ -364,7 +390,7 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['pagepeekerid']                 = '';
 	$genoptions['stwthumbnailsize']             = '120x90';
 	$genoptions['deletelocalfile']              = false;
-	/* $genoptions['customurl1active']             = false;
+	$genoptions['customurl1active']             = false;
 	$genoptions['customurl2active']             = false;
 	$genoptions['customurl3active']             = false;
 	$genoptions['customurl4active']             = false;
@@ -373,7 +399,7 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['customurl2label']              = '';
 	$genoptions['customurl3label']              = '';
 	$genoptions['customurl4label']              = '';
-	$genoptions['customurl5label']              = ''; */
+	$genoptions['customurl5label']              = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

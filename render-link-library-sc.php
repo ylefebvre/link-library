@@ -1468,6 +1468,14 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$linkitem['link_rating'] = '';
 								}
 
+								for ( $customurlfieldnumber = 1; $customurlfieldnumber < 6; $customurlfieldnumber++ ) {
+									if ( isset( $link_meta['link_custom_url_' . $customurlfieldnumber][0] ) ) {
+										$linkitem['link_custom_url_' . $customurlfieldnumber] = esc_url( $link_meta['link_custom_url_' . $customurlfieldnumber][0] );
+									} else {
+										$linkitem['link_custom_url_' . $customurlfieldnumber] = '';
+									}
+								}
+
 								$date_diff = time() - intval( $link_meta['link_updated'][0] );
 
 								if ( $date_diff < 604800 ) {
@@ -2298,6 +2306,67 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 													}
 
 													$current_cat_output .= stripslashes( $aftercatname );
+												}
+
+												break;
+											case 18: 	//------------------ Custom URL Output --------------------
+											case 19:
+											case 20:
+											case 21:
+											case 22:
+
+												$customurlfieldid = $arrayelements - 17;
+												$fieldactivevar = 'customurl' . $customurlfieldid . 'active';
+												$displayvar = 'displaycustomurl' . $customurlfieldid;
+												$beforevar = 'beforecustomurl' . $customurlfieldid;
+												$aftervar = 'aftercustomurl' . $customurlfieldid;
+												$labelvar = 'labelcustomurl' . $customurlfieldid;
+												$targetvar = 'customurl' . $customurlfieldid . 'target';
+
+												$customurl = $linkitem['link_custom_url_' . $customurlfieldid];
+
+												if ( $$fieldactivevar && 'false' != $$displayvar ) {
+													$current_cat_output .= $between . stripslashes( $$beforevar );
+
+													if
+													( !$nooutputempty ||
+													  ( $nooutputempty && !empty( $customurl ) && 'label' != $$displayvar && '#' != $customurl ) || ( $nooutputempty && !empty( $$labelvar ) && 'label' == $$displayvar && !empty( $customurl ) && '#' != $customurl )
+													) {
+														if ( true == $debugmode ) {
+															$starttimerweblink = microtime ( true );
+														}
+
+														if ( 'addressonly' == $$displayvar ) {
+															$current_cat_output .= $customurl;
+														} else {
+															$current_cat_output .= '<a href="';
+
+															$current_cat_output .= $customurl;
+
+															if ( !empty( $target ) && !empty( $$targetvar ) ) {
+																$new_target_string = '="' . $$targetvar . ' ';
+																$weblinktarget = str_replace( '="', $new_target_string, $target );
+															} elseif ( empty( $target ) && !empty( $$targetvar ) ) {
+																$weblinktarget = ' target="' . $$targetvar . '"';
+															}
+
+															$current_cat_output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="track_this_link" ' . $$targetvar . '>';
+
+															if ( 'address' == $$displayvar ) {
+																$current_cat_output .= $customurl;
+															} elseif ( 'label' == $$displayvar && !empty( $$labelvar ) ) {
+																$current_cat_output .= stripslashes( $$labelvar );
+															}
+
+															$current_cat_output .= '</a>';
+														}
+
+														if ( true == $debugmode ) {
+															$current_cat_output .= "\n<!-- Time to render custom URL section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerweblink ) . " --> \n";
+														}
+													}
+
+													$current_cat_output .= stripslashes( $$aftervar );
 												}
 
 												break;
