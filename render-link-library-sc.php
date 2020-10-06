@@ -2382,7 +2382,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														$starttimedesc = microtime ( true );
 													}
 
-													$current_cat_output .= thumbs_rating_getlink();
+													$current_cat_output .= thumbs_rating_getlink( '', '', true, $uservotelikelabel );
 
 													if ( true == $debugmode ) {
 														$current_cat_output .= "\n<!-- Time to render category name section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";

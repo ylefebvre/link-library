@@ -49,6 +49,7 @@ Further configuration is available under the Link Library Settings panel.
 == Changelog ==
 
 = 6.6.10 =
+* Added ability to set label of user vote button
 * Fixed bugs with user voting system
 * When activating user voting system, all existing links will be assigned an initial vote value of 0
 

@@ -61,8 +61,7 @@ endif;
 /* ----------------------------------------------------------------------------------- */
 
 if (! function_exists ( 'thumbs_rating_getlink' )) :
-	function thumbs_rating_getlink($post_ID = '', $type_of_vote = '', $show_div_wrap = true) {
-
+	function thumbs_rating_getlink($post_ID = '', $type_of_vote = '', $show_div_wrap = true, $likelabel = 'Like' ) {
 		// Sanatize params
 		$post_ID = intval ( sanitize_text_field ( $post_ID ) );
 		$type_of_vote = intval ( sanitize_text_field ( $type_of_vote ) );
@@ -81,7 +80,7 @@ if (! function_exists ( 'thumbs_rating_getlink' )) :
 							<span class="likebtn-button lb-like thumbs-rating-up">
 								<span onclick="thumbs_rating_vote(this, ' . $post_ID . ', 1);" class="lb-a">
 									<span class="likebtn-icon lb-like-icon">&nbsp;</span>
-									<span class="likebtn-label lb-like-label">Like</span>
+									<span class="likebtn-label lb-like-label">' . $likelabel . '</span>
 								</span>
 								<span class="lb-count" data-count="'. $thumbs_rating_up_count . '" style="display: inline-block;">'. $thumbs_rating_up_count . '</span>
 							</span>

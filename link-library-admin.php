@@ -2373,7 +2373,7 @@ class link_library_plugin_admin {
 					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage', 'linknametooltip', 'linkaddrtooltip', 'linkrsstooltip',
 					'linkcattooltip', 'linkusercattooltip', 'linkusertagtooltip', 'linkdesctooltip', 'linknotestooltip', 'linkimagetooltip', 'linkreciptooltip',
 					'linksecondtooltip', 'linktelephonetooltip', 'linkemailtooltip', 'submitternametooltip', 'submitteremailtooltip',
-					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes'
+					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes', 'uservotelikelabel'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -5098,7 +5098,7 @@ function general_custom_fields_meta_box( $data ) {
 							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Only allow members to vote on links', 'link-library' ); ?>'>
 								<?php _e( 'Only members can rate links', 'link-library' ); ?> <input type="checkbox" id="membersonlylinkvotes" name="membersonlylinkvotes" <?php checked( $options['membersonlylinkvotes'] ); ?>/>
 							</td>
-							<td style='background: #FFF'></td>
+							<td class="lltooltip" title="Text of user voting button" style='background: #FFF'><input type="text" id="uservotelikelabel" name="uservotelikelabel" size="22" value="<?php echo stripslashes( $options['uservotelikelabel'] ); ?>" /></td>
 						</tr>
 						<?php break;
 				}
