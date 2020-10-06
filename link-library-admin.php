@@ -1637,7 +1637,7 @@ class link_library_plugin_admin {
 						update_post_meta( $new_link_ID, 'link_description', $link_description );
 
 						$link_rating = '';
-						$rating_labels = array( 'Description', 'link_description' );
+						$rating_labels = array( 'Rating', 'rating' );
 						foreach( $rating_labels as $rating_label ) {
 							if ( isset( $import_columns[$rating_label] ) ) {
 								$newrating = intval( $data[$import_columns[$rating_label]] );
@@ -1648,6 +1648,8 @@ class link_library_plugin_admin {
 							}
 						}
 						update_post_meta( $new_link_ID, 'link_rating', $link_rating );
+
+						update_post_meta( $new_link_ID, '_thumbs_rating_up', 0 );
 
 						$link_updated = current_time( 'timestamp' );
 						$updated_labels = array( 'Updated Date - Empty for none', 'link_updated' );
@@ -2297,6 +2299,28 @@ class link_library_plugin_admin {
 			$options = get_option( $settingsname );
 
 			$genoptions = get_option( 'LinkLibraryGeneral' );
+
+			if ( !$options['showuservotes'] && isset( $_POST['showuservotes'] ) ) {
+
+				var_dump( 'in here' );
+				$post_query_args = array(
+					'post_type' => 'link_library_links',
+					'posts_per_page' => -1
+				);
+
+				$query = new WP_Query( $post_query_args );
+				if ( $query->have_posts() ) {
+					while ( $query->have_posts() ) {
+						$query->the_post();
+
+						$thumbs_count = get_post_meta( get_the_ID(), '_thumbs_rating_up', true );
+						if ( empty( $thumbs_count ) ) {
+							update_post_meta( get_the_ID(), '_thumbs_rating_up', 0 );
+						}
+					}
+					wp_reset_postdata();
+				}
+			}
 
 			foreach (
 				array(
@@ -6468,6 +6492,11 @@ function general_custom_fields_meta_box( $data ) {
 				if ( isset( $_POST[$array_escape_item] ) ) {
 					update_post_meta( $link_id, $array_escape_item, sanitize_text_field( $_POST[$array_escape_item] ) );
 				}
+			}
+
+			$thumbs_count = get_post_meta( $link_id, '_thumbs_rating_up', true );
+			if ( empty( $thumbs_count ) ) {
+				update_post_meta( $link_id, '_thumbs_rating_up', 0 );
 			}
 
 			if ( isset( $_POST['link_updated'] ) && !empty( $_POST['link_updated'] ) ) {

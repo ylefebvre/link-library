@@ -452,6 +452,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 						update_post_meta( $new_link_ID, 'link_visits', 0 );
 						update_post_meta( $new_link_ID, 'link_rating', 0 );
+						update_post_meta( $new_link_ID, '_thumbs_rating_up', 0 );
 
 						update_post_meta( $new_link_ID, 'link_reciprocal', $captureddata['ll_reciprocal'] );
 						update_post_meta( $new_link_ID, 'link_submitter', ( isset( $username ) ? $username : null ) );

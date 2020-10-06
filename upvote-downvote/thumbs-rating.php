@@ -141,10 +141,10 @@ if (! function_exists ( 'thumbs_rating_add_vote_callback' )) :
 		$current_ip_votes = array();
 		if ( empty( $post_voter_ips ) ) {
 			$post_voter_ips = array();
+		}
 
-			if ( isset( $post_voter_ips[$serveraddress] ) ) {
-				$current_ip_votes = $post_voter_ips[$serveraddress];
-			}
+		if ( isset( $post_voter_ips[$serveraddress] ) ) {
+			$current_ip_votes = $post_voter_ips[$serveraddress];
 		}
 
 		$user_id = get_current_user_id();
@@ -153,10 +153,10 @@ if (! function_exists ( 'thumbs_rating_add_vote_callback' )) :
 		if ( 0 != $user_id ) {
 			if ( empty( $post_voter_users ) ) {
 				$post_voter_users = array();
+			}
 
-				if ( isset( $post_voter_users[$user_id] ) ) {
-					$current_user_votes = $post_voter_users[$user_id];
-				}
+			if ( isset( $post_voter_users[$user_id] ) ) {
+				$current_user_votes = $post_voter_users[$user_id];
 			}
 		}
 
@@ -252,8 +252,6 @@ if (! function_exists ( 'thumbs_rating_check' )) :
 			$current_ip_votes = $post_voter_ips[$serveraddress];
 		}
 
-		$json_array_ip = json_encode( $current_ip_votes );
-
 		$user_id = get_current_user_id();
 		$current_user_votes = array();
 		if ( 0 != $user_id ) {
@@ -266,8 +264,32 @@ if (! function_exists ( 'thumbs_rating_check' )) :
 
 		$output = "<script>\n";
 		$output .= "\tjQuery(document).ready(function() {\n";
-		$output .= "\t\tvar current_ip_votes = " . $json_array_ip . ";\n";
-		$output .= "\t\tvar current_user_votes = " . $json_array_users . ";\n";
+		$output .= "\t\tvar current_ip_votes = [";
+
+		$number_of_votes_ip = count( $current_ip_votes );
+		$current_vote_ip = 1;
+		foreach( $current_ip_votes as $current_ip_vote ) {
+			$output .= $current_ip_vote;
+			if ( $current_vote_ip != $number_of_votes_ip ) {
+				$output .= ',';
+				$current_vote_ip++;
+			}
+		}
+
+		$output .= "];\n";
+		$output .= "\t\tvar current_user_votes = [";
+
+		$number_of_votes_user = count( $current_user_votes );
+		$current_vote_user = 1;
+		foreach( $current_user_votes as $current_user_vote ) {
+			$output .= $current_user_vote;
+			if ( $current_vote_user != $number_of_votes_user ) {
+				$output .= ',';
+				$current_vote_user++;
+			}
+		}
+
+		$output .= "];\n";
 
 		$output .= "\t\tupdateCount();\n";
 
