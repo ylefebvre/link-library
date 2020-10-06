@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.11 =
+* Added two options to link image display. Can now link to dedicated page or not link to any page
+
 = 6.6.10 =
 * Added ability to set label of user vote button
 * Fixed bugs with user voting system

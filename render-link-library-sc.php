@@ -1684,19 +1684,23 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 																$starttimeimage = microtime ( true );
 															}
 
-															$imageoutput .= '<a href="';
+															if ( 'imageonly' != $sourceimage ) {
+																$imageoutput .= '<a href="';
 
-															if ( !$enable_link_popup ) {
-																if ( 'primary' == $sourceimage || empty( $sourceimage ) ) {
-																	$imageoutput .= $the_link;
-																} elseif ( 'secondary' == $sourceimage ) {
-																	$imageoutput .= $the_second_link;
+																if ( !$enable_link_popup ) {
+																	if ( 'primary' == $sourceimage || empty( $sourceimage ) ) {
+																		$imageoutput .= $the_link;
+																	} elseif ( 'secondary' == $sourceimage ) {
+																		$imageoutput .= $the_second_link;
+																	} elseif ( 'permalink' == $sourceimage ) {
+																		$current_cat_output .= $the_permalink;
+																	}
+																} else {
+																	$imageoutput .= admin_url( 'admin-ajax.php' . '?action=link_library_popup_content&linkid=' . $linkitem['proper_link_id'] . '&settings=' . $settings . '&height=' . ( empty( $popup_height ) ? 300 : $popup_height ) . '&width=' . ( empty( $popup_width ) ? 400 : $popup_width ) . '&xpath=' . $xpath );
 																}
-															} else {
-																$imageoutput .= admin_url( 'admin-ajax.php' . '?action=link_library_popup_content&linkid=' . $linkitem['proper_link_id'] . '&settings=' . $settings . '&height=' . ( empty( $popup_height ) ? 300 : $popup_height ) . '&width=' . ( empty( $popup_width ) ? 400 : $popup_width ) . '&xpath=' . $xpath );
-															}
 
-															$imageoutput .= '" id="link-' . $linkitem['proper_link_id'] . '" class="' . ( $enable_link_popup ? 'thickbox' : 'track_this_link' ) . ' ' . ( $linkitem['link_featured'] ? 'featured' : '' ). '" ' . $linkitem['link_rel'] . $title . $target. '>';
+																$imageoutput .= '" id="link-' . $linkitem['proper_link_id'] . '" class="' . ( $enable_link_popup ? 'thickbox' : 'track_this_link' ) . ' ' . ( $linkitem['link_featured'] ? 'featured' : '' ). '" ' . $linkitem['link_rel'] . $title . $target. '>';
+															}
 
 															if ( $usethumbshotsforimages && ( !$uselocalimagesoverthumbshots || empty( $uselocalimagesoverthumbshots ) || ( $uselocalimagesoverthumbshots && empty( $linkitem['link_image'] ) ) ) ) {
 																$protocol = is_ssl() ? 'https://' : 'http://';
@@ -1736,7 +1740,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 																}
 															}
 															$imageoutput .= '/>';
-															$imageoutput .= '</a>';
+
+															if ( 'imageonly' != $sourceimage ) {
+																$imageoutput .= '</a>';
+															}
 
 															if ( true == $debugmode ) {
 																$current_cat_output .= '<!-- Time to render image section of link id ' . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimeimage ) . " --> \n";

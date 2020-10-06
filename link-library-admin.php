@@ -4708,6 +4708,8 @@ function general_custom_fields_meta_box( $data ) {
 								<select name="sourceimage" id="sourceimage" style="width:200px;">
 									<option value="primary"<?php selected( $options['sourceimage'] == "primary" ); ?>><?php _e( 'Primary', 'link-library' ); ?></option>
 									<option value="secondary"<?php selected( $options['sourceimage'] == "secondary" ); ?>><?php _e( 'Secondary', 'link-library' ); ?></option>
+									<option value="permalink"<?php selected( $options['sourceimage'] == "permalink" ); ?>><?php _e( 'Dedicated page', 'link-library' ); ?></option>
+									<option value="imageonly"<?php selected( $options['sourceimage'] == "imageonly" ); ?>><?php _e( 'Image only', 'link-library' ); ?></option>
 								</select>
 							</td>
 						</tr>
