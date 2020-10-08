@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.6.12 =
+* Fixed bug with image link not displayed at the right place with new dedicated page option
+
 = 6.6.11 =
 * Added two options to link image display. Can now link to dedicated page or not link to any page
 

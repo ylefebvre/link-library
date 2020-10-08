@@ -1693,7 +1693,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 																	} elseif ( 'secondary' == $sourceimage ) {
 																		$imageoutput .= $the_second_link;
 																	} elseif ( 'permalink' == $sourceimage ) {
-																		$current_cat_output .= $the_permalink;
+																		$imageoutput .= $the_permalink;
 																	}
 																} else {
 																	$imageoutput .= admin_url( 'admin-ajax.php' . '?action=link_library_popup_content&linkid=' . $linkitem['proper_link_id'] . '&settings=' . $settings . '&height=' . ( empty( $popup_height ) ? 300 : $popup_height ) . '&width=' . ( empty( $popup_width ) ? 400 : $popup_width ) . '&xpath=' . $xpath );
