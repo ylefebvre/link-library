@@ -405,6 +405,7 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['customurl3label']              = '';
 	$genoptions['customurl4label']              = '';
 	$genoptions['customurl5label']              = '';
+	$genoptions['dismissll67update']            = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

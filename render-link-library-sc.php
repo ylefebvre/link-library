@@ -1539,10 +1539,6 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 								$current_cat_output .= stripslashes( $beforeitem );
 
-								if ( $showupdated && $linkitem['recently_updated'] && 'before' == $showupdatedpos ) {
-									$current_cat_output .= '<span class="recently_updated">' . $updatedlabel . '</span>';
-								}
-
 								$the_link = '#';
 								if ( !empty( $linkitem['link_url'] ) ) {
 									$the_link = esc_html( $linkitem['link_url'] );
@@ -1769,6 +1765,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 													if ( !$nooutputempty || ( $nooutputempty && !empty( $name ) ) ) {
 														if ( true == $debugmode ) {
 															$starttimename = microtime ( true );
+														}
+
+														if ( $showupdated && $linkitem['recently_updated'] && 'before' == $showupdatedpos ) {
+															$current_cat_output .= '<span class="recently_updated">' . $updatedlabel . '</span>';
 														}
 
 														if ( ( 'primary' == $sourcename && $the_link != '#') || ( 'secondary' == $sourcename && $the_second_link != '#' ) || ( 'permalink' == $sourcename && $the_permalink != '#' ) ) {
