@@ -1,4 +1,4 @@
-﻿﻿=== Link Library ===
+﻿=== Link Library ===
 Contributors: jackdewey
 Donate link: https://ylefebvre.home.blog/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
@@ -47,6 +47,9 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 6.6.13 =
+* Fixed issue with New tag displayed before link name not working correctly if link name is not the first field or is in a table
 
 = 6.6.12 =
 * Fixed bug with image link not displayed at the right place with new dedicated page option
