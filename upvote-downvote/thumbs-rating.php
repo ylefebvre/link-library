@@ -76,24 +76,25 @@ if (! function_exists ( 'thumbs_rating_getlink' )) :
 
 		$voted  = isset( $type_of_vote ) && $type_of_vote == 2 ? false : true;
 
-		$link_button = '<span class="likebtn-wrapper lb-loaded lb-style-white lb-popup-position-top lb-popup-style-light lb-unlike-not-allowed">
-							<span class="likebtn-button lb-like thumbs-rating-up">
-								<span onclick="thumbs_rating_vote(this, ' . $post_ID . ', 1);" class="lb-a">
-									<span class="likebtn-icon lb-like-icon">&nbsp;</span>
-									<span class="likebtn-label lb-like-label">' . $likelabel . '</span>
-								</span>
-								<span class="lb-count" data-count="'. $thumbs_rating_up_count . '" style="display: inline-block;">'. $thumbs_rating_up_count . '</span>
-							</span>
-							<!-- <span class="likebtn-button lb-dislike thumbs-rating-down">
-								<span onclick="thumbs_rating_vote(this, ' . $post_ID . ', 2);" class="lb-a">
-									<span class="likebtn-icon lb-dislike-icon">&nbsp;</span>
-								</span>
-								<span class="lb-count" data-count="'. $thumbs_rating_down_count . '" style="display: inline-block;">'. $thumbs_rating_down_count . '</span>
-							</span> -->
-						</span>';
+		$link_button = '<span class="likebtn-wrapper lb-loaded lb-style-white lb-popup-position-top lb-popup-style-light lb-unlike-not-allowed">';
+		$link_button .= '<span class="likebtn-button lb-like thumbs-rating-up">';
+		$link_button .= '<span onclick="thumbs_rating_vote(this, ' . $post_ID . ', 1, \'' . $likelabel . '\');" class="lb-a">';
+		$link_button .= '<span class="likebtn-icon lb-like-icon">&nbsp;</span>';
+		$link_button .= '<span class="likebtn-label lb-like-label">' . $likelabel . '</span>';
+		$link_button .= '</span>';
+		$link_button .= '<span class="lb-count" data-count="'. $thumbs_rating_up_count . '" style="display: inline-block;">'. $thumbs_rating_up_count . '</span>';
+		$link_button .= '</span>';
+
+		//<!-- <span class="likebtn-button lb-dislike thumbs-rating-down">
+		//						<span onclick="thumbs_rating_vote(this, ' . $post_ID . ', 2);" class="lb-a">
+		//							<span class="likebtn-icon lb-dislike-icon">&nbsp;</span>
+		//						</span>
+		//						<span class="lb-count" data-count="'. $thumbs_rating_down_count . '" style="display: inline-block;">'. $thumbs_rating_down_count . '</span>
+		//					</span> -->
+		//				</span>';
 
 		if ( $show_div_wrap ) {
-			$thumbs_rating_link = '<div  class="thumbs-rating-container" id="thumbs-rating-' . $post_ID . '" data-content-id="' . $post_ID . '">';
+			$thumbs_rating_link = '<div class="thumbs-rating-container" id="thumbs-rating-' . $post_ID . '" data-content-id="' . $post_ID . '">';
 		}
 
 		$thumbs_rating_link .= $link_button;
@@ -125,6 +126,7 @@ if (! function_exists ( 'thumbs_rating_add_vote_callback' )) :
 		$post_ID = intval ( $_POST ['postid'] );
 		$type_of_vote = intval ( $_POST ['type'] );
 		$selection = '';
+		$likelabel = $_POST['likelabel'];
 
 		if ( isset( $_POST['selection'] ) ) {
 			$selection = intval ( $_POST ['selection'] );
@@ -225,7 +227,7 @@ if (! function_exists ( 'thumbs_rating_add_vote_callback' )) :
 		update_post_meta ( $post_ID, $meta_name, $thumbs_rating_count );
 
 		// Retrieve the meta value from the DB
-		$results = thumbs_rating_getlink ( $post_ID, $type_of_vote, false );
+		$results = thumbs_rating_getlink ( $post_ID, $type_of_vote, false, $likelabel );
 
 		die ( $results ) ;
 	}

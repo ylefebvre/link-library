@@ -1,4 +1,4 @@
-function thumbs_rating_vote(obj, ID, type)
+function thumbs_rating_vote(obj, ID, type, likeLabel)
 {
 	// For the LocalStorage
 
@@ -49,6 +49,7 @@ function thumbs_rating_vote(obj, ID, type)
 			type: type,
 			selection: selection,
 			alternate : alternate,
+      likelabel : likeLabel,
 			nonce: thumbs_rating_ajax.nonce
 		};
 

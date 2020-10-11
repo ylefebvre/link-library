@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.1 =
+* Fixed issue with user vote custom label not staying when you upvote links
+
 = 6.7 =
 * Added update message for new version
 * Removed Accessibe banner ads and moved Accessibe menu to bottom of list
