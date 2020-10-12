@@ -629,7 +629,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= '><input ';
 
-            if ( 'required' == $showaddlinkrss ) {
+            if ( 'required' == $showaddlinkreciprocal ) {
                 $requiredtext = ' required url';
             } else {
                 $requiredtext = '';
@@ -677,7 +677,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= '><input ';
 
-            if ( 'required' == $showaddlinkrss ) {
+            if ( 'required' == $showaddlinktelephone ) {
                 $requiredtext = ' required';
             } else {
                 $requiredtext = '';

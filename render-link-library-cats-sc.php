@@ -406,12 +406,16 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 			                }
 		                }
 	                } else if ( $catanchor ) {
-		                if ( !$pagination ) {
+		                if ( !$pagination || ( !$pagination && $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
 			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 				                $cattext = '<a href="';
 			                }
 
-			                $cattext .= '#' . $catname->slug;
+			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
+				                $cattext .= '?searchll=' . $_GET['searchll'] . '&cat_id=' . $catname->term_id;
+			                } else {
+				                $cattext .= '#' . $catname->slug;
+			                }
 
 			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 				                $cattext .= '">';

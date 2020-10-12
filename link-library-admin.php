@@ -2402,7 +2402,8 @@ class link_library_plugin_admin {
 					'current_user_links', 'showsubmittername', 'onereciprocaldomain', 'nooutputempty', 'showcatdesc', 'hidechildcatlinks',
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree',
 					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt',
-					'showcatname', 'onelinkperdomain', 'showupdatedtooltip', 'searchtextinsearchbox', 'showuservotes', 'membersonlylinkvotes'
+					'showcatname', 'onelinkperdomain', 'showupdatedtooltip', 'searchtextinsearchbox', 'showuservotes', 'membersonlylinkvotes',
+					'searchfiltercats'
 				)
 				as $option_name
 			) {
@@ -4126,10 +4127,15 @@ function general_custom_fields_meta_box( $data ) {
 					<td>
 						<input type="checkbox" id="showcatlinkcount" name="showcatlinkcount" <?php checked( $options['showcatlinkcount'] ); ?>/>
 					</td>
-					<td style='width:100px'></td>
+				</tr>
+				<tr>
 					<td style='width:200px'><?php _e( 'Display categories with search results', 'link-library' ); ?>    </td>
 					<td>
 						<input type="checkbox" id="showcatonsearchresults" name="showcatonsearchresults" <?php checked( $options['showcatonsearchresults'] ); ?>/></td>
+					<td style='width:100px'></td>
+					<td style='width:200px'><?php _e( 'Use categories to filter search results', 'link-library' ); ?>    </td>
+					<td>
+						<input type="checkbox" id="searchfiltercats" name="searchfiltercats" <?php checked( $options['searchfiltercats'] ); ?>/></td>
 				</tr>
 				<tr>
 					<td class="lltooltip">

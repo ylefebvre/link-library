@@ -392,12 +392,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 	if ( $showonecatonly && 'AJAX' == $showonecatmode && isset( $AJAXcatid ) && !empty( $AJAXcatid ) && ( !isset( $_GET['searchll'] ) || empty( $_GET['searchll'] ) ) ) {
 		$categorylist_cpt = $AJAXcatid;
-	} elseif ($showonecatonly && 'HTMLGET' == $showonecatmode && isset( $_GET['cat_id'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+	} elseif ( ( $showonecatonly && 'HTMLGET' == $showonecatmode && isset( $_GET['cat_id'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) || ( $searchfiltercats && isset( $_GET['cat_id'] ) && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
 		$categorylist_cpt = intval( $_GET['cat_id'] );
 		$AJAXcatid = $categorylist_cpt;
-	} elseif ($showonecatonly && 'HTMLGETSLUG' == $showonecatmode && isset( $_GET['cat'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+	} elseif ( ( $showonecatonly && 'HTMLGETSLUG' == $showonecatmode && isset( $_GET['cat'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) || ( $searchfiltercats && isset( $_GET['cat'] ) && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
 		$categorysluglist = $_GET['cat'];
-	} elseif ($showonecatonly && 'HTMLGETCATNAME' == $showonecatmode && isset( $_GET['catname'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
+	} elseif ( ( $showonecatonly && 'HTMLGETCATNAME' == $showonecatmode && isset( $_GET['catname'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) || ( $searchfiltercats && isset( $_GET['catname'] ) && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
 		$categorynamelist = $_GET['catname'];
 	} elseif ( $showonecatonly && 'HTMLGETPERM' == $showonecatmode && empty( $_GET['searchll'] ) ) {
 		global $wp_query;

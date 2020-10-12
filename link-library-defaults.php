@@ -334,6 +334,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['afteruservotes']                  = '';
 	$options['membersonlylinkvotes']            = false;
 	$options['uservotelikelabel']               = 'Like';
+	$options['searchfiltercats']                = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
