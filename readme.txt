@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.3 =
+* Fixed issues with user-submission form
+
 = 6.7.2 =
 * Added new option to allow categories to be used to refine search results when displayed
 * Fixed issues with user-submission form

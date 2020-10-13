@@ -653,7 +653,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= '><input ';
 
-            if ( 'required' == $showaddlinkrss ) {
+            if ( 'required' == $showaddlinksecondurl ) {
                 $requiredtext = ' required';
             } else {
                 $requiredtext = '';
@@ -701,7 +701,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= '><input ';
 
-            if ( 'required' == $showaddlinkrss ) {
+            if ( 'required' == $showaddlinkemail ) {
                 $requiredtext = ' required';
             } else {
                 $requiredtext = '';
@@ -738,7 +738,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
 	        $output .= '><input ';
 
-            if ( 'required' == $showaddlinkrss ) {
+            if ( 'required' == $showlinksubmittername ) {
                 $requiredtext = ' required';
             } else {
                 $requiredtext = '';
@@ -775,7 +775,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
 	        $output .= '><input ';
 
-            if ( 'required' == $showaddlinkrss ) {
+            if ( 'required' == $showaddlinksubmitteremail ) {
                 $requiredtext = ' required';
             } else {
                 $requiredtext = '';
@@ -815,7 +815,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $customcaptchaquestion = __( 'Is boiling water hot or cold?', 'link-library' );
             }
 
-            $output .= '<tr><th style="vertical-align: top;">' . $customcaptchaquestion . '</th><td><input data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . ' type="text" name="ll_customcaptchaanswer" id="ll_customcaptchaanswer" value="' . (isset( $_GET['ll_customcaptchaanswer'] ) ? esc_html( stripslashes( $_GET['ll_customcaptchaanswer'] ), '1' ) : '' ) . "\" /></td></tr>\n";
+            $output .= '<tr><th style="vertical-align: top;">' . $customcaptchaquestion . '</th><td><input data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="ll_customcaptchaanswer" id="ll_customcaptchaanswer" value="' . (isset( $_GET['ll_customcaptchaanswer'] ) ? esc_html( stripslashes( $_GET['ll_customcaptchaanswer'] ), '1' ) : '' ) . "\" /></td></tr>\n";
         }
 
         $output .= "</table>\n";

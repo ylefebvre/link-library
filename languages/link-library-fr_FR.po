@@ -3426,7 +3426,8 @@ msgstr "Valeur incorrect du domaine"
 #: render-link-library-addlink-sc.php:715
 msgid "The input value is not a correct URL. Requires http://."
 msgstr ""
-"La valeur saisie n&rsquo;est pas une URL correcte. Il faut mettre http://."
+"La valeur saisie n&rsquo;est pas une URL correcte. Il faut mettre http:// ou "
+"https://."
 
 #: render-link-library-addlink-sc.php:716
 msgid "The input value is incorrect"
