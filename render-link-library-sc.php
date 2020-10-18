@@ -242,7 +242,7 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 		$paginationoutput .= "<SCRIPT LANGUAGE=\"JavaScript\">\n";
 		$paginationoutput .= "var ajaxobject;\n";
 		$paginationoutput .= "if(typeof showLinkCat" . $settings . " !== 'function'){\n";
-		$paginationoutput .= "window.showLinkCat" . $settings . " = function ( _incomingID, _settingsID, _pagenumber ) {\n";
+		$paginationoutput .= "window.showLinkCat" . $settings . " = function ( _incomingID, _settingsID, _pagenumber, _searchll ) {\n";
 		$paginationoutput .= "if (typeof(ajaxobject) != \"undefined\") { ajaxobject.abort(); }\n";
 
 		$paginationoutput .= "\tjQuery('#contentLoading" . $settings . "').toggle();" .
@@ -254,6 +254,7 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 		                     "            id : _incomingID, " .
 		                     "            settings : _settingsID, " .
 		                     "            ajaxupdate : true, " .
+		                     "            searchll : _searchll, " .
 		                     "            linkresultpage: _pagenumber }, " .
 		                     "    success: function( data ){ " .
 		                     "            jQuery('#linklist" . $settings. "').html( data ); " .
@@ -382,7 +383,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 	if ( $showonecatonly && ( 'HTMLGET' == $showonecatmode || 'HTMLGETSLUG' == $showonecatmode || 'HTMLGETCATNAME' == $showonecatmode ) ) {
 		if ( 'HTMLGET' == $showonecatmode && ( !isset( $_GET['cat_id'] ) || ( isset( $_GET['cat_id'] ) && empty( $_GET['cat_id'] ) ) ) ) {
 			$GETnocatset = true;
-		} elseif ( 'HTMLGETSLUG' == $showonecatmode && ( !isset( $_GET['cat'] ) || ( isset( $_GET['cat'] ) && empty( $_GET['cat'] ) ) ) ) {
+		} elseif ( 'HTMLGETSLUG' == $showonecatmode && ( !isset( $_GET['catslug'] ) || ( isset( $_GET['catslug'] ) && empty( $_GET['catslug'] ) ) ) ) {
 			$GETnocatset = true;
 		} elseif ( 'HTMLGETCATNAME' == $showonecatmode && ( !isset( $_GET['catname'] ) || ( isset( $_GET['catname'] ) && empty( $_GET['catname'] ) ) ) ) {
 			$GETnocatset = true;
@@ -390,23 +391,27 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 	}
 
-	if ( $showonecatonly && 'AJAX' == $showonecatmode && isset( $AJAXcatid ) && !empty( $AJAXcatid ) && ( !isset( $_GET['searchll'] ) || empty( $_GET['searchll'] ) ) ) {
+	if ( $showonecatonly && 'AJAX' == $showonecatmode && isset( $AJAXcatid ) && !empty( $AJAXcatid ) && ( !isset( $_GET['searchll'] ) || empty( $_GET['searchll'] ) || ( $searchfiltercats && isset( $_POST['searchll'] ) ) ) ) {
 		$categorylist_cpt = $AJAXcatid;
 	} elseif ( ( $showonecatonly && 'HTMLGET' == $showonecatmode && isset( $_GET['cat_id'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) || ( $searchfiltercats && isset( $_GET['cat_id'] ) && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
 		$categorylist_cpt = intval( $_GET['cat_id'] );
 		$AJAXcatid = $categorylist_cpt;
-	} elseif ( ( $showonecatonly && 'HTMLGETSLUG' == $showonecatmode && isset( $_GET['cat'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) || ( $searchfiltercats && isset( $_GET['cat'] ) && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
-		$categorysluglist = $_GET['cat'];
+	} elseif ( ( $showonecatonly && 'HTMLGETSLUG' == $showonecatmode && isset( $_GET['catslug'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) || ( $searchfiltercats && isset( $_GET['catslug'] ) && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
+		$categorysluglist = $_GET['catslug'];
 	} elseif ( ( $showonecatonly && 'HTMLGETCATNAME' == $showonecatmode && isset( $_GET['catname'] ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) || ( $searchfiltercats && isset( $_GET['catname'] ) && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
 		$categorynamelist = $_GET['catname'];
 	} elseif ( $showonecatonly && 'HTMLGETPERM' == $showonecatmode && empty( $_GET['searchll'] ) ) {
 		global $wp_query;
 
-		$categoryname = $wp_query->query_vars['cat_name'];
+		$categoryname = '';
+		if ( isset( $wp_query->query_vars['cat_name'] ) ) {
+			$categoryname = $wp_query->query_vars['cat_name'];
+		}
+
 		$AJAXcatid = $categoryname;
 		$categorysluglist = '';
-		if ( isset( $_GET['cat'] ) ) {
-			$categorysluglist = $_GET['cat'];
+		if ( isset( $_GET['catslug'] ) ) {
+			$categorysluglist = $_GET['catslug'];
 		}
 	} elseif ( $showonecatonly && ( !isset( $AJAXcatid ) || empty( $AJAXcatid ) ) && !empty( $defaultsinglecat_cpt ) && ( !isset( $_GET['searchll'] ) || ( isset( $_GET['searchll'] ) && empty( $_GET['searchll'] ) ) ) ) {
 		$categorylist_cpt = $defaultsinglecat_cpt;
@@ -443,11 +448,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			$show_one_cat_query_args['exclude'] = explode( ',', $excludecategorylist_cpt );
 		}
 
-		if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) ) {
+		if ( ( !empty( $categorysluglist ) || isset( $_GET['catslug'] ) ) && empty( $singlelinkid ) ) {
 			if ( !empty( $categorysluglist ) ) {
 				$show_one_cat_query_args['slug'] = explode( ',', $categorysluglist );
-			} elseif ( isset( $_GET['cat'] ) ) {
-				$show_one_cat_query_args['slug'] = isset( $_GET['cat'] );
+			} elseif ( isset( $_GET['catslug'] ) ) {
+				$show_one_cat_query_args['slug'] = isset( $_GET['catslug'] );
 			}
 
 		}
@@ -489,10 +494,16 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 	}
 
+	$searchstring = '';
 	$searchterms = '';
 
-	if ( isset($_GET['searchll'] ) && !empty( $_GET['searchll'] ) && empty( $singlelinkid ) ) {
-		$searchstring = $_GET['searchll'];
+	if ( ( isset($_GET['searchll'] ) && !empty( $_GET['searchll'] ) || ( isset( $_POST['searchll'] ) && !empty( $_POST['searchll'] ) ) ) && empty( $singlelinkid ) ) {
+		if ( isset( $_GET['searchll'] ) ) {
+			$searchstring = $_GET['searchll'];
+		} elseif ( isset( $_POST['searchll'] ) ) {
+			$searchstring = $_POST['searchll'];
+		}
+
 		$searchstringcopy = $searchstring;
 		$searchterms  = array();
 
@@ -561,11 +572,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			$link_categories_query_args['exclude'] = explode( ',', $excludecategorylist_cpt );
 		}
 
-		if ( ( !empty( $categorysluglist ) || isset( $_GET['cat'] ) ) && empty( $singlelinkid ) ) {
+		if ( ( !empty( $categorysluglist ) || isset( $_GET['catslug'] ) ) && empty( $singlelinkid ) ) {
 			if ( !empty( $categorysluglist ) ) {
 				$link_categories_query_args['slug'] = explode( ',', $categorysluglist );
-			} elseif ( isset( $_GET['cat'] ) ) {
-				$link_categories_query_args['slug'] = $_GET['cat'];
+			} elseif ( isset( $_GET['catslug'] ) ) {
+				$link_categories_query_args['slug'] = $_GET['catslug'];
 			}
 			$link_categories_query_args['include'] = array();
 			$link_categories_query_args['exclude'] = array();
@@ -694,7 +705,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 
 		if ( $level == 0 && 'search' == $mode ) {
-			$output .= '<div class="resulttitle">' . __('Search Results for', 'link-library') . ' "' . esc_html( stripslashes( $_GET['searchll'] ) ) . '"</div><!-- Div search results title -->';
+			$output .= '<div class="resulttitle">' . __('Search Results for', 'link-library') . ' "' . esc_html( stripslashes( $searchstring ) ) . '"</div><!-- Div search results title -->';
 		}
 
 		if ( $enablerewrite && !empty( $toppagetext ) && $parent_cat_id == 0 ) {
@@ -930,7 +941,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 
 				// Display links
-				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && !isset( $_GET['searchll'] ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $_GET['searchll'] ) ) ) {
+				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && !empty( $searchstring ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $searchstring ) ) ) {
 					$output .= "<div id='linklist" . $settings . "' class='linklist'>\n";
 					$output .= '</div><!-- Div empty list -->';
 				} elseif ( ( $the_link_query->found_posts || !$hide_if_empty || $cat_has_children ) ) {
@@ -2490,7 +2501,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$output .= '<span class="nolinksfoundallcats">' . __( 'No links found', 'link-library' ) . '</span>';
 	}
 
-	if ( isset( $_GET['searchll'] ) && $linkcount == 1 && $level == 0 ) {
+	if ( !empty( $searchstring ) && $linkcount == 1 && $level == 0 ) {
 		$output .= '<span class="nolinksfoundallcats">' . $searchnoresultstext . "</span>\n";
 	}
 

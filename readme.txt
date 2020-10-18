@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.5 =
+* Fixed to support new option to allow categories to be used to refine search results when displayed in more configurations
+
 = 6.7.4 =
 * Fixed warning in admin when activatinguser voting
 * Changed mechanism for user-submitted links to repost info if anything is missing or wrong. Now using transients.
