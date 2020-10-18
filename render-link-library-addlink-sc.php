@@ -17,7 +17,7 @@ require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
  * @return                  List of categories output for browser
  */
 
-function addlink_render_category_list( $categories, $select_name, $depth, $order, $libraryoptions ) {
+function addlink_render_category_list( $categories, $select_name, $depth, $order, $libraryoptions, $captureddata ) {
 
 	$output = '';
 	if ( !empty( $categories ) ) {
@@ -42,7 +42,7 @@ function addlink_render_category_list( $categories, $select_name, $depth, $order
 		foreach ( $categories as $category ) {
 			$output .= '<option value="' . $category->term_id . '" ';
 
-			if ( isset( $_GET['addlinkcat'] ) && in_array( $category->term_id, $_GET['addlinkcat'] ) ) {
+			if ( isset( $captureddata['link_category'] ) && in_array( $category->term_id, $captureddata['link_category'] ) ) {
 				$output .= "selected";
 			} elseif ( 'nodefaultcat' != $libraryoptions['addlinkdefaultcat'] && $category->term_id == intval( $libraryoptions['addlinkdefaultcat'] ) ) {
 				$output .= "selected";
@@ -52,7 +52,7 @@ function addlink_render_category_list( $categories, $select_name, $depth, $order
 			$child_categories = get_terms( 'link_library_category', array( 'orderby' => 'name', 'parent' => $category->term_id, 'order' => $order, 'hide_empty' => false ) );
 
 			if ( !empty( $child_categories ) ) {
-				$output .= addlink_render_category_list( $child_categories, $select_name, $depth + 1, $order, $libraryoptions );
+				$output .= addlink_render_category_list( $child_categories, $select_name, $depth + 1, $order, $libraryoptions, $captureddata );
 			}
 		}
 
@@ -192,6 +192,11 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         }
     }
 
+    $captureddata = array();
+    if ( isset( $_GET['formdata'] ) && !empty( $_GET['formdata'] ) ) {
+    	$captureddata = get_transient( $_GET['formdata'] );
+    }
+
     if ( 'link-library-addlink' == $code || 'addlink-link-library' == $code || 'link-library-addlinkcustommsg' == $code || 'addlinkcustommsg-link-library' == $code ) {
         if ( isset( $_GET['addlinkmessage'] ) ) {
             if ( 1 == $_GET['addlinkmessage'] ) {
@@ -299,7 +304,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
         	$output .= 'class="lltooltip" title="' . $linknametooltip . '"';
         }
 
-        $output .= '><input data-validation="required length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="link_name" id="link_name" value="' . ( isset( $_GET['addlinkname'] ) ? esc_html( stripslashes( $_GET['addlinkname'] ), '1' ) : '') . "\" /></td></tr>\n";
+        $output .= '><input data-validation="required length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="link_name" id="link_name" value="' . ( isset( $captureddata['link_name'] ) ? esc_html( stripslashes( $captureddata['link_name'] ), '1' ) : '') . "\" /></td></tr>\n";
 
         if ( $showaddlinkfile == 'hide' ) {
 	        if ( empty( $linkaddrlabel ) ) {
@@ -316,7 +321,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 	        if ( !$addlinknoaddress ) {
 		        $output .= 'data-validation="required url length" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, URL', 'link-library' ) . '" ';
 	        }
-	        $output .= 'type="text" name="link_url" id="link_url" value="' . ( isset( $_GET['addlinkurl'] ) ? esc_html( stripslashes( $_GET['addlinkurl'] ), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
+	        $output .= 'type="text" name="link_url" id="link_url" value="' . ( isset( $captureddata['link_url'] ) ? esc_html( stripslashes( $captureddata['link_url'] ), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
         } elseif ( $showaddlinkfile == 'show' ) {
 	        if ( empty( $linkfilelabel ) ) {
 		        $linkfilelabel = __( 'Link File', 'link-library' );
@@ -355,7 +360,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= 'data-validation="length' . $requiredtext . '" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, 1-255 chars', 'link-library' ) . '" ';
 
-            $output .= ' type="text" name="link_rss" id="link_rss" value="' . ( isset( $_GET['addlinkrss'] ) ? esc_html( stripslashes( $_GET['addlinkrss'] ), '1') : '' ) . "\" /></td></tr>\n";
+            $output .= ' type="text" name="link_rss" id="link_rss" value="' . ( isset( $captureddata['link_rss'] ) ? esc_html( stripslashes( $captureddata['link_rss'] ), '1') : '' ) . "\" /></td></tr>\n";
         }
 
 	    $include_links_array = array();
@@ -413,7 +418,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
                 $output .= '>';
 
-	            $output .= addlink_render_category_list( $linkcats, 'link_category', 0, 'ASC', $libraryoptions );
+	            $output .= addlink_render_category_list( $linkcats, 'link_category', 0, 'ASC', $libraryoptions, $captureddata );
 
 	            $output .= "</td></tr>\n";
             } else {
@@ -428,7 +433,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             if ( 'show' == $addlinkcustomcat ) {
                 $output .= '<tr class="customcatrow" ';
-                if ( !isset( $_GET['addlinkusercat'] ) || empty( $_GET['addlinkusercat'] ) ) {
+                if ( !isset( $captureddata['link_user_category'] ) || empty( $captureddata['link_user_category'] ) ) {
 	                $output .= 'style="display: none;"';
                 }
 
@@ -438,16 +443,16 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 		            $output .= 'class="lltooltip" title="' . $linkusercattooltip . '"';
 	            }
 
-                $output .= '><input type="text" name="link_user_category" id="link_user_category" value="' . ( isset( $_GET['addlinkusercat'] ) ? esc_html( stripslashes( $_GET['addlinkusercat'] ), '1' ) : '') . "\" /></td></tr>\n";
+                $output .= '><input type="text" name="link_user_category" id="link_user_category" value="' . ( isset( $captureddata['link_user_category'] ) ? esc_html( stripslashes( $captureddata['link_user_category'] ), '1' ) : '') . "\" /></td></tr>\n";
             }
         }
 
-	    $link_tags_query_args = array( 'hide_empty' => false );
+	    $link_tags_query_args = array( 'hide_empty' => false, 'taxonomy' => 'link_library_tags' );
 	    if ( !empty( $include_links_array ) ) {
 		    $link_tags_query_args['include'] = explode( ',', $libraryoptions['addlinktaglistoverride'] );
 	    }
 
-	    $linktags = get_terms( 'link_library_tags', $link_tags_query_args );
+	    $linktags = get_terms( $link_tags_query_args );
 
 	    if ( $linktags ) {
 		    if ( 'show' == $libraryoptions['showaddlinktags'] ) {
@@ -483,7 +488,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
 			    foreach ( $linktags as $linktag ) {
 				    $output .= '<OPTION VALUE="' . $linktag->term_id . '" ';
-				    if ( isset( $_GET['addlinktag'] ) && in_array( $linktag->term_id, $_GET['addlinktag'] ) ) {
+				    if ( isset( $captureddata['link_tags'] ) && in_array( $linktag->term_id, $captureddata['link_tags'] ) ) {
 					    $output .= "selected";
 				    }
 				    $output .= '>' . $linktag->name;
@@ -498,7 +503,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
 		    if ( 'show' == $addlinkcustomtag ) {
 			    $output .= '<tr class="customtagrow" ';
-			    if ( !isset( $_GET['addlinkusertags'] ) || empty( $_GET['addlinkusertags'] ) ) {
+			    if ( !isset( $captureddata['link_user_tags'] ) || empty( $captureddata['link_user_tags'] ) ) {
 				    $output .= 'style="display: none;"';
 			    }
 
@@ -508,7 +513,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 				    $output .= 'class="lltooltip" title="' . $linkusertagtooltip . '"';
 			    }
 
-			    $output .= '><input type="text" name="link_user_tags" id="link_user_tags" value="' . ( isset( $_GET['addlinkusertags'] ) ? esc_html( stripslashes( $_GET['addlinkusertags'] ), '1' ) : '') . "\" /></td></tr>\n";
+			    $output .= '><input type="text" name="link_user_tags" id="link_user_tags" value="' . ( isset( $captureddata['addlinkusertags'] ) ? esc_html( stripslashes( $captureddata['link_user_tags'] ), '1' ) : '') . "\" /></td></tr>\n";
 		    }
 	    }
 
@@ -534,7 +539,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= 'data-validation="length' . $requiredtext . '" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, 1-255 chars', 'link-library' ) . '" ';
 
-            $output .= ' type="text" name="link_description" id="link_description" value="' . ( isset( $_GET['addlinkdesc'] ) ? esc_html( stripslashes( $_GET['addlinkdesc'] ), '1' ) : '' ) . "\" /></td></tr>\n";
+            $output .= ' type="text" name="link_description" id="link_description" value="' . ( isset( $captureddata['link_description'] ) ? esc_html( stripslashes( $captureddata['link_description'] ), '1' ) : '' ) . "\" /></td></tr>\n";
         }
 
         if ( 'show' == $showuserlargedescription || 'required' == $showuserlargedescription ) {
@@ -554,7 +559,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $output .= 'data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
             }
 
-            $output .= ' name="link_textfield" id="link_textfield" cols="66">' . ( isset( $_GET['addlinktextfield'] ) ? esc_html( stripslashes( $_GET['addlinktextfield'] ), '1' ) : '' ) . "</textarea></td></tr>\n";
+            $output .= ' name="link_textfield" id="link_textfield" cols="66">' . ( isset( $captureddata['link_textfield'] ) ? esc_html( stripslashes( $captureddata['link_textfield'] ), '1' ) : '' ) . "</textarea></td></tr>\n";
         }
 
         if ( 'show' == $showaddlinknotes || 'required' == $showaddlinknotes) {
@@ -588,7 +593,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $output .= 'name="link_notes" id="link_notes">';
             }
 
-            $output .= ( isset( $_GET['addlinknotes'] ) ? esc_html( stripslashes( $_GET['addlinknotes'] ), '1' ) : '' );
+            $output .= ( isset( $captureddata['link_notes'] ) ? esc_html( stripslashes( $captureddata['link_notes'] ), '1' ) : '' );
 
             if ( !$usetextareaforusersubmitnotes || empty( $usetextareaforusersubmitnotes ) ) {
                 $output .= '" />';
@@ -637,7 +642,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= 'data-validation="length' . $requiredtext . '" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, 1-255 chars', 'link-library' ) . '" ';
 
-            $output .= 'type="text" name="ll_reciprocal" id="ll_reciprocal" value="' . ( isset( $_GET['addlinkreciprocal'] ) ? esc_html(stripslashes($_GET['addlinkreciprocal']), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
+            $output .= 'type="text" name="ll_reciprocal" id="ll_reciprocal" value="' . ( isset( $captureddata['ll_reciprocal'] ) ? esc_html(stripslashes($captureddata['ll_reciprocal']), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
         }
 
         if ( 'show' == $showaddlinksecondurl || 'required' == $showaddlinksecondurl) {
@@ -661,7 +666,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= 'data-validation="length' . $requiredtext . '" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
 
-            $output .= 'type="text" name="ll_secondwebaddr" id="ll_secondwebaddr" value="' . ( isset( $_GET['addlinksecondurl'] ) ? esc_html( stripslashes( $_GET['addlinksecondurl'] ), '1' ) : $linkaddrdefvalue ) . "\" /></td></tr>\n";
+            $output .= 'type="text" name="ll_secondwebaddr" id="ll_secondwebaddr" value="' . ( isset( $captureddata['ll_secondwebaddr'] ) ? esc_html( stripslashes( $captureddata['ll_secondwebaddr'] ), '1' ) : $linkaddrdefvalue ) . "\" /></td></tr>\n";
         }
 
         if ( 'show' == $showaddlinktelephone || 'required' == $showaddlinktelephone) {
@@ -685,7 +690,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= 'data-validation="length' . $requiredtext . '" data-validation-length="max128" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
 
-            $output .= 'type="text" name="ll_telephone" id="ll_telephone" value="' . ( isset( $_GET['addlinktelephone'] ) ? esc_html( stripslashes( $_GET['addlinktelephone'] ), '1' ) : '' ) . "\" /></td></tr>\n";
+            $output .= 'type="text" name="ll_telephone" id="ll_telephone" value="' . ( isset( $captureddata['ll_telephone'] ) ? esc_html( stripslashes( $captureddata['ll_telephone'] ), '1' ) : '' ) . "\" /></td></tr>\n";
         }
 
         if ( 'show' == $showaddlinkemail || 'required' == $showaddlinkemail ) {
@@ -709,7 +714,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 
             $output .= 'data-validation="email length' . $requiredtext . '" data-validation-length="max128" data-validation-error-msg-required="' . __( 'Required field, proper e-mail, 1-128 chars', 'link-library' ) . '" ';
 
-            $output .= 'type="text" name="ll_email" id="ll_email" value="' . ( isset( $_GET['addlinkemail'] ) ? esc_html( stripslashes( $_GET['addlinkemail'] ), '1' ) : '' ) . "\" /></td></tr>\n";
+            $output .= 'type="text" name="ll_email" id="ll_email" value="' . ( isset( $captureddata['ll_email'] ) ? esc_html( stripslashes( $captureddata['ll_email'] ), '1' ) : '' ) . "\" /></td></tr>\n";
         }
 
         if ( 'show' == $showlinksubmittername || 'required' == $showlinksubmittername || is_user_logged_in() ) {
@@ -718,8 +723,8 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             }
 
 	        $name_field_value = '';
-	        if ( isset( $_GET['ll_submittername'] ) ) {
-		        $name_field_value = esc_html( stripslashes( $_GET['ll_submittername'] ) );
+	        if ( isset( $captureddata['ll_submittername'] ) ) {
+		        $name_field_value = esc_html( stripslashes( $captureddata['ll_submittername'] ) );
 	        } elseif ( is_user_logged_in() ) {
 		        $user_data = wp_get_current_user();
 		        $name_field_value = $user_data->display_name;
@@ -755,8 +760,8 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
             }
 
 	        $email_field_value = '';
-	        if ( isset( $_GET['ll_submitteremail'] ) ) {
-		        $email_field_value = esc_html( stripslashes( $_GET['ll_submitteremail'] ) );
+	        if ( isset( $captureddata['ll_submitteremail'] ) ) {
+		        $email_field_value = esc_html( stripslashes( $captureddata['ll_submitteremail'] ) );
 	        } elseif ( is_user_logged_in() ) {
 		        $user_data = wp_get_current_user();
 		        $email_field_value = $user_data->user_email;
@@ -803,7 +808,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $output .= 'data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
             }
 
-            $output .= 'name="ll_submittercomment" id="ll_submittercomment" cols="38">' . ( isset( $_GET['addlinksubmitcomment'] ) ? esc_html( stripslashes( $_GET['addlinksubmitcomment']), '1' ) : '' ) . "</textarea></td></tr>\n";
+            $output .= 'name="ll_submittercomment" id="ll_submittercomment" cols="38">' . ( isset( $captureddata['ll_submittercomment'] ) ? esc_html( stripslashes( $captureddata['ll_submittercomment']), '1' ) : '' ) . "</textarea></td></tr>\n";
         }
 
         if ( $showcaptcha && !is_user_logged_in() ) {
@@ -815,7 +820,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
                 $customcaptchaquestion = __( 'Is boiling water hot or cold?', 'link-library' );
             }
 
-            $output .= '<tr><th style="vertical-align: top;">' . $customcaptchaquestion . '</th><td><input data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="ll_customcaptchaanswer" id="ll_customcaptchaanswer" value="' . (isset( $_GET['ll_customcaptchaanswer'] ) ? esc_html( stripslashes( $_GET['ll_customcaptchaanswer'] ), '1' ) : '' ) . "\" /></td></tr>\n";
+            $output .= '<tr><th style="vertical-align: top;">' . $customcaptchaquestion . '</th><td><input data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" type="text" name="ll_customcaptchaanswer" id="ll_customcaptchaanswer" value="' . (isset( $captureddata['ll_customcaptchaanswer'] ) ? esc_html( stripslashes( $captureddata['ll_customcaptchaanswer'] ), '1' ) : '' ) . "\" /></td></tr>\n";
         }
 
         $output .= "</table>\n";

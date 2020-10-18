@@ -2309,8 +2309,6 @@ class link_library_plugin_admin {
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 
 			if ( !$options['showuservotes'] && isset( $_POST['showuservotes'] ) ) {
-
-				var_dump( 'in here' );
 				$post_query_args = array(
 					'post_type' => 'link_library_links',
 					'posts_per_page' => -1

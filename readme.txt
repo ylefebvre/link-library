@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.4 =
+* Fixed warning in admin when activatinguser voting
+* Changed mechanism for user-submitted links to repost info if anything is missing or wrong. Now using transients.
+* Fixed issues with escaped characters when users submit new links
+
 = 6.7.3 =
 * Fixed issues with user-submission form
 

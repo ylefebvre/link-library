@@ -41,6 +41,8 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 	$captureddata['ll_submitteremail']      = ( isset( $_POST['ll_submitteremail'] ) ? $_POST['ll_submitteremail'] : '' );
 	$captureddata['ll_submittercomment']    = ( isset( $_POST['ll_submittercomment'] ) ? $_POST['ll_submittercomment'] : '' );
 	$captureddata['ll_customcaptchaanswer'] = ( isset( $_POST['ll_customcaptchaanswer'] ) ? $_POST['ll_customcaptchaanswer'] : '' );
+	$captureddata['link_category']          = ( isset( $_POST['link_category'] ) ? $_POST['link_category'] : '' );
+	$captureddata['link_tags']              = ( isset( $_POST['link_tags'] ) ? $_POST['link_tags'] : '' );
 
 	$uploads = wp_upload_dir();
 
@@ -440,12 +442,12 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						}
 
 						update_post_meta( $new_link_ID, 'link_target', $options['linktarget'] );
-						update_post_meta( $new_link_ID, 'link_description', esc_html( stripslashes( $newlinkdesc ) ) );
+						update_post_meta( $new_link_ID, 'link_description', sanitize_text_field( $newlinkdesc ) );
 
 						update_post_meta( $new_link_ID, 'link_updated', current_time( 'timestamp' ) );
 
-						update_post_meta( $new_link_ID, 'link_notes', esc_html( stripslashes( $captureddata['link_notes'] ) ) );
-						update_post_meta( $new_link_ID, 'link_rss', esc_html( stripslashes( $captureddata['link_rss'] ) ) );
+						update_post_meta( $new_link_ID, 'link_notes', sanitize_text_field( $captureddata['link_notes'] ) );
+						update_post_meta( $new_link_ID, 'link_rss', esc_url( stripslashes( $captureddata['link_rss'] ) ) );
 						update_post_meta( $new_link_ID, 'link_second_url', $captureddata['ll_secondwebaddr'] );
 						update_post_meta( $new_link_ID, 'link_telephone', $captureddata['ll_telephone'] );
 						update_post_meta( $new_link_ID, 'link_email', $captureddata['ll_email'] );
@@ -458,7 +460,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						update_post_meta( $new_link_ID, 'link_submitter', ( isset( $username ) ? $username : null ) );
 						update_post_meta( $new_link_ID, 'link_submitter_name', $captureddata['ll_submittername'] );
 						update_post_meta( $new_link_ID, 'link_submitter_email', $captureddata['ll_submitteremail'] );
-						update_post_meta( $new_link_ID, 'link_textfield', $captureddata['link_textfield'] );
+						update_post_meta( $new_link_ID, 'link_textfield', sanitize_text_field( $captureddata['link_textfield'] ) );
 
 						update_post_meta( $new_link_ID, 'link_no_follow', false );
 						update_post_meta( $new_link_ID, 'link_featured', 0 );
@@ -680,94 +682,12 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 
 	$redirectaddress = esc_url_raw( add_query_arg( 'addlinkmessage', $message, $redirectaddress ) );
 
+	$transient_data = array();
+
 	if ( $valid == false && ( $options['showcaptcha'] == true || $options['showcustomcaptcha'] == 'show'  || $options['onereciprocaldomain'] ) ) {
-		if ( isset( $_POST['link_name'] ) && $_POST['link_name'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkname', rawurlencode( $captureddata['link_name'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_url'] ) && $_POST['link_url'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkurl', rawurlencode( $captureddata['link_url'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_user_category'] ) && $_POST['link_user_category'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkusercat', rawurlencode( $captureddata['link_user_category'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_user_tags'] ) && !empty( $_POST['link_user_tags'] ) ) {
-			$redirectaddress = add_query_arg( 'addlinkusertags', rawurlencode( $captureddata['link_user_tags'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_description'] ) && $_POST['link_description'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkdesc', rawurlencode( $captureddata['link_description'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_textfield'] ) && $_POST['link_textfield'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinktextfield', rawurlencode( $captureddata['link_textfield'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_rss'] ) && $_POST['link_rss'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkrss', rawurlencode( $captureddata['link_rss'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_notes'] ) && $_POST['link_notes'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinknotes', rawurlencode( $captureddata['link_notes'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_secondwebaddr'] ) && $_POST['ll_secondwebaddr'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinksecondurl', rawurlencode( $captureddata['ll_secondwebaddr'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_telephone'] ) && $_POST['ll_telephone'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinktelephone', rawurlencode( $captureddata['ll_telephone'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_email'] ) && $_POST['ll_email'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkemail', rawurlencode( $captureddata['ll_email'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_reciprocal'] ) && $_POST['ll_reciprocal'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkreciprocal', rawurlencode( $captureddata['ll_reciprocal'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_submittername'] ) && $_POST['ll_submittername'] != '' ) {
-			$redirectaddress = add_query_arg( 'll_submittername', rawurlencode( $captureddata['ll_submittername'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_submitteremail'] ) && $_POST['ll_submitteremail'] != '' ) {
-			$redirectaddress = add_query_arg( 'll_submitteremail', rawurlencode( $captureddata['ll_submitteremail'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_submittercomment'] ) && $_POST['ll_submittercomment'] != '' ) {
-			$redirectaddress = add_query_arg( 'll_submittercomment', rawurlencode( $captureddata['ll_submittercomment'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['ll_customcaptchaanswer'] ) && $_POST['ll_customcaptchaanswer'] != '' ) {
-			$redirectaddress = add_query_arg( 'addlinkcustomcaptcha', rawurlencode( $captureddata['ll_customcaptchaanswer'] ), $redirectaddress );
-		}
-
-		if ( isset( $_POST['link_category'] ) && !empty( $_POST['link_category'] ) ) {
-			foreach( $_POST['link_category'] as $cat_item ) {
-				if ( false !== strpos( $redirectaddress, '?' ) ) {
-					$redirectaddress .= '&';
-				} else {
-					$redirectaddress .= '?';
-				}
-				$redirectaddress .= 'addlinkcat[]=' . rawurlencode( $cat_item );
-			}
-		}
-
-		if ( isset( $_POST['link_tags'] ) && !empty( $_POST['link_tags'] ) ) {
-			foreach( $_POST['link_tags'] as $tag_item ) {
-				if ( false !== strpos( $redirectaddress, '?' ) ) {
-					$redirectaddress .= '&';
-				} else {
-					$redirectaddress .= '?';
-				}
-				$redirectaddress .= 'addlinktag[]=' . rawurlencode( $tag_item );
-			}
-		}
-
-		$redirectaddress = esc_url_raw( $redirectaddress );
+		$nonce = wp_generate_password( 12, false );
+		set_transient( 'll_user_form_' . $nonce, $captureddata, 60 );
+		$redirectaddress = esc_url_raw( add_query_arg( 'formdata', 'll_user_form_' . $nonce, $redirectaddress ) );
 	}
 
 	wp_redirect( $redirectaddress );

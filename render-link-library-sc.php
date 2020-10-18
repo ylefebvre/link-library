@@ -1005,7 +1005,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											$catlink .= '>';
 										} /* elseif ( $catlinkspermalinksmode ) {
-											var_dump( 'Generating cat link' );
+											// Generating cat link
 										} */
 										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
 										if ( !empty( $caturl ) ) {
