@@ -220,6 +220,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
             }
 
             $totallinkcount = 0;
+            $searchstring = '';
 
             foreach ( $link_categories as $catname ) {
 	            $linkcount = 0;
@@ -328,7 +329,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                if ( $showonecatonly ) {
 		                if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
 			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
-				                $cattext = "<a href='#' onClick=\"showLinkCat" . $settings . "('" . $catname->term_id. "', '" . $settings . "', 1, '" . $_GET['searchll'] . "');return false;\" >";
+				                $cattext = "<a href='#' onClick=\"showLinkCat" . $settings . "('" . $catname->term_id. "', '" . $settings . "', 1, '" . $searchstring . "');return false;\" >";
 			                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 				                $cattext = $catname->term_id;
 			                }

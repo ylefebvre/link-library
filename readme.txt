@@ -48,6 +48,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.6 =
+* Added new options to linkorderoverride parameter when calling [link-library] shortcode to reflect list of choices in interface
+* Cleared some PHP warnings related to recent changes
+* Fix for show not cat on startup in AJAX mode not working
+* Modified link hits logic to disregard visits from administrators to links
+
 = 6.7.5 =
 * Fixed to support new option to allow categories to be used to refine search results when displayed in more configurations
 

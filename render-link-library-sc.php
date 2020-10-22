@@ -941,7 +941,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 
 				// Display links
-				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && !empty( $searchstring ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $searchstring ) ) ) {
+				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && empty( $searchstring ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $searchstring ) ) ) {
 					$output .= "<div id='linklist" . $settings . "' class='linklist'>\n";
 					$output .= '</div><!-- Div empty list -->';
 				} elseif ( ( $the_link_query->found_posts || !$hide_if_empty || $cat_has_children ) ) {

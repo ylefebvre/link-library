@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.7.5
+Version: 6.7.6
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -1268,7 +1268,7 @@ class link_library_plugin {
 		}
 
 		if ( !empty( $linkorderoverride ) ) {
-			$validlinkorder = array( 'name', 'id', 'random', 'date', 'hits', 'scpo' );
+			$validlinkorder = array( 'name', 'id', 'random', 'date', 'hits', 'scpo', 'pubdate', 'uservotes' );
 			if ( in_array( $linkorderoverride, $validlinkorder ) ) {
 				$options['linkorder'] = $linkorderoverride;
 			}
