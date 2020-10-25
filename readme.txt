@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.7 =
+* Reduced the transient time for form submissions to 5 seconds instead of 60
+* Fixed warning in category display
+* User submission message is now transmitted in transient expiring after 10 seconds
+
 = 6.7.6 =
 * Added new options to linkorderoverride parameter when calling [link-library] shortcode to reflect list of choices in interface
 * Cleared some PHP warnings related to recent changes

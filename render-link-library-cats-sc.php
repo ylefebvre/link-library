@@ -566,7 +566,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
                 if ( $showonecatonly && ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) ) {
                     $output .= 'catidvar = document.catselect.catdropdown.options[document.catselect.catdropdown.selectedIndex].value;';
-                    $output .= "showLinkCat" . $settings . "(catidvar, '" . $settings . "', 1, '" . $_GET['searchll']  . "');return false; }";
+                    $output .= "showLinkCat" . $settings . "(catidvar, '" . $settings . "', 1, '" . $searchstring  . "');return false; }";
                 } else {
                     $output .= "\t\tlocation=\n";
                     $output .= "document.catselect.catdropdown.options[document.catselect.catdropdown.selectedIndex].value }\n";

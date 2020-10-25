@@ -680,15 +680,14 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 		}
 	}
 
-	$redirectaddress = esc_url_raw( add_query_arg( 'addlinkmessage', $message, $redirectaddress ) );
-
-	$transient_data = array();
-
-	if ( $valid == false && ( $options['showcaptcha'] == true || $options['showcustomcaptcha'] == 'show'  || $options['onereciprocaldomain'] ) ) {
-		$nonce = wp_generate_password( 12, false );
-		set_transient( 'll_user_form_' . $nonce, $captureddata, 60 );
-		$redirectaddress = esc_url_raw( add_query_arg( 'formdata', 'll_user_form_' . $nonce, $redirectaddress ) );
+	if ( $valid == true ) {
+		$captureddata = array();
 	}
+	$captureddata['message'] = $message;
+
+	$nonce = wp_generate_password( 12, false );
+	set_transient( 'll_user_form_' . $nonce, $captureddata, 10 );
+	$redirectaddress = esc_url_raw( add_query_arg( 'formdata', 'll_user_form_' . $nonce, $redirectaddress ) );
 
 	wp_redirect( $redirectaddress );
 	exit;

@@ -198,68 +198,68 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
     }
 
     if ( 'link-library-addlink' == $code || 'addlink-link-library' == $code || 'link-library-addlinkcustommsg' == $code || 'addlinkcustommsg-link-library' == $code ) {
-        if ( isset( $_GET['addlinkmessage'] ) ) {
-            if ( 1 == $_GET['addlinkmessage'] ) {
+        if ( isset( $captureddata['message'] ) && !empty( $captureddata['message'] ) ) {
+            if ( 1 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Confirm code not given', 'link-library') . '.</div>';
-            } elseif ( 2 == $_GET['addlinkmessage'] ) {
+            } elseif ( 2 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Captcha code is wrong', 'link-library') . '.</div>';
-            } elseif ( 3 == $_GET['addlinkmessage'] ) {
+            } elseif ( 3 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Captcha code is only valid for 5 minutes', 'link-library') . '.</div>';
-            } elseif ( 4 == $_GET['addlinkmessage'] ) {
+            } elseif ( 4 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('No captcha cookie given. Make sure cookies are enabled', 'link-library') . '.</div>';
-            } elseif ( 5 == $_GET['addlinkmessage'] ) {
+            } elseif ( 5 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Captcha answer was not provided.', 'link-library') . '</div>';
-            } elseif ( 6 == $_GET['addlinkmessage'] ) {
+            } elseif ( 6 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Captcha answer is incorrect', 'link-library') . '.</div>';
-            } elseif ( 7 == $_GET['addlinkmessage'] ) {
+            } elseif ( 7 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('User Category was not provided correctly. Link insertion failed.', 'link-library') . '</div>';
-            } elseif ( 8 == $_GET['addlinkmessage'] ) {
+            } elseif ( 8 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $newlinkmsg;
                 if ( !$showuserlinks ) {
                     $output .= ' ' . $moderatemsg;
                 }
                 $output .= '</div>';
-            } elseif ( 9 == $_GET['addlinkmessage'] ) {
+            } elseif ( 9 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Error: Link does not have an address.', 'link-library') . '</div>';
-            } elseif ( 10 == $_GET['addlinkmessage'] ) {
+            } elseif ( 10 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Error: Link already exists.', 'link-library') . '</div>';
-            } elseif ( 11 == $_GET['addlinkmessage'] ) {
+            } elseif ( 11 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linkrsslabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 12 == $_GET['addlinkmessage'] ) {
+            } elseif ( 12 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linkdesclabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 13 == $_GET['addlinkmessage'] ) {
+            } elseif ( 13 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linknoteslabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 14 == $_GET['addlinkmessage'] ) {
+            } elseif ( 14 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linkreciprocallabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 15 == $_GET['addlinkmessage'] ) {
+            } elseif ( 15 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linksecondurllabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 16 == $_GET['addlinkmessage'] ) {
+            } elseif ( 16 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linktelephonelabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 17 == $_GET['addlinkmessage'] ) {
+            } elseif ( 17 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linkemaillabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 18 == $_GET['addlinkmessage'] ) {
+            } elseif ( 18 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linksubmitternamelabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 19 == $_GET['addlinkmessage'] ) {
+            } elseif ( 19 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linksubmitteremaillabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 20 == $_GET['addlinkmessage'] ) {
+            } elseif ( 20 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linksubmittercommentlabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 21 == $_GET['addlinkmessage'] ) {
+            } elseif ( 21 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . $libraryoptions['linklargedesclabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 22 == $_GET['addlinkmessage'] ) {
+            } elseif ( 22 == $captureddata['message'] ) {
                 $output .= '<div class="llmessage">' . __('Link submission error', 'link-library') . '</div>';
-            } elseif ( 23 == $_GET['addlinkmessage'] ) {
+            } elseif ( 23 == $captureddata['message'] ) {
 	            $output .= '<div class="llmessage">' . __('Link rejected. There is already a site with this reciprocal link.', 'link-library') . '</div>';
-            } elseif ( 24 == $_GET['addlinkmessage'] ) {
+            } elseif ( 24 == $captureddata['message'] ) {
 	            $output .= '<div class="llmessage">' . __('Link rejected. Invalid reciprocal link.', 'link-library') . '</div>';
-            } elseif ( 25 == $_GET['addlinkmessage'] ) {
+            } elseif ( 25 == $captureddata['message'] ) {
 	            $output .= '<div class="llmessage">' . $libraryoptions['linkimagelabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 26 == $_GET['addlinkmessage'] ) {
+            } elseif ( 26 == $captureddata['message'] ) {
 	            $output .= '<div class="llmessage">' . $libraryoptions['linkfilelabel'] . __(' is a required field', 'link-library') . '</div>';
-            } elseif ( 27 == $_GET['addlinkmessage'] ) {
+            } elseif ( 27 == $captureddata['message'] ) {
 	            $output .= '<div class="llmessage">' . __( 'Invalid image file extension', 'link-library') . '</div>';
-            } elseif ( 28 == $_GET['addlinkmessage'] ) {
+            } elseif ( 28 == $captureddata['message'] ) {
 	            $output .= '<div class="llmessage">' . __( 'Invalid link file extension', 'link-library') . '</div>';
-            } elseif ( 29 == $_GET['addlinkmessage'] ) {
+            } elseif ( 29 == $captureddata['message'] ) {
 	            $output .= '<div class="llmessage">' . __( 'A link file with this name already exists', 'link-library') . '</div>';
             }
         }
