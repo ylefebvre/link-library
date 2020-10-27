@@ -66,7 +66,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
         if ( $showonecatonly && ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) ) {
             $nonce = wp_create_nonce( 'link_library_ajax_refresh' );
 
-            $output .= "<SCRIPT LANGUAGE=\"JavaScript\">\n";
+            $output .= "<script type=\"text/javascript\">\n";
             $output .= "var ajaxobject;\n";
 	        $output .= "if(typeof showLinkCat" . $settings . " !== 'function'){\n";
 	        $output .= "window.showLinkCat" . $settings . " = function ( _incomingID, _settingsID, _pagenumber, _searchll ) {\n";
@@ -90,7 +90,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	        $output .= "}\n";
             $output .= "}\n";
 
-            $output .= "</SCRIPT>\n\n";
+            $output .= "</script>\n\n";
         }
 
 	    $currentcatletter = '';

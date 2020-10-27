@@ -2141,7 +2141,8 @@ class link_library_plugin_admin {
 					'linksubmissionthankyouurl', 'recipcheckaddress', 'imagefilepath', 'catselectmethod', 'expandiconpath', 'collapseiconpath', 'updatechannel',
 					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug',
 					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings', 'defaultprotocoladmin', 'pagepeekerid', 'pagepeekersize', 'stwthumbnailsize', 'shrinkthewebaccesskey', 'customurl1label', 'customurl2label',
-					'customurl3label', 'customurl4label', 'customurl5label'
+					'customurl3label', 'customurl4label', 'customurl5label', 'customtext1label', 'customtext2label', 'customtext3label', 'customtext4label', 'customtext5label', 'customlist1label', 'customlist2label', 'customlist3label', 'customlist4label', 'customlist5label', 'customlist1values', 'customlist2values', 'customlist3values', 'customlist4values', 'customlist5values',
+					'customlist1html', 'customlist2html', 'customlist3html', 'customlist4html', 'customlist5html'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2165,7 +2166,9 @@ class link_library_plugin_admin {
 			}
 
 			foreach ( array( 'debugmode', 'emaillinksubmitter', 'suppressemailfooter', 'usefirstpartsubmittername', 'hidedonation', 'publicly_queryable', 'exclude_from_search', 'bp_log_activity', 'deletelocalfile', 'customurl1active',
-				'customurl2active', 'customurl3active', 'customurl4active', 'customurl5active' ) as $option_name ) {
+				'customurl2active', 'customurl3active', 'customurl4active', 'customurl5active', 'customtext1active', 'customtext2active',
+				'customtext3active', 'customtext4active', 'customtext5active', 'customlist1active', 'customlist2active',
+				'customlist3active', 'customlist4active', 'customlist5active' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					$genoptions[$option_name] = true;
 				} else {
@@ -2334,7 +2337,9 @@ class link_library_plugin_admin {
 					'beforecatlist1', 'beforecatlist2', 'beforecatlist3', 'catnameoutput', 'linkaddfrequency',
 					'defaultsinglecat_cpt', 'rsspreviewcount', 'rssfeedinlinecount', 'linksperpage', 'catdescpos',
 					'catlistdescpos', 'rsspreviewwidth', 'rsspreviewheight', 'numberofrssitems',
-					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement', 'displaycustomurl1', 'displaycustomurl2', 'displaycustomurl3', 'displaycustomurl4', 'displaycustomurl5'
+					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement', 'displaycustomurl1', 'displaycustomurl2', 'displaycustomurl3', 'displaycustomurl4', 'displaycustomurl5', 'displaycustomtext1', 'displaycustomtext2',
+					'displaycustomtext3', 'displaycustomtext4', 'displaycustomtext5', 'displaycustomlist1', 'displaycustomlist2',
+					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5'
 				)
 				as $option_name
 			) {
@@ -2379,7 +2384,7 @@ class link_library_plugin_admin {
 					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage', 'linknametooltip', 'linkaddrtooltip', 'linkrsstooltip',
 					'linkcattooltip', 'linkusercattooltip', 'linkusertagtooltip', 'linkdesctooltip', 'linknotestooltip', 'linkimagetooltip', 'linkreciptooltip',
 					'linksecondtooltip', 'linktelephonetooltip', 'linkemailtooltip', 'submitternametooltip', 'submitteremailtooltip',
-					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes', 'uservotelikelabel'
+					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes', 'uservotelikelabel', 'beforecustomtext1', 'beforecustomtext2', 'beforecustomtext3', 'beforecustomtext4', 'beforecustomtext5', 'aftercustomtext1', 'aftercustomtext2', 'aftercustomtext3', 'aftercustomtext4', 'aftercustomtext5', 'beforecustomlist1', 'beforecustomlist2', 'beforecustomlist3', 'beforecustomlist4', 'beforecustomlist5', 'aftercustomlist1', 'aftercustomlist2', 'aftercustomlist3', 'aftercustomlist4', 'aftercustomlist5'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -3089,19 +3094,66 @@ function general_custom_fields_meta_box( $data ) {
 	$genoptions = $data['genoptions'];
 	?>
 	<div style='padding-top:15px' id="ll-customfields" class="content-section">
-		<h2>URL Fields</h2>
+		<h2><?php _e( 'URL Fields', 'link-library' ); ?></h2>
 		<table>
 			<tr>
 				<th></th>
-				<th>Active</th>
-				<th>Label</th>
+				<th><?php _e( 'Active', 'link-library' ); ?></th>
+				<th><?php _e( 'Label', 'link-library' ); ?></th>
 			</tr>
 			<?php for ( $customurlfieldnumber = 1; $customurlfieldnumber < 6; $customurlfieldnumber++ ) { ?>
 				<tr>
-					<td style="width:200px">Custom Field #<?php echo $customurlfieldnumber; ?></td>
+					<td style="width:200px"><?php _e( 'Custom URL Field #', 'link-library' ); ?><?php echo $customurlfieldnumber; ?></td>
 					<td><input type="checkbox" name="customurl<?php echo $customurlfieldnumber; ?>active" <?php checked( $genoptions['customurl' . $customurlfieldnumber . 'active'] ); ?>></td>
 					<td><input type="text" name="customurl<?php echo $customurlfieldnumber; ?>label" value="<?php echo $genoptions['customurl' . $customurlfieldnumber . 'label']; ?>"></td>
 				</tr>
+			<?php } ?>
+		</table>
+		<br /><br />
+
+		<h2><?php _e( 'Text Fields', 'link-library' ); ?></h2>
+		<table>
+			<tr>
+				<th></th>
+				<th><?php _e( 'Active', 'link-library' ); ?></th>
+				<th><?php _e( 'Label', 'link-library' ); ?></th>
+			</tr>
+			<?php for ( $customtextfieldnumber = 1; $customtextfieldnumber < 6; $customtextfieldnumber++ ) { ?>
+				<tr>
+					<td style="width:200px"><?php _e( 'Custom Text Field #', 'link-library' ); ?><?php echo $customtextfieldnumber; ?></td>
+					<td><input type="checkbox" name="customtext<?php echo $customtextfieldnumber; ?>active" <?php checked( $genoptions['customtext' . $customtextfieldnumber . 'active'] ); ?>></td>
+					<td><input type="text" name="customtext<?php echo $customtextfieldnumber; ?>label" value="<?php echo $genoptions['customtext' . $customtextfieldnumber . 'label']; ?>"></td>
+				</tr>
+			<?php } ?>
+		</table>
+
+		<br /><br />
+
+		<h2><?php _e( 'List Fields', 'link-library' ); ?></h2>
+		<table>
+			<tr>
+				<th></th>
+				<th><?php _e( 'Active', 'link-library' ); ?></th>
+				<th><?php _e( 'Label', 'link-library' ); ?></th>
+				<th><?php _e( 'List Values', 'link-library' ); ?></th>
+			</tr>
+			<?php for ( $customlistfieldnumber = 1; $customlistfieldnumber < 6; $customlistfieldnumber++ ) { ?>
+				<tr>
+					<td style="width:200px"><?php _e( 'Custom List Field #', 'link-library' ); ?><?php echo $customlistfieldnumber; ?></td>
+					<td><input type="checkbox" name="customlist<?php echo $customlistfieldnumber; ?>active" <?php checked( $genoptions['customlist' . $customlistfieldnumber . 'active'] ); ?>></td>
+					<td><input type="text" name="customlist<?php echo $customlistfieldnumber; ?>label" value="<?php echo $genoptions['customlist' . $customlistfieldnumber . 'label']; ?>"></td>
+					<td class="lltooltip" title="<?php _e( 'List of entries to display in custom list, comma-separated', 'link-library' ); ?>"><input type="text" name="customlist<?php echo $customlistfieldnumber; ?>values" value="<?php echo $genoptions['customlist' . $customlistfieldnumber . 'values']; ?>"></td>
+				</tr>
+				<?php if ( !empty( $genoptions['customlist' . $customlistfieldnumber . 'values'] ) ) {
+					$values_array = explode( ',', $genoptions['customlist' . $customlistfieldnumber . 'values'] );
+					foreach( $values_array as $index => $value ) { ?>
+					<tr>
+						<td></td>
+						<td></td>
+						<td>Custom HTML for <?php echo $value; ?></td>
+						<td><input type="text" size="60" name="customlist<?php echo $customlistfieldnumber; ?>html[]" value="<?php if ( isset( $genoptions['customlist' . $customlistfieldnumber . 'html'][$index] ) ) { echo $genoptions['customlist' . $customlistfieldnumber . 'html'][$index]; } ?>"></td>
+					</tr>
+				<?php } } ?>
 			<?php } ?>
 		</table>
 	</div>
@@ -4527,7 +4579,7 @@ function general_custom_fields_meta_box( $data ) {
 
 			$dragndroparray = explode( ',', $dragndroporder );
 
-			foreach ( range( 1, 23 ) as $new_entry ) {
+			foreach ( range( 1, 33 ) as $new_entry ) {
 				if ( !in_array( $new_entry, $dragndroparray ) ) {
 					$dragndroparray[] = $new_entry;
 				}
@@ -4633,6 +4685,56 @@ function general_custom_fields_meta_box( $data ) {
 								?>
 							<li class="lltooltip" title="<?php _e( 'User Votes', 'link-library' ); ?>" id="23" style='background-color: #23A023'>23</li>
 							<?php  break;
+						case 24:
+							if ( $genoptions['customtext1active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customtext1label'] ?>" id="24" style='background-color: #5ccccc'>24</li>
+							<?php } break;
+						case 25:
+							if ( $genoptions['customtext2active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customtext2label'] ?>" id="25" style='background-color: #23A023'>25</li>
+							<?php } break;
+						case 26:
+							if ( $genoptions['customtext3active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customtext3label'] ?>" id="26" style='background-color: #23A023'>26</li>
+							<?php } break;
+						case 27:
+							if ( $genoptions['customtext4active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customtext4label'] ?>" id="27" style='background-color: #23A023'>27</li>
+							<?php } break;
+						case 28:
+							if ( $genoptions['customtext5active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customtext5label'] ?>" id="28" style='background-color: #23A023'>28</li>
+							<?php } break;
+						case 29:
+							if ( $genoptions['customlist1active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customlist1label'] ?>" id="29" style='background-color: #5ccccc'>29</li>
+							<?php } break;
+						case 30:
+							if ( $genoptions['customlist2active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customlist2label'] ?>" id="30" style='background-color: #23A023'>30</li>
+							<?php } break;
+						case 31:
+							if ( $genoptions['customlist3active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customlist3label'] ?>" id="31" style='background-color: #23A023'>31</li>
+							<?php } break;
+						case 32:
+							if ( $genoptions['customlist4active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customlist4label'] ?>" id="32" style='background-color: #23A023'>32</li>
+							<?php } break;
+						case 33:
+							if ( $genoptions['customlist5active'] ) {
+								?>
+								<li class="lltooltip" title="<?php echo $genoptions['customtext5label'] ?>" id="33" style='background-color: #23A023'>33</li>
+							<?php } break;
 					}
 				}
 			}
@@ -4685,7 +4787,7 @@ function general_custom_fields_meta_box( $data ) {
 
 		$dragndroparray = explode( ',', $dragndroporder );
 
-		foreach ( range( 1, 23 ) as $new_entry ) {
+		foreach ( range( 1, 33 ) as $new_entry ) {
 			if ( !in_array( $new_entry, $dragndroparray ) ) {
 				$dragndroparray[] = $new_entry;
 			}
@@ -5109,6 +5211,61 @@ function general_custom_fields_meta_box( $data ) {
 							<td class="lltooltip" title="Text of user voting button" style='background: #FFF'><input type="text" id="uservotelikelabel" name="uservotelikelabel" size="22" value="<?php echo stripslashes( $options['uservotelikelabel'] ); ?>" /></td>
 						</tr>
 						<?php break;
+					case 24: /* ------------------------- Custom Text Fields ---------------------------------------*/
+					case 25:
+					case 26:
+					case 27:
+					case 28:
+						$customtextfieldid = $arrayelements - 23;
+
+						if ( $genoptions['customtext' . $customtextfieldid . 'active'] ) {
+							?>
+							<tr>
+								<td style='background-color: #5ccccc;color:#fff' class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before and after the Text Field', 'link-library' ); ?>'><?php echo $arrayelements; ?>- <?php echo $genoptions['customtext' . $customtextfieldid . 'label']; ?></td>
+								<td style='text-align:center;background: #FFF'>
+									<select name="displaycustomtext<?php echo $customtextfieldid; ?>" id="displaycustomtext<?php echo $customtextfieldid; ?>" style="width:80px;">
+										<option value="false"<?php selected( $options['displaycustomtext' . $customtextfieldid] == 'false' ); ?>><?php _e( 'False', 'link-library' ); ?></option>
+										<option value="label"<?php selected( $options['displaycustomtext' . $customtextfieldid] == 'label' ); ?>><?php _e( 'Text', 'link-library' ); ?></option>
+									</select>
+								</td>
+								<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed before the Text Field', 'link-library' ); ?>'>
+									<input type="text" id="beforecustomtext<?php echo $customtextfieldid; ?>" name="beforecustomtext<?php echo $customtextfieldid; ?>" size="22" value="<?php echo stripslashes( $options['beforecustomtext' . $customtextfieldid] ); ?>" />
+								</td>
+								<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed after Text Field', 'link-library' ); ?>'>
+									<input type="text" id="aftercustomtext<?php echo $customtextfieldid; ?>" name="aftercustomtext<?php echo $customtextfieldid; ?>" size="22" value="<?php echo stripslashes( $options['aftercustomtext' . $customtextfieldid] ); ?>" />
+								</td>
+								<td style='background: #FFF'></td>
+								<td style='background: #FFF'></td>
+							</tr>
+						<?php } break;
+					case 29: /* ------------------------- Custom List Fields ---------------------------------------*/
+					case 30:
+					case 31:
+					case 32:
+					case 33:
+						$customlistfieldid = $arrayelements - 28;
+
+						if ( $genoptions['customlist' . $customlistfieldid . 'active'] ) {
+							?>
+							<tr>
+								<td style='background-color: #5ccccc;color:#fff' class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before and after the custom list field', 'link-library' ); ?>'><?php echo $arrayelements; ?>- <?php echo $genoptions['customlist' . $customlistfieldid . 'label']; ?></td>
+								<td style='text-align:center;background: #FFF'>
+									<select name="displaycustomlist<?php echo $customlistfieldid; ?>" id="displaycustomlist<?php echo $customlistfieldid; ?>" style="width:80px;">
+										<option value="false"<?php selected( $options['displaycustomlist' . $customlistfieldid] == 'false' ); ?>><?php _e( 'False', 'link-library' ); ?></option>
+										<option value="listentry"<?php selected( $options['displaycustomlist' . $customlistfieldid] == 'listentry' ); ?>><?php _e( 'List Entry', 'link-library' ); ?></option>
+										<option value="listhtml"<?php selected( $options['displaycustomlist' . $customlistfieldid] == 'listhtml' ); ?>><?php _e( 'HTML Code', 'link-library' ); ?></option>
+									</select>
+								</td>
+								<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed before the custom list field', 'link-library' ); ?>'>
+									<input type="text" id="beforecustomlist<?php echo $customlistfieldid; ?>" name="beforecustomlist<?php echo $customlistfieldid; ?>" size="22" value="<?php echo stripslashes( $options['beforecustomlist' . $customlistfieldid] ); ?>" />
+								</td>
+								<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed after custom list field', 'link-library' ); ?>'>
+									<input type="text" id="aftercustomlist<?php echo $customlistfieldid; ?>" name="aftercustomlist<?php echo $customlistfieldid; ?>" size="22" value="<?php echo stripslashes( $options['aftercustomlist' . $customlistfieldid] ); ?>" />
+								</td>
+								<td style='background: #FFF'></td>
+								<td style='background: #FFF'></td>
+							</tr>
+						<?php } break;
 				}
 			}
 		}
@@ -6285,6 +6442,18 @@ function general_custom_fields_meta_box( $data ) {
 		$link_custom_url_4 = get_post_meta( $link->ID, 'link_custom_url_4', true );
 		$link_custom_url_5 = get_post_meta( $link->ID, 'link_custom_url_5', true );
 
+		$link_custom_text_1 = get_post_meta( $link->ID, 'link_custom_text_1', true );
+		$link_custom_text_2 = get_post_meta( $link->ID, 'link_custom_text_2', true );
+		$link_custom_text_3 = get_post_meta( $link->ID, 'link_custom_text_3', true );
+		$link_custom_text_4 = get_post_meta( $link->ID, 'link_custom_text_4', true );
+		$link_custom_text_5 = get_post_meta( $link->ID, 'link_custom_text_5', true );
+
+		$link_custom_list_1 = get_post_meta( $link->ID, 'link_custom_list_1', true );
+		$link_custom_list_2 = get_post_meta( $link->ID, 'link_custom_list_2', true );
+		$link_custom_list_3 = get_post_meta( $link->ID, 'link_custom_list_3', true );
+		$link_custom_list_4 = get_post_meta( $link->ID, 'link_custom_list_4', true );
+		$link_custom_list_5 = get_post_meta( $link->ID, 'link_custom_list_5', true );
+
 		$link_updated = get_post_meta( $link->ID, 'link_updated', true );
 
 		$link_updated_manual = get_post_meta( $link->ID, 'link_updated_manual', true );
@@ -6350,6 +6519,33 @@ function general_custom_fields_meta_box( $data ) {
 					<td><input type="text" name="link_custom_url_<?php echo $customurlfieldnumber; ?>" style="width:100%" value="<?php echo $$valuefield; ?>"></td>
 				</tr>
 			<?php } } ?>
+			<?php for ( $customtextfieldnumber = 1; $customtextfieldnumber < 6; $customtextfieldnumber++ ) {
+				if ( $genoptions['customtext' . $customtextfieldnumber . 'active'] ) {
+					$valuefield = 'link_custom_text_' . $customtextfieldnumber; ?>
+					<tr>
+						<td style="width:200px"><?php echo $genoptions['customtext' . $customtextfieldnumber . 'label']; ?></td>
+						<td><input type="text" name="link_custom_text_<?php echo $customtextfieldnumber; ?>" style="width:100%" value="<?php echo $$valuefield; ?>"></td>
+					</tr>
+				<?php } } ?>
+			<?php for ( $customlistfieldnumber = 1; $customlistfieldnumber < 6; $customlistfieldnumber++ ) {
+				if ( $genoptions['customlist' . $customlistfieldnumber . 'active'] ) {
+					$valuefield = 'link_custom_list_' . $customlistfieldnumber;
+					$list_values = explode( ',', $genoptions['customlist' . $customlistfieldnumber . 'values'] );
+					?>
+					<tr>
+						<td style="width:200px"><?php echo $genoptions['customlist' . $customlistfieldnumber . 'label']; ?></td>
+						<td>
+							<?php if ( !empty( $list_values ) ) { ?>
+								<select name="link_custom_list_<?php echo $customlistfieldnumber; ?>">
+									<option value=""><?php _e( 'Select an option', 'link-library' ); ?></option>
+								<?php foreach ( $list_values as $index => $list_value ) { ?>
+									<option <?php selected( $index, $$valuefield ); ?> value="<?php echo $index; ?>"><?php echo $list_value; ?></option>
+								<?php } ?>
+								</select>
+							<?php } ?>
+						</td>
+					</tr>
+				<?php } } ?>
 			<tr>
 				<td><?php _e( 'Telephone', 'link-library' ); ?></td>
 				<td>
@@ -6495,7 +6691,7 @@ function general_custom_fields_meta_box( $data ) {
 				}
 			}
 
-			$array_escape_items = array( 'link_description', 'link_notes', 'link_telephone', 'link_reciprocal', 'link_submitter', 'link_submitter_name', 'link_rel' );
+			$array_escape_items = array( 'link_description', 'link_notes', 'link_telephone', 'link_reciprocal', 'link_submitter', 'link_submitter_name', 'link_rel', 'link_custom_text_1', 'link_custom_text_2', 'link_custom_text_3', 'link_custom_text_4', 'link_custom_text_5', 'link_custom_list_1', 'link_custom_list_2', 'link_custom_list_3', 'link_custom_list_4', 'link_custom_list_5' );
 			foreach ( $array_escape_items as $array_escape_item ) {
 				if ( isset( $_POST[$array_escape_item] ) ) {
 					update_post_meta( $link_id, $array_escape_item, sanitize_text_field( $_POST[$array_escape_item] ) );

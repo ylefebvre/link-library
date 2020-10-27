@@ -239,7 +239,7 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 	if ( 'AJAX' == $showonecatmode ) {
 		$nonce = wp_create_nonce( 'link_library_ajax_refresh' );
 
-		$paginationoutput .= "<SCRIPT LANGUAGE=\"JavaScript\">\n";
+		$paginationoutput .= "<script type=\"text/javascript\">\n";
 		$paginationoutput .= "var ajaxobject;\n";
 		$paginationoutput .= "if(typeof showLinkCat" . $settings . " !== 'function'){\n";
 		$paginationoutput .= "window.showLinkCat" . $settings . " = function ( _incomingID, _settingsID, _pagenumber, _searchll ) {\n";
@@ -263,7 +263,7 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 		$paginationoutput .= "}\n";
 		$paginationoutput .= "}\n";
 
-		$paginationoutput .= "</SCRIPT>\n\n";
+		$paginationoutput .= "</script>\n\n";
 	}
 
 	return $paginationoutput;
@@ -1231,15 +1231,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									                         15 => __( 'Tags', 'link-library' ), 16 => __( 'Price', 'link-library'),
 									                         17 => __( 'Category Name', 'link-library' ) );
 
-									if ( empty( $dragndroporder ) ) {
-										$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17';
-									}
-
 									$dragndroparray = explode( ',', $dragndroporder );
 
-									$new_entries = array( '13', '14', '15', '16', '17' );
-
-									foreach ( $new_entries as $new_entry ) {
+									foreach ( range( 1, 28 ) as $new_entry ) {
 										if ( !in_array( $new_entry, $dragndroparray ) ) {
 											$dragndroparray[] = $new_entry;
 										}
@@ -1483,10 +1477,29 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								for ( $customurlfieldnumber = 1; $customurlfieldnumber < 6; $customurlfieldnumber++ ) {
+									$linkitem['link_custom_url_' . $customurlfieldnumber] = '';
 									if ( isset( $link_meta['link_custom_url_' . $customurlfieldnumber][0] ) ) {
 										$linkitem['link_custom_url_' . $customurlfieldnumber] = esc_url( $link_meta['link_custom_url_' . $customurlfieldnumber][0] );
 									} else {
 										$linkitem['link_custom_url_' . $customurlfieldnumber] = '';
+									}
+								}
+
+								for ( $customtextfieldnumber = 1; $customtextfieldnumber < 6; $customtextfieldnumber++ ) {
+									$linkitem['link_custom_text_' . $customtextfieldnumber] = '';
+									if ( isset( $link_meta['link_custom_text_' . $customtextfieldnumber][0] ) ) {
+										$linkitem['link_custom_text_' . $customtextfieldnumber] = sanitize_text_field( $link_meta['link_custom_text_' . $customtextfieldnumber][0] );
+									} else {
+										$linkitem['link_custom_text_' . $customtextfieldnumber] = '';
+									}
+								}
+
+								for ( $customlistfieldnumber = 1; $customlistfieldnumber < 6; $customlistfieldnumber++ ) {
+									$linkitem['link_custom_list_' . $customlistfieldnumber] = '';
+									if ( isset( $link_meta['link_custom_list_' . $customlistfieldnumber][0] ) ) {
+										$linkitem['link_custom_list_' . $customlistfieldnumber] = sanitize_text_field( $link_meta['link_custom_list_' . $customlistfieldnumber][0] );
+									} else {
+										$linkitem['link_custom_text_' . $customlistfieldnumber] = '';
 									}
 								}
 
@@ -1660,15 +1673,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									}
 								}
 
-								if ( empty( $dragndroporder ) ) {
-									$dragndroporder = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17';
-								}
-
 								$dragndroparray = explode( ',', $dragndroporder );
 
-								$new_entries = array( '13', '14', '15', '16', '17' );
-
-								foreach ( $new_entries as $new_entry ) {
+								foreach ( range( 1, 33 ) as $new_entry ) {
 									if ( !in_array( $new_entry, $dragndroparray ) ) {
 										$dragndroparray[] = $new_entry;
 									}
@@ -2407,6 +2414,94 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 													}
 
 													$current_cat_output .= stripslashes( $afteruservotes );
+												}
+
+												break;
+											case 24: 	//------------------ Custom Text Output --------------------
+											case 25:
+											case 26:
+											case 27:
+											case 28:
+
+												$customtextfieldid = $arrayelements - 23;
+												$fieldactivevar = 'customtext' . $customtextfieldid . 'active';
+												$displayvar = 'displaycustomtext' . $customtextfieldid;
+												$beforevar = 'beforecustomtext' . $customtextfieldid;
+												$aftervar = 'aftercustomtext' . $customtextfieldid;
+
+												$customtext = $linkitem['link_custom_text_' . $customtextfieldid];
+
+												if ( $$fieldactivevar && 'false' != $$displayvar ) {
+													$current_cat_output .= $between . stripslashes( $$beforevar );
+
+													if ( !$nooutputempty || ( $nooutputempty && !empty( $customtext ) ) ) {
+
+														if ( true == $debugmode ) {
+															$starttimedesc = microtime ( true );
+														}
+
+														$current_cat_output .= $customtext;
+
+														if ( true == $debugmode ) {
+															$current_cat_output .= "\n<!-- Time to render custom text section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
+														}
+													}
+
+													$current_cat_output .= stripslashes( $$aftervar );
+												}
+
+												break;
+											case 29: 	//------------------ Custom List Output --------------------
+											case 30:
+											case 31:
+											case 32:
+											case 33:
+
+												$customlistfieldid = $arrayelements - 28;
+												$fieldactivevar = 'customlist' . $customlistfieldid . 'active';
+												$customlistvalues = 'customlist' . $customlistfieldid . 'values';
+												$customlisthtmlname = 'customlist' . $customlistfieldid . 'html';
+												$displayvar = 'displaycustomlist' . $customlistfieldid;
+												$beforevar = 'beforecustomlist' . $customlistfieldid;
+												$aftervar = 'aftercustomlist' . $customlistfieldid;
+
+												$customlistselection = '';
+												if ( isset( $linkitem['link_custom_list_' . $customlistfieldid] ) ) {
+													$customlistselection = $linkitem['link_custom_list_' . $customlistfieldid];
+												}
+
+												if ( $$fieldactivevar && 'false' != $$displayvar ) {
+													$list_values = array();
+													if ( !empty( $$customlistvalues ) ) {
+														$list_values = explode( ',', $$customlistvalues );
+													}
+
+													$html_values = array();
+
+													if ( !empty( $$customlisthtmlname ) ) {
+														$html_values = $$customlisthtmlname;
+													}
+
+													$current_cat_output .= $between . stripslashes( $$beforevar );
+
+													if ( !$nooutputempty || ( $nooutputempty && !empty( $customlistselection ) ) ) {
+
+														if ( true == $debugmode ) {
+															$starttimedesc = microtime ( true );
+														}
+
+														if ( 'listentry' == $$displayvar && isset( $list_values[$customlistselection] ) ) {
+															$current_cat_output .= $list_values[$customlistselection];
+														} elseif( 'listhtml' == $$displayvar && isset( $html_values[$customlistselection] ) ) {
+															$current_cat_output .= $html_values[$customlistselection];
+														}
+
+														if ( true == $debugmode ) {
+															$current_cat_output .= "\n<!-- Time to render custom text section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";
+														}
+													}
+
+													$current_cat_output .= stripslashes( $$aftervar );
 												}
 
 												break;

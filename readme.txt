@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.8 =
+* Fix for some users experiencing issues with AJAX mode. Extra line breaks were being output on some configurations
+* Added custom text fields and custom list fields
+
 = 6.7.7 =
 * Reduced the transient time for form submissions to 5 seconds instead of 60
 * Fixed warning in category display
