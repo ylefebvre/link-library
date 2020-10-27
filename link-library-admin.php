@@ -3142,7 +3142,7 @@ function general_custom_fields_meta_box( $data ) {
 					<td style="width:200px"><?php _e( 'Custom List Field #', 'link-library' ); ?><?php echo $customlistfieldnumber; ?></td>
 					<td><input type="checkbox" name="customlist<?php echo $customlistfieldnumber; ?>active" <?php checked( $genoptions['customlist' . $customlistfieldnumber . 'active'] ); ?>></td>
 					<td><input type="text" name="customlist<?php echo $customlistfieldnumber; ?>label" value="<?php echo $genoptions['customlist' . $customlistfieldnumber . 'label']; ?>"></td>
-					<td class="lltooltip" title="<?php _e( 'List of entries to display in custom list, comma-separated', 'link-library' ); ?>"><input type="text" name="customlist<?php echo $customlistfieldnumber; ?>values" value="<?php echo $genoptions['customlist' . $customlistfieldnumber . 'values']; ?>"></td>
+					<td class="lltooltip" title="<?php _e( 'List of entries to display in custom list, comma-separated. Once saved, custom HTML fields for each entry will appear below.', 'link-library' ); ?>"><input type="text" name="customlist<?php echo $customlistfieldnumber; ?>values" value="<?php echo $genoptions['customlist' . $customlistfieldnumber . 'values']; ?>"></td>
 				</tr>
 				<?php if ( !empty( $genoptions['customlist' . $customlistfieldnumber . 'values'] ) ) {
 					$values_array = explode( ',', $genoptions['customlist' . $customlistfieldnumber . 'values'] );
