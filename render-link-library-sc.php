@@ -1499,7 +1499,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									if ( isset( $link_meta['link_custom_list_' . $customlistfieldnumber][0] ) ) {
 										$linkitem['link_custom_list_' . $customlistfieldnumber] = sanitize_text_field( $link_meta['link_custom_list_' . $customlistfieldnumber][0] );
 									} else {
-										$linkitem['link_custom_text_' . $customlistfieldnumber] = '';
+										$linkitem['link_custom_list_' . $customlistfieldnumber] = '';
 									}
 								}
 
@@ -2493,7 +2493,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														if ( 'listentry' == $$displayvar && isset( $list_values[$customlistselection] ) ) {
 															$current_cat_output .= $list_values[$customlistselection];
 														} elseif( 'listhtml' == $$displayvar && isset( $html_values[$customlistselection] ) ) {
-															$current_cat_output .= $html_values[$customlistselection];
+															$current_cat_output .= stripslashes( $html_values[$customlistselection] );
 														}
 
 														if ( true == $debugmode ) {

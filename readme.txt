@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.9 =
+* Fixed issues with quotes in HTML fields for custom lists
+* Fixed issue with custom text fields
+
 = 6.7.8 =
 * Fix for some users experiencing issues with AJAX mode. Extra line breaks were being output on some configurations
 * Added custom text fields and custom list fields

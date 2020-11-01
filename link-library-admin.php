@@ -3151,7 +3151,7 @@ function general_custom_fields_meta_box( $data ) {
 						<td></td>
 						<td></td>
 						<td>Custom HTML for <?php echo $value; ?></td>
-						<td><input type="text" size="60" name="customlist<?php echo $customlistfieldnumber; ?>html[]" value="<?php if ( isset( $genoptions['customlist' . $customlistfieldnumber . 'html'][$index] ) ) { echo $genoptions['customlist' . $customlistfieldnumber . 'html'][$index]; } ?>"></td>
+						<td><input type="text" size="60" name="customlist<?php echo $customlistfieldnumber; ?>html[]" value="<?php if ( isset( $genoptions['customlist' . $customlistfieldnumber . 'html'][$index] ) ) { echo stripslashes( $genoptions['customlist' . $customlistfieldnumber . 'html'][$index] ); } ?>"></td>
 					</tr>
 				<?php } } ?>
 			<?php } ?>
