@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.7.9
+Version: 6.7.10
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -425,7 +425,8 @@ class link_library_plugin {
 				),
 				'show_ui' => true,
 				'show_tagcloud' => false,
-				'hierarchical' => true
+				'hierarchical' => true,
+				'rewrite' => false,
 			)
 		);
 
