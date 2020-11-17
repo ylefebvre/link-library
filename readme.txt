@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.11 =
+* Add support for lazy loading images
+
 = 6.7.10 =
 * Fix to avoid permalinks / rewrite issues on some installations
 

@@ -1749,6 +1749,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 																$imageoutput .= $alt . $title;
 
+																if ( $lazyloadimages ) {
+																	$imageoutput .= ' loading="lazy"';
+																}
+
 																if ( !empty( $imageclass ) ) {
 																	$imageoutput .= ' class="' . $imageclass . '" ';
 																}

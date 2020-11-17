@@ -365,6 +365,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['aftercustomlist3']                 = '';
 	$options['aftercustomlist4']                 = '';
 	$options['aftercustomlist5']                 = '';
+	$options['lazyloadimages']                   = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
