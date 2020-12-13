@@ -2004,11 +2004,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 																$current_cat_output .= $the_second_link;
 															}
 
-															if ( !empty( $target ) && !empty( $weblinktarget ) ) {
-																$new_target_string = '="' . $weblinktarget . ' ';
-																$weblinktarget = str_replace( '="', $new_target_string, $target );
-															} elseif ( empty( $target ) && !empty( $weblinktarget ) ) {
+															if ( !empty( $weblinktarget ) ) {
 																$weblinktarget = ' target="' . $weblinktarget . '"';
+															} elseif ( !empty( $target ) && empty( $weblinktarget ) ) {
+																$weblinktarget = $target;
 															}
 
 															$current_cat_output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="track_this_link" ' . $weblinktarget . '>';
@@ -2375,11 +2374,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 															$current_cat_output .= $customurl;
 
-															if ( !empty( $target ) && !empty( $$targetvar ) ) {
-																$new_target_string = '="' . $$targetvar . ' ';
-																$weblinktarget = str_replace( '="', $new_target_string, $target );
-															} elseif ( empty( $target ) && !empty( $$targetvar ) ) {
+															if ( !empty( $$targetvar ) ) {
 																$weblinktarget = ' target="' . $$targetvar . '"';
+															} elseif ( !empty( $target ) ) {
+																$weblinktarget = ' target="' . $target . '"';
 															}
 
 															$current_cat_output .= '" id="link-' . $linkitem['proper_link_id'] . '" class="track_this_link" ' . $$targetvar . '>';
