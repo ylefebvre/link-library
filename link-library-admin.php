@@ -1578,12 +1578,24 @@ class link_library_plugin_admin {
 							}
 						}
 
+
+						$link_publication = current_time( 'mysql' );
+						$publication_labels = array( 'Publication Date' );
+						foreach( $publication_labels as $publication_label ) {
+							if ( isset( $import_columns[$publication_label] ) ) {
+								if ( !empty( $import_columns[$publication_label] ) ) {
+									$link_publication = $data[ $import_columns[$publication_label] ];
+								}
+							}
+						}
+
 						$new_link_data = array(
 							'post_type' => 'link_library_links',
 							'post_content' => '',
 							'post_title' => $post_title,
 							'tax_input' => array( 'link_library_category' => $matched_link_cats, 'link_library_tags' => $matched_link_tags ),
-							'post_status' => $post_status
+							'post_status' => $post_status,
+							'post_date' => $link_publication
 						);
 
 						if ( !empty( $existing_link_post_id ) ) {

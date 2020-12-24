@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.13 =
+* Added ability to specify publication date for imported links
+
 = 6.7.12 =
 * Fix bug in generation of target field for web link
 
