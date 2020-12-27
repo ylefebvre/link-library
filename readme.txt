@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.14 =
+* Added new function where bookmarklet checks for existing link URL and redirects to edit that link if one is found
+
 = 6.7.13 =
 * Added ability to specify publication date for imported links
 

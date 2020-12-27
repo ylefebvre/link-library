@@ -531,6 +531,20 @@ class link_library_plugin_admin {
 		if ( isset($_GET['page']) && $_GET['page'] == 'link-library-faq' ) {
 			wp_redirect( 'https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/' );
 			exit();
+		} elseif ( !empty( $_GET['linkurl'] ) && !empty( $_GET['action'] ) ) {
+			$incoming_link_url = esc_url( urldecode( $_GET['linkurl'] ) );
+
+			$find_post_args = array( 'post_type' => 'link_library_links',
+				'meta_key' => 'link_url',
+				'meta_value' => $incoming_link_url,
+				'numberposts' => 1 );
+
+			$posts_same_url_array = get_posts( $find_post_args );
+
+			if ( !empty( $posts_same_url_array ) ) {
+				$existing_link_post_id = $posts_same_url_array[0]->ID;
+				wp_redirect( add_query_arg( array( 'post' => $existing_link_post_id, 'action' => 'edit', 'existinglink' => 'true' ), admin_url( 'post.php') ) );
+			}
 		}
 
 		//register the callback been used if options of page been submitted and needs to be processed
@@ -6170,6 +6184,11 @@ function general_custom_fields_meta_box( $data ) {
 		$link_notes = get_post_meta( $link->ID, 'link_notes', true );
 		$link_notes = htmlentities( $link_notes );
 		wp_nonce_field( plugin_basename( __FILE__ ), 'link_edit_nonce' );
+
+		if ( isset( $_GET['existinglink'] ) && 'true' == $_GET['existinglink'] ) {
+			echo '<h2 style="color:#f00;font-weight:bold">'. __( 'Existing link found with target URL in Link Library. Showing existing link to edit.', 'link-library' ) . '</h2>';
+		}
+
 		?>
 
 		<table style="width:100%">
