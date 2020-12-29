@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.7.14
+Version: 6.7.15
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -426,7 +426,7 @@ class link_library_plugin {
 				'show_ui' => true,
 				'show_tagcloud' => false,
 				'hierarchical' => true,
-				'rewrite' => false,
+				'rewrite' => $genoptions['publicly_queryable'],
 			)
 		);
 
@@ -1671,7 +1671,7 @@ class link_library_plugin {
 				$content = str_replace( '[link_large_description]', $link_large_description, $content );
 				$content = str_replace( '[link_image]', $link_image, $content );
 				$content = str_replace( '[link_email]', $link_email, $content );
-				$content = str_replace( '[link_telephone]', $link_telephone, $content );
+				$content = str_replace( '[link_telephone]', $link_phone_number, $content );
 
 				$content = str_replace( '[link_price]', $link_price, $content );
 				$content = $this->ll_replace_all_between( '[currency]', '[/currency]', $content, $link_price_currency );

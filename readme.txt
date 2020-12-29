@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.7.15 =
+* Fixed issue with being able to view links as single page items
+* Improvements for bookmarklet existing link verification
+
 = 6.7.14 =
 * Added new function where bookmarklet checks for existing link URL and redirects to edit that link if one is found
 

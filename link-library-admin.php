@@ -533,10 +533,12 @@ class link_library_plugin_admin {
 			exit();
 		} elseif ( !empty( $_GET['linkurl'] ) && !empty( $_GET['action'] ) ) {
 			$incoming_link_url = esc_url( urldecode( $_GET['linkurl'] ) );
+			$incoming_link_url = preg_replace("(^https?://)", "", $incoming_link_url );
 
 			$find_post_args = array( 'post_type' => 'link_library_links',
 				'meta_key' => 'link_url',
 				'meta_value' => $incoming_link_url,
+				'meta_compare' => 'LIKE',
 				'numberposts' => 1 );
 
 			$posts_same_url_array = get_posts( $find_post_args );
@@ -646,7 +648,7 @@ class link_library_plugin_admin {
 
 	function ll_inner_custom_box( $post ) {
 		$editor_config = array( 'textarea_rows' => 8 );
-		wp_editor( $post->post_content, 'content', $editor_config );
+wp_editor( $post->post_content, 'content', $editor_config );
 	}
 
 	function ll_thumbshots_warning() {
@@ -1554,9 +1556,11 @@ class link_library_plugin_admin {
 						}
 
 						if ( isset( $_POST['updatesameurl'] ) ) {
+							$search_link_url = preg_replace("(^https?://)", "", $link_url );
 							$find_post_args = array( 'post_type' => 'link_library_links',
 													 'meta_key' => 'link_url',
-													 'meta_value' => $link_url,
+													 'meta_value' => $search_link_url,
+													 'meta_compare' => 'LIKE',
 													 'numberposts' => 1 );
 
 							$posts_same_url_array = get_posts( $find_post_args );
@@ -1903,9 +1907,11 @@ class link_library_plugin_admin {
 					$incomingcatdata = $_POST['siteimportcat'];
 
 					if ( isset( $_POST['siteimportupdatesameurl'] ) ) {
+						$search_link_url = esc_url( $node->getAttribute( "href" ) );
+						$search_link_url = preg_replace("(^https?://)", "", $search_link_url );
 						$find_post_args = array( 'post_type' => 'link_library_links',
 						                         'meta_key' => 'link_url',
-						                         'meta_value' => esc_url( $node->getAttribute( "href" ) ),
+						                         'meta_value' => $search_link_url,
 						                         'numberposts' => 1 );
 
 						$posts_same_url_array = get_posts( $find_post_args );
