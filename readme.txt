@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8 =
+* Fixed issues with links export and import functions
+* Added ability to export and import custom fields
+
 = 6.7.15 =
 * Fixed issue with being able to view links as single page items
 * Improvements for bookmarklet existing link verification

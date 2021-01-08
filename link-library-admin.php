@@ -1445,6 +1445,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		$successfulimport = 0;
 		$successfulupdate = 0;
 
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+
 		if ( isset( $_POST['importlinks'] ) ) {
 			wp_defer_term_counting( true );
 			wp_defer_comment_counting( true );
@@ -1820,6 +1822,45 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							}
 						}
 						update_post_meta( $new_link_ID, 'link_submitter_email', $link_submitter_email );
+
+						for ( $customurlfieldnumber = 1; $customurlfieldnumber < 6; $customurlfieldnumber++ ) {
+							$custom_link = '';
+							if ( $genoptions['customurl' . $customurlfieldnumber . 'active'] ) {
+								$valuelabel = 'Custom URL ' . $customurlfieldnumber;
+								$valuefield = 'link_custom_url_' . $customurlfieldnumber;
+								if ( isset( $import_columns[$valuelabel] ) ) {
+									$custom_link = esc_url( $data[$import_columns[$valuelabel]] );
+								}
+
+								update_post_meta( $new_link_ID, $valuefield, $custom_link );
+							}
+						}
+
+						for ( $customtextfieldnumber = 1; $customtextfieldnumber < 6; $customtextfieldnumber++ ) {
+							$custom_text = '';
+							if ( $genoptions['customtext' . $customtextfieldnumber . 'active'] ) {
+								$valuelabel = 'Custom Text ' . $customtextfieldnumber;
+								$valuefield = 'link_custom_text_' . $customtextfieldnumber;
+								if ( isset( $import_columns[$valuelabel] ) ) {
+									$custom_text = sanitize_text_field( $data[$import_columns[$valuelabel]] );
+								}
+
+								update_post_meta( $new_link_ID, $valuefield, $custom_text );
+							}
+						}
+
+						for ( $customlistnumber = 1; $customlistnumber < 6; $customlistnumber++ ) {
+							$custom_list = '';
+							if ( $genoptions['customlist' . $customlistnumber . 'active'] ) {
+								$valuelabel = 'Custom List ' . $customlistnumber;
+								$valuefield = 'link_custom_list_' . $customlistnumber;
+								if ( isset( $import_columns[$valuelabel] ) ) {
+									$custom_list = intval( $data[$import_columns[$valuelabel]] );
+								}
+
+								update_post_meta( $new_link_ID, $valuefield, $custom_list );
+							}
+						}
 					}
 				}
 			}
@@ -2039,11 +2080,33 @@ wp_editor( $post->post_content, 'content', $editor_config );
 						$link_object['No Follow'] = get_post_meta( get_the_ID(), 'link_no_follow', true );
 						$link_object['Rating'] = get_post_meta( get_the_ID(), 'link_rating', true );
 						$link_object['Link Target'] = get_post_meta( get_the_ID(), 'link_target', true );
-						$link_object['Updated Date - Empty for none'] = date( 'Y-m-d', intval( get_post_meta( get_the_ID(), 'link_updated', true ) ) );
+						$link_object['Updated Date - Empty for none'] = date( 'Y-m-d H:i:s', intval( get_post_meta( get_the_ID(), 'link_updated', true ) ) );
 						$link_object['Link Featured'] = get_post_meta( get_the_ID(), 'link_featured', true );
 						$link_object['Link Submitter Name'] = get_post_meta( get_the_ID(), 'link_submitter_name', true );
 						$link_object['Link Submitter E-mail'] = get_post_meta( get_the_ID(), 'link_submitter_email', true );
 						$link_object['Link Visits'] = get_post_meta( get_the_ID(), 'link_visits', true );
+						$link_object['Publication Date'] = get_the_date( 'Y-m-d H:i:s', get_the_ID() );
+
+						for ( $customurlfieldnumber = 1; $customurlfieldnumber < 6; $customurlfieldnumber++ ) {
+							if ( $genoptions['customurl' . $customurlfieldnumber . 'active'] ) {
+								$valuefield = 'link_custom_url_' . $customurlfieldnumber;
+								$link_object['Custom URL ' . $customurlfieldnumber] = get_post_meta( get_the_ID(), $valuefield, true );
+							}
+						}
+
+						for ( $customtextfieldnumber = 1; $customtextfieldnumber < 6; $customtextfieldnumber++ ) {
+							if ( $genoptions['customtext' . $customtextfieldnumber . 'active'] ) {
+								$valuefield = 'link_custom_text_' . $customtextfieldnumber;
+								$link_object['Custom Text ' . $customtextfieldnumber] = get_post_meta( get_the_ID(), $valuefield, true );
+							}
+						}
+
+						for ( $customlistnumber = 1; $customlistnumber < 6; $customlistnumber++ ) {
+							if ( $genoptions['customlist' . $customlistnumber . 'active'] ) {
+								$valuefield = 'link_custom_list_' . $customlistnumber;
+								$link_object['Custom List ' . $customlistnumber] = get_post_meta( get_the_ID(), $valuefield, true );
+							}
+						}
 
 						$link_items[] = $link_object;
 					}
@@ -2164,8 +2227,6 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			$delete_links_query = 'DELETE FROM ' . $this->db_prefix() . 'links ';
 			$wpdb->get_results( $delete_links_query );
 		} else {
-			$genoptions = get_option( 'LinkLibraryGeneral' );
-
 			foreach (
 				array(
 					'numberstylesets', 'includescriptcss', 'pagetitleprefix', 'pagetitlesuffix', 'schemaversion', 'thumbshotscid', 'approvalemailtitle',
