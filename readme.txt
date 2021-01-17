@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.1 =
+* Fixed issue where Link Library message display in e-mails did not all respect supression setting under General Options
+
 = 6.8 =
 * Fixed issues with links export and import functions
 * Added ability to export and import custom fields
