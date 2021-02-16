@@ -1955,7 +1955,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 														foreach ( $rss_items as $item ) {
 															$current_cat_output .= '<div class="chunk" style="padding:0 5px 5px;">';
-															$item_timestamp = strtotime( $item->get_date( 'j F Y | g:i a' ) );
+															$item_timestamp = strtotime( $item->get_date( 'F j, Y, g:i a' ) );
 
 															$formatted_date = date_i18n( $date_format_string, $item_timestamp );
 															$current_cat_output .= '<div class="rsstitle"><a target="feedwindow" href="' . $item->get_permalink() . '">' . $item->get_title() . '</a><span class="rsstimestamp"> - ' . $formatted_date . '</span></div><!-- RSS Feed title -->';
