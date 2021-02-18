@@ -1518,6 +1518,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								$between = "\n";
+								$rss_items = array();
 
 								if ( $rssfeedinline ) {
 									include_once( ABSPATH . WPINC . '/feed.php' );
@@ -1949,7 +1950,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												}
 
 												if ( $rssfeedinline && $linkitem['link_rss'] ) {
-													if ( $rss_items ) {
+													if ( !empty( $rss_items ) ) {
 														$current_cat_output .= '<div id="ll_rss_results">';
 														$date_format_string = get_option( 'date_format' );
 

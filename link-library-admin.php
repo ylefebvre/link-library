@@ -6729,6 +6729,12 @@ function general_custom_fields_meta_box( $data ) {
 				if ( isset( $_POST[$array_url] ) ) {
 					$submitted_url = $_POST[$array_url];
 
+					if ( 'https' == $genoptions['defaultprotocoladmin'] && false === strpos( $submitted_url, '://' ) && !empty( $submitted_url ) ) {
+						$submitted_url = 'https://' . $submitted_url;
+					}
+
+					$submitted_url = esc_url ( $submitted_url );
+
 					if ( 'link_image' == $array_url ) {
 						if ( empty( $submitted_url ) ) {
 							delete_post_thumbnail( $link_id );
@@ -6736,7 +6742,7 @@ function general_custom_fields_meta_box( $data ) {
 							$previous_image_url = get_post_meta( $link_id, 'link_image', true );
 
 							if ( has_post_thumbnail( $link_id ) && $submitted_url == $previous_image_url ) {
-								break;
+								continue;
 							}
 
 							global $wpdb;
@@ -6769,26 +6775,7 @@ function general_custom_fields_meta_box( $data ) {
 						}
 					}
 
-					if ( 'https' == $genoptions['defaultprotocoladmin'] ) {
-						$submitted_url = str_replace( ' ', '%20', $submitted_url );
-						$submitted_url = preg_replace( '|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\\x80-\\xff]|i', '', $submitted_url );
-
-						if ( 0 !== stripos( $submitted_url, 'mailto:' ) ) {
-							$strip = array( '%0d', '%0a', '%0D', '%0A' );
-							$submitted_url   = _deep_replace( $strip, $submitted_url );
-						}
-
-						$submitted_url = str_replace( ';//', '://', $submitted_url );
-						/* If the URL doesn't appear to contain a scheme, we
-						 * presume it needs http:// prepended (unless a relative
-						 * link starting with /, # or ? or a php file).
-						 */
-						if ( !empty( $submitted_url ) && strpos( $submitted_url, ':' ) === false && ! preg_match( '/^[a-z0-9-]+?\.php/i', $submitted_url ) ) {
-							$submitted_url = 'https://' . $submitted_url;
-						}
-					}
-
-					update_post_meta( $link_id, $array_url, esc_url( $submitted_url ) );
+					update_post_meta( $link_id, $array_url, $submitted_url );
 				}
 			}
 

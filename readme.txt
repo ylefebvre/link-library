@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.3 =
+* Fixed issue where a link with a bad RSS feed shows RSS items from the previous link's feed
+* Fixed issue where custom url fields are not saved correctly if a link image is present
+
 = 6.8.2 =
 * Fixed issue with dates of RSS feed items
 
