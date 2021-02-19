@@ -1687,6 +1687,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 										switch ( $arrayelements ) {
 
 											case 1: 	//------------------ Image Output --------------------
+
+												if ( $suppress_image_if_empty && empty( $linkitem['link_image'] ) ) {
+													break;
+												}
+
 												$imageoutput = '';
 
 												if ( ( $show_images && !$shownameifnoimage ) || ( $show_images && $shownameifnoimage && !empty( $linkitem['link_image'] ) ) || $usethumbshotsforimages ) {
@@ -1846,6 +1851,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 3: 	//------------------ Date Output --------------------
 
+												if ( $suppress_link_date_if_empty && empty( $linkitem['link_updated'] ) ) {
+													break;
+												}
+
 												if ( $showdate ) {
 													$current_cat_output .= $between . stripslashes( $beforedate );
 
@@ -1873,6 +1882,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 4: 	//------------------ Description Output --------------------
 
+												if ( $suppress_link_desc_if_empty && empty( $desc ) ) {
+													break;
+												}
+
 												if ( $showdescription ) {
 													$current_cat_output .= $between . stripslashes( $beforedesc );
 
@@ -1895,6 +1908,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 5: 	//------------------ Notes Output --------------------
 
+												if ( $suppress_link_notes_if_empty && empty( $descnotes ) ) {
+													break;
+												}
+
 												if ( $shownotes ) {
 													$current_cat_output .= $between . stripslashes( $beforenote );
 
@@ -1916,6 +1933,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												break;
 
 											case 6: 	//------------------ RSS Icons Output --------------------
+
+												if ( $suppress_rss_icon_if_empty && empty( $linkitem['link_rss'] ) ) {
+													break;
+												}
 
 												if ( $show_rss || $show_rss_icon || $rsspreview ) {
 													$current_cat_output .= stripslashes( $beforerss );
@@ -2037,6 +2058,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												break;
 											case 8: 	//------------------ Telephone Output --------------------
 
+												if ( $suppress_tel_if_empty && empty( $linkitem['link_telephone'] ) ) {
+													break;
+												}
+
 												if ( 'false' != $showtelephone ) {
 													$current_cat_output .= $between . stripslashes( $beforetelephone );
 
@@ -2082,6 +2107,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												}
 												break;
 											case 9: 	//------------------ E-mail Output --------------------
+
+												if ( $suppress_email_if_empty && empty( $linkitem['link_email'] ) ) {
+													break;
+												}
 
 												if ( 'false' != $showemail ) {
 													$current_cat_output .= $between . stripslashes( $beforeemail );
@@ -2134,16 +2163,14 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												if ( $showlinkhits ) {
 													$current_cat_output .= $between . stripslashes( $beforelinkhits );
 
-													if ( !$nooutputempty || ( $nooutputempty && !empty( $linkitem['link_visits'] ) ) ) {
-														if ( true == $debugmode ) {
-															$starttimerhits = microtime ( true );
-														}
+													if ( true == $debugmode ) {
+														$starttimerhits = microtime ( true );
+													}
 
-														$current_cat_output .= $linkitem['link_visits'];
+													$current_cat_output .= $linkitem['link_visits'];
 
-														if ( true == $debugmode ) {
-															$current_cat_output .= "\n<!-- Time to render link hits section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerhits ) . " --> \n";
-														}
+													if ( true == $debugmode ) {
+														$current_cat_output .= "\n<!-- Time to render link hits section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerhits ) . " --> \n";
 													}
 
 													$current_cat_output .= stripslashes( $afterlinkhits );
@@ -2152,6 +2179,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												break;
 
 											case 11: 	//------------------ Link Rating Output --------------------
+
+												if ( $suppress_rating_if_empty && empty( $linkitem['link_rating'] ) ) {
+													break;
+												}
 
 												if ( $showrating ) {
 													$current_cat_output .= $between . stripslashes( $beforelinkrating );
@@ -2175,6 +2206,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 12: 	//------------------ Link Large Description Output --------------------
 
+												if ( $suppress_large_desc_if_empty && empty( $textfield ) ) {
+													break;
+												}
+
 												if ( $showlargedescription ) {
 													$current_cat_output .= $between . stripslashes( $beforelargedescription );
 
@@ -2197,6 +2232,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 13: 	//------------------ Submitter Name Output --------------------
 
+												if ( $suppress_submitter_if_empty && empty( $linkitem['link_submitter_name'] ) ) {
+													break;
+												}
+
 												if ( $showsubmittername ) {
 													$current_cat_output .= $between . stripslashes( $beforesubmittername );
 
@@ -2218,6 +2257,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												break;
 
 											case 14: 	//------------------ Category Description Output --------------------
+
+												if ( $suppress_cat_desc_if_empty && empty( $linkitem['category_description'] ) ) {
+													break;
+												}
 
 												if ( isset( $linkitem['category_description'] ) ) {
 													$linkitem['category_description'] = str_replace( '[', '<', $linkitem['category_description'] );
@@ -2248,6 +2291,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												break;
 
 											case 15: 	//------------------ Link Tags Output --------------------
+
+												if ( $suppress_link_tags_if_empty && empty( $link_tags ) ) {
+													break;
+												}
 
 												$link_tags = wp_get_post_terms( $linkitem['proper_link_id'], 'link_library_tags' );
 
@@ -2288,6 +2335,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 16: 	//------------------ Link Price Output --------------------
 
+												if ( $suppress_link_price_if_empty && empty( $linkitem['link_price'] ) ) {
+													break;
+												}
+
 												if ( $showlinkprice ) {
 													$current_cat_output .= $between . stripslashes( $beforelinkprice );
 
@@ -2322,6 +2373,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 17: 	//------------------ Category Name Output --------------------
 
+												if ( $suppress_cat_name_if_empty && empty( $linkitem['category_name'] ) ) {
+													break;
+												}
+
 												if ( $showcatname ) {
 													$current_cat_output .= $between . stripslashes( $beforecatname );
 
@@ -2354,8 +2409,13 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												$aftervar = 'aftercustomurl' . $customurlfieldid;
 												$labelvar = 'labelcustomurl' . $customurlfieldid;
 												$targetvar = 'customurl' . $customurlfieldid . 'target';
+												$suppressvar = 'suppress_custom_url_' . $customurlfieldid . '_if_empty';
 
 												$customurl = $linkitem['link_custom_url_' . $customurlfieldid];
+
+												if ( $suppressvar && empty( $customurl ) ) {
+													break;
+												}
 
 												if ( $$fieldactivevar && 'false' != $$displayvar ) {
 													$current_cat_output .= $between . stripslashes( $$beforevar );
@@ -2431,8 +2491,13 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												$displayvar = 'displaycustomtext' . $customtextfieldid;
 												$beforevar = 'beforecustomtext' . $customtextfieldid;
 												$aftervar = 'aftercustomtext' . $customtextfieldid;
+												$suppressvar = 'suppress_custom_text_' . $customtextfieldid . '_if_empty';
 
 												$customtext = $linkitem['link_custom_text_' . $customtextfieldid];
+
+												if ( $suppressvar && empty( $customtext ) ) {
+													break;
+												}
 
 												if ( $$fieldactivevar && 'false' != $$displayvar ) {
 													$current_cat_output .= $between . stripslashes( $$beforevar );
@@ -2467,10 +2532,15 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												$displayvar = 'displaycustomlist' . $customlistfieldid;
 												$beforevar = 'beforecustomlist' . $customlistfieldid;
 												$aftervar = 'aftercustomlist' . $customlistfieldid;
+												$suppressvar = 'suppress_custom_list_' . $customtextfieldid . '_if_empty';
 
 												$customlistselection = '';
 												if ( isset( $linkitem['link_custom_list_' . $customlistfieldid] ) ) {
 													$customlistselection = $linkitem['link_custom_list_' . $customlistfieldid];
+												}
+
+												if ( $suppressvar && empty( $customlistselection ) ) {
+													break;
 												}
 
 												if ( $$fieldactivevar && 'false' != $$displayvar ) {

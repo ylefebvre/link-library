@@ -367,6 +367,35 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['aftercustomlist5']                 = '';
 	$options['lazyloadimages']                   = false;
 	$options['emailhidepluginmessage']			 = false;
+	$options['suppress_image_if_empty']			 = false;
+	$options['suppress_link_date_if_empty']		 = false;
+	$options['suppress_link_desc_if_empty']		 = false;
+	$options['suppress_link_notes_if_empty']	 = false;
+	$options['suppress_rss_icon_if_empty']		 = false;
+	$options['suppress_tel_if_empty']			 = false;
+	$options['suppress_email_if_empty']			 = false;
+	$options['suppress_rating_if_empty']		 = false;
+	$options['suppress_large_desc_if_empty']	 = false;
+	$options['suppress_submitter_if_empty']		 = false;
+	$options['suppress_cat_desc_if_empty']		 = false;
+	$options['suppress_link_tags_if_empty']		 = false;
+	$options['suppress_link_price_if_empty']	 = false;
+	$options['suppress_cat_name_if_empty']		 = false;
+	$options['suppress_custom_url_1_if_empty']	 = false;
+	$options['suppress_custom_url_2_if_empty']	 = false;
+	$options['suppress_custom_url_3_if_empty']	 = false;
+	$options['suppress_custom_url_4_if_empty']	 = false;
+	$options['suppress_custom_url_5_if_empty']	 = false;
+	$options['suppress_custom_text_1_if_empty']	 = false;
+	$options['suppress_custom_text_2_if_empty']	 = false;
+	$options['suppress_custom_text_3_if_empty']	 = false;
+	$options['suppress_custom_text_4_if_empty']	 = false;
+	$options['suppress_custom_text_5_if_empty']	 = false;
+	$options['suppress_custom_list_1_if_empty']	 = false;
+	$options['suppress_custom_list_2_if_empty']	 = false;
+	$options['suppress_custom_list_3_if_empty']	 = false;
+	$options['suppress_custom_list_4_if_empty']	 = false;
+	$options['suppress_custom_list_5_if_empty']	 = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

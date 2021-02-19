@@ -2499,7 +2499,14 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'hidechildcattop', 'catlinkspermalinksmode', 'showbreadcrumbspermalinks', 'showlinktags', 'showlinkprice', 'show0asfree', 'lazyloadimages',
 					'allowcolumnsorting', 'showsearchreset', 'showscheduledlinks', 'suppressnoreferrer', 'dropdownselectionprompt',
 					'showcatname', 'onelinkperdomain', 'showupdatedtooltip', 'searchtextinsearchbox', 'showuservotes', 'membersonlylinkvotes',
-					'searchfiltercats'
+					'searchfiltercats', 'suppress_image_if_empty', 'suppress_link_date_if_empty', 'suppress_link_desc_if_empty',
+					'suppress_link_notes_if_empty', 'suppress_rss_icon_if_empty', 'suppress_tel_if_empty',
+					'suppress_email_if_empty', 'suppress_rating_if_empty', 'suppress_large_desc_if_empty', 'suppress_submitter_if_empty', 'suppress_cat_desc_if_empty',
+					'suppress_link_tags_if_empty', 'suppress_link_price_if_empty', 'suppress_cat_name_if_empty', 'suppress_custom_url_1_if_empty',
+					'suppress_custom_url_2_if_empty', 'suppress_custom_url_3_if_empty', 'suppress_custom_url_4_if_empty', 'suppress_custom_url_5_if_empty',
+					'suppress_custom_text_1_if_empty', 'suppress_custom_text_2_if_empty', 'suppress_custom_text_3_if_empty',
+					'suppress_custom_text_4_if_empty', 'suppress_custom_text_5_if_empty', 'suppress_custom_list_1_if_empty', 'suppress_custom_list_2_if_empty',
+					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty'
 				)
 				as $option_name
 			) {
@@ -4845,6 +4852,7 @@ function general_custom_fields_meta_box( $data ) {
 		<th style='width: 80px'><?php _e( 'After', 'link-library' ); ?></th>
 		<th style='width: 80px'><?php _e( 'Additional Details', 'link-library' ); ?></th>
 		<th style='width: 80px'><?php _e( 'Link Source', 'link-library' ); ?></th>
+		<th style='width: 40px'><?php _e( 'Suppress all output if empty', 'link-library' ); ?></th>
 		</thead>
 		<tr>
 			<td class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before the first link in each category', 'link-library' ); ?>'><?php _e( 'Before first link', 'link-library' ); ?></td>
@@ -4853,6 +4861,7 @@ function general_custom_fields_meta_box( $data ) {
 				<input type="text" id="beforefirstlink" name="beforefirstlink" size="22" value="<?php echo stripslashes( $options['beforefirstlink'] ); ?>" />
 			</td>
 			<td style='background: #FFF'></td><td style='background: #FFF'></td><td style='background: #FFF'></td>
+			<td style='background: #FFF'></td>
 		</tr>
 		<tr>
 			<td class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before a number of links determined by the Display field', 'link-library' ); ?>'><?php _e( 'Intermittent Before Link', 'link-library' ); ?></td>
@@ -4865,6 +4874,7 @@ function general_custom_fields_meta_box( $data ) {
 			<td style='background: #FFF'></td>
 			<td style='background: #FFF'></td>
 			<td style='background: #FFF'></td>
+			<td style='background: #FFF'></td>
 		</tr>
 		<tr>
 			<td class="lltooltip" title='<?php _e( 'This column allows for the output of text/code before each link', 'link-library' ); ?>'><?php _e( 'Before Link', 'link-library' ); ?></td>
@@ -4872,6 +4882,7 @@ function general_custom_fields_meta_box( $data ) {
 			<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Output before complete link group (link, notes, desc, etc...)', 'link-library' ); ?>'>
 				<input type="text" id="beforeitem" name="beforeitem" size="22" value="<?php echo stripslashes( $options['beforeitem'] ); ?>" />
 			</td>
+			<td style='background: #FFF'></td>
 			<td style='background: #FFF'></td>
 			<td style='background: #FFF'></td>
 			<td style='background: #FFF'></td>
@@ -4916,6 +4927,7 @@ function general_custom_fields_meta_box( $data ) {
 									<option value="imageonly"<?php selected( $options['sourceimage'] == "imageonly" ); ?>><?php _e( 'Image only', 'link-library' ); ?></option>
 								</select>
 							</td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_image_if_empty" name="suppress_image_if_empty" <?php checked( $options['suppress_image_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 2: /* -------------------------------- Link Name -------------------------------------------*/
@@ -4945,6 +4957,7 @@ function general_custom_fields_meta_box( $data ) {
 									<option value="linknameonly"<?php selected( $options['sourcename'] == "linknameonly" ); ?>><?php _e( 'Link name only', 'link-library' ); ?></option>
 								</select>
 							</td>
+							<td style='background: #FFF'></td>
 						</tr>
 						<?php break;
 					case 3: /* -------------------------------- Link Date -------------------------------------------*/
@@ -4967,6 +4980,7 @@ function general_custom_fields_meta_box( $data ) {
 								</select>
 							</td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_link_date_if_empty" name="suppress_link_date_if_empty" <?php checked( $options['suppress_link_date_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 4: /* -------------------------------- Link Description -------------------------------------------*/
@@ -4984,6 +4998,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_link_desc_if_empty" name="suppress_link_desc_if_empty" <?php checked( $options['suppress_link_desc_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 5: /* -------------------------------- Link Notes -------------------------------------------*/
@@ -5001,6 +5016,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_link_notes_if_empty" name="suppress_link_notes_if_empty" <?php checked( $options['suppress_link_notes_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 6: /* -------------------------------- Link RSS Icons -------------------------------------------*/
@@ -5018,6 +5034,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_rss_icon_if_empty" name="suppress_rss_icon_if_empty" <?php checked( $options['suppress_rss_icon_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 7: /* -------------------------------- Web Link -------------------------------------------*/
@@ -5048,6 +5065,7 @@ function general_custom_fields_meta_box( $data ) {
 									<option value="secondary"<?php selected( $options['sourceweblink'] == "secondary" ); ?>><?php _e( 'Secondary', 'link-library' ); ?></option>
 								</select>
 							</td>
+							<td style='background: #FFF'></td>
 						</tr>
 						<?php break;
 					case 8: /* -------------------------------- Telephone -------------------------------------------*/
@@ -5078,6 +5096,7 @@ function general_custom_fields_meta_box( $data ) {
 									<option value="phone"<?php selected( $options['sourcetelephone'] == 'phone' ); ?>><?php _e( 'Phone', 'link-library' ); ?></option>
 								</select>
 							</td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_tel_if_empty" name="suppress_tel_if_empty" <?php checked( $options['suppress_tel_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 9: /* -------------------------------- E-mail -------------------------------------------*/
@@ -5106,6 +5125,7 @@ function general_custom_fields_meta_box( $data ) {
 							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Command that the e-mail will be embedded in. In the case of a command, use the symbols #email and #company to indicate the position where these elements should be inserted.', 'link-library' ); ?>'>
 								<input type="text" id="emailcommand" name="emailcommand" size="22" value="<?php echo stripslashes( $options['emailcommand'] ); ?>" />
 							</td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_email_if_empty" name="suppress_email_if_empty" <?php checked( $options['suppress_email_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 10: /* -------------------------------- Link Hits -------------------------------------------*/
@@ -5121,6 +5141,7 @@ function general_custom_fields_meta_box( $data ) {
 							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed after Link Hits', 'link-library' ); ?>'>
 								<input type="text" id="afterlinkhits" name="afterlinkhits" size="22" value="<?php echo stripslashes( $options['afterlinkhits'] ); ?>" />
 							</td>
+							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
 						</tr>
@@ -5140,6 +5161,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_rating_if_empty" name="suppress_rating_if_empty" <?php checked( $options['suppress_rating_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 12: /* -------------------------------- Large Description -------------------------------------------*/
@@ -5157,6 +5179,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_large_desc_if_empty" name="suppress_large_desc_if_empty" <?php checked( $options['suppress_large_desc_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 13: /* -------------------------------- Link Submitter Name -------------------------------------------*/
@@ -5174,6 +5197,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_submitter_if_empty" name="suppress_submitter_if_empty" <?php checked( $options['suppress_submitter_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 14: /* -------------------------------- Category Description -------------------------------------------*/
@@ -5191,6 +5215,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_cat_desc_if_empty" name="suppress_cat_desc_if_empty" <?php checked( $options['suppress_cat_desc_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 15: /* -------------------------------- Link Tags -------------------------------------------*/
@@ -5213,6 +5238,7 @@ function general_custom_fields_meta_box( $data ) {
 								</select>
 							</td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_link_tags_if_empty" name="suppress_link_tags_if_empty" <?php checked( $options['suppress_link_tags_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 16: /* -------------------------------- Link Price -------------------------------------------*/
@@ -5238,6 +5264,7 @@ function general_custom_fields_meta_box( $data ) {
 									<option value="after"<?php selected( $options['linkcurrencyplacement'] == 'after' ); ?>><?php _e( 'After Price', 'link-library' ); ?></option>
 								</select>
 							</td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_link_price_if_empty" name="suppress_link_price_if_empty" <?php checked( $options['suppress_link_price_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 17: /* -------------------------------- Category Name -------------------------------------------*/
@@ -5255,6 +5282,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_cat_name_if_empty" name="suppress_cat_name_if_empty" <?php checked( $options['suppress_cat_name_if_empty'] );?>/></td>
 						</tr>
 						<?php break;
 					case 18: /* ------------------------- Custom URL Fields ---------------------------------------*/
@@ -5286,6 +5314,7 @@ function general_custom_fields_meta_box( $data ) {
 								<input class="lltooltip" title='<?php _e( 'Text Label that the URL will be assigned to.', 'link-library' ); ?>' type="text" id="labelcustomurl<?php echo $customurlfieldid; ?>" name="labelcustomurl<?php echo $customurlfieldid; ?>" size="22" value="<?php echo stripslashes( $options['labelcustomurl' . $customurlfieldid] ); ?>" />
 							</td>
 							<td style='background: #FFF'><input class="lltooltip" title='<?php _e( 'Target that will be assigned to URL', 'link-library' ); ?>'  type="text" id="customurl<?php echo $customurlfieldid; ?>target" name="customurl<?php echo $customurlfieldid; ?>target" size="22" value="<?php echo stripslashes( $options['customurl' . $customurlfieldid . 'target'] ); ?>" /></td>
+							<td style='background: #FFF'><input type="checkbox" id="suppress_custom_url_<?php echo $customurlfieldid; ?>_if_empty" name="suppress_custom_url_<?php echo $customurlfieldid; ?>_if_empty" <?php checked( $options['suppress_custom_url_' . $customurlfieldid . '_if_empty'] );?>/></td>
 						</tr>
 						<?php } break;
 					case 23: /* -------------------------------- User Votes -------------------------------------------*/
@@ -5305,6 +5334,7 @@ function general_custom_fields_meta_box( $data ) {
 								<?php _e( 'Only members can rate links', 'link-library' ); ?> <input type="checkbox" id="membersonlylinkvotes" name="membersonlylinkvotes" <?php checked( $options['membersonlylinkvotes'] ); ?>/>
 							</td>
 							<td class="lltooltip" title="Text of user voting button" style='background: #FFF'><input type="text" id="uservotelikelabel" name="uservotelikelabel" size="22" value="<?php echo stripslashes( $options['uservotelikelabel'] ); ?>" /></td>
+							<td style='background: #FFF'></td>
 						</tr>
 						<?php break;
 					case 24: /* ------------------------- Custom Text Fields ---------------------------------------*/
@@ -5332,6 +5362,7 @@ function general_custom_fields_meta_box( $data ) {
 								</td>
 								<td style='background: #FFF'></td>
 								<td style='background: #FFF'></td>
+								<td style='background: #FFF'><input type="checkbox" id="suppress_custom_text_<?php echo $customtextfieldid; ?>_if_empty" name="suppress_custom_text_<?php echo $customtextfieldid; ?>_if_empty" <?php checked( $options['suppress_custom_text_' . $customtextfieldid . '_if_empty'] );?>/></td>
 							</tr>
 						<?php } break;
 					case 29: /* ------------------------- Custom List Fields ---------------------------------------*/
@@ -5360,6 +5391,7 @@ function general_custom_fields_meta_box( $data ) {
 								</td>
 								<td style='background: #FFF'></td>
 								<td style='background: #FFF'></td>
+								<td style='background: #FFF'><input type="checkbox" id="suppress_custom_list_<?php echo $customlistfieldid; ?>_if_empty" name="suppress_custom_list_<?php echo $customlistfieldid; ?>_if_empty" <?php checked( $options['suppress_custom_list_' . $customlistfieldid . '_if_empty'] );?>/></td>
 							</tr>
 						<?php } break;
 				}
@@ -5375,6 +5407,7 @@ function general_custom_fields_meta_box( $data ) {
 			</td>
 			<td style='background: #FFF'></td>
 			<td style='background: #FFF'></td>
+			<td style='background: #FFF'></td>
 		</tr>
 		<tr>
 			<td class="lltooltip" title='<?php _e( 'This column allows for the output of text/code after a number of links determined in the first column', 'link-library' ); ?>'><?php _e( 'Intermittent After Link', 'link-library' ); ?></td>
@@ -5385,6 +5418,7 @@ function general_custom_fields_meta_box( $data ) {
 			</td>
 			<td style='background: #FFF'></td>
 			<td style='background: #FFF'></td>
+			<td style='background: #FFF'></td>
 		</tr>
 		<tr>
 			<td class="lltooltip" title='<?php _e( 'This column allows for the output of text/code after the last link in each category', 'link-library' ); ?>'><?php _e( 'After last link', 'link-library' ); ?></td>
@@ -5393,6 +5427,7 @@ function general_custom_fields_meta_box( $data ) {
 				<input type="text" id="afterlastlink" name="afterlastlink" size="22" value="<?php echo stripslashes( $options['afterlastlink'] ); ?>" />
 			</td>
 			<td style='background: #FFF'></td><td style='background: #FFF'></td>
+			<td style='background: #FFF'></td>
 		</tr>
 		</table>
 		</table>

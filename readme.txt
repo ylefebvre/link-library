@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.4 =
+* Added new option to most advanced configuration fields to suppress their output if no value is set
+* Fixed issue where link hits are not displayed if value is 0 and library configured not to output empty items
+
 = 6.8.3 =
 * Fixed issue where a link with a bad RSS feed shows RSS items from the previous link's feed
 * Fixed issue where custom url fields are not saved correctly if a link image is present
