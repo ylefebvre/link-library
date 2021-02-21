@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.8.4
+Version: 6.8.5
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -844,11 +844,13 @@ class link_library_plugin {
 		$categorylistoverride = '';
 		$excludecategoryoverride = '';
 		$settings = '';
+		$targetlibrary = '';
 
 		extract( shortcode_atts( array (
 			'categorylistoverride' => '',
 			'excludecategoryoverride' => '',
-			'settings' => ''
+			'settings' => '',
+			'targetlibrary' => ''
 		), $atts ) );
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
@@ -971,7 +973,7 @@ class link_library_plugin {
 			$timeoutput = "\n<!-- [link-library-cats] shortcode execution time: " . ( microtime( true ) - $mainoutputstarttime ) . "-->\n";
 		}
 
-		return ( true == $genoptions['debugmode'] ? $timeoutputstart : '' ) . RenderLinkLibraryCategories( $this, $genoptions, $options, $settings )  . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
+		return ( true == $genoptions['debugmode'] ? $timeoutputstart : '' ) . RenderLinkLibraryCategories( $this, $genoptions, $options, $settings, $targetlibrary )  . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
 	}
 
 	/********************************************** Function to Process [link-library-search] shortcode *********************************************/

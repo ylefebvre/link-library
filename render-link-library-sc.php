@@ -874,6 +874,20 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['orderby']['link_votes_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'scpo' == $linkorder ) {
 					$link_query_args['orderby']['menu_order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+				} elseif ( false !== strpos( $linkorder, 'customtext' ) ) {
+					$customtextid = substr( $linkorder, 10 );
+
+					if ( is_integer( intval( $customtextid ) ) ) {
+						$customtextactivevar = 'customtext' . $customtextid . 'active';
+						if ( $$customtextactivevar ) {
+							$link_query_args['meta_query']['custom_text_clause'] = array( 'key' => 'link_custom_text_' . $customtextid, 'type' => 'char' );
+							$link_query_args['orderby']['custom_text_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+						} else {
+							$link_query_args['orderby']['title'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+						}
+					} else {
+						$link_query_args['orderby']['title'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+					}
 				}
 
 				if ( $current_user_links ) {
@@ -1545,6 +1559,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												continue;
 											}
 										}
+									} else {
+										$rss_items = 'ERROR';
 									}
 
 									if ( true == $debugmode ) {
@@ -1971,7 +1987,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												}
 
 												if ( $rssfeedinline && $linkitem['link_rss'] ) {
-													if ( !empty( $rss_items ) ) {
+													if ( !empty( $rss_items ) && 'ERROR' != $rss_items ) {
 														$current_cat_output .= '<div id="ll_rss_results">';
 														$date_format_string = get_option( 'date_format' );
 
@@ -1991,6 +2007,8 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														}
 
 														$current_cat_output .= '</div><!-- RSS Results -->';
+													} elseif ( 'ERROR' == $rss_items ) {
+														$current_cat_output .= '<div class="rss_feed_error">' . __( 'Invalid RSS feed', 'link-library' ) . '</div>';
 													}
 												}
 

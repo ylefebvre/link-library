@@ -347,7 +347,7 @@ class link_library_plugin_admin {
 			}
 		}
 
-		if ( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'link-library-general-options' ) || $_GET['page'] == 'link-library-settingssets' || $_GET['page'] == 'link-library-moderate' || $_GET['page'] == 'link-library-stylesheet' || $_GET['page'] == 'link-library-reciprocal' || $_GET['page'] == 'link-library-accessibe' ) ) {
+		if ( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'link-library-general-options' ) || $_GET['page'] == 'link-library-settingssets' || $_GET['page'] == 'link-library-moderate' || $_GET['page'] == 'link-library-stylesheet' || $_GET['page'] == 'link-library-reciprocal' ) ) {
 			wp_enqueue_style( 'LibraryLibraryAdminStyle', plugins_url( 'link-library-admin.css', __FILE__ ) );
 		}
 	}
@@ -728,7 +728,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 	//extend the admin menu
 	function on_admin_menu() {
 		//add our own option page, you can also add it to different sections or use your own one
-		global $pagehookmoderate, $pagehooksettingssets, $pagehookstylesheet, $pagehookreciprocal, $pagehookaccessibe;
+		global $pagehookmoderate, $pagehooksettingssets, $pagehookstylesheet, $pagehookreciprocal;
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
@@ -784,15 +784,12 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 		add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'FAQ', 'link-library' ), __( 'FAQ', 'link-library' ), $admin_capability, 'link-library-faq', array( $this, 'on_show_page' ) );
 
-		$pagehookaccessibe = add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Accessibe', 'Accessibe', $admin_capability, 'link-library-accessibe', array( $this, 'on_show_page' ) );
-
 		//register  callback gets call prior your own page gets rendered
 		add_action( 'load-' . $pagehookgeneraloptions, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehooksettingssets, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehookmoderate, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehookstylesheet, array( $this, 'on_load_page' ) );
 		add_action( 'load-' . $pagehookreciprocal, array( $this, 'on_load_page' ) );
-		add_action( 'load-' . $pagehookaccessibe, array( $this, 'on_load_page' ) );
 	}
 
 	//will be executed if wordpress core detects this page has to be rendered
@@ -984,7 +981,41 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			}
 
 			if ( isset( $_GET['newlayout'] ) ) {
-				$options = ll_modify_layout( $settings, intval( $_GET['newlayout']) );
+				$layout_list = simplexml_load_file( plugin_dir_path( __FILE__ ) . '/presets/PresetList.xml' );
+				$layout_id = intval( $_GET['newlayout'] );
+
+				if ( !empty( $layout_list ) ) {
+					foreach ( $layout_list as $layout ) {
+						if ( $layout->ID == $layout_id ) {
+							$handle = fopen( plugin_dir_path( __FILE__ ) . '/presets/' . $layout->File, "r" );
+
+							$row         = 1;
+							$optionnames = array();
+							$options     = array();
+
+							while ( ( $data = fgetcsv( $handle, 5000, "," ) ) !== false ) {
+								if ( $row == 1 ) {
+									$optionnames = $data;
+									$row ++;
+								} else if ( $row == 2 ) {
+									for ( $counter = 0; $counter <= count( $data ) - 1; $counter ++ ) {
+										$options[$optionnames[$counter]] = $data[$counter];
+									}
+									$row ++;
+								}
+							}
+
+							if ( !empty( $options ) ) {
+								$settingsname = 'LinkLibraryPP' . $settings;
+
+								$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
+								update_option( $settingsname, $options );
+							}
+
+							fclose( $handle );
+						}
+					}
+				}
 			}
 
 			$pagetitle = __( 'Library', 'link-library' ) . ' #' . $settings . " - " . stripslashes( $options['settingssetname'] );
@@ -1135,8 +1166,6 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				$this->link_library_duplicate_link_checker( $this );
 				echo "</p></div>";
 			}
-		} elseif ( $_GET['page'] == 'link-library-accessibe' ) {
-			$formvalue = 'save_link_library_accessibe';
 		}
 
 		$data               = array();
@@ -1285,8 +1314,6 @@ wp_editor( $post->post_content, 'content', $editor_config );
 									do_meta_boxes( $pagehookstylesheet, 'normal', $data );
 								} elseif ( $_GET['page'] == 'link-library-reciprocal' ) {
 									do_meta_boxes( $pagehookreciprocal, 'normal', $data );
-								} elseif ( $_GET['page'] == 'link-library-accessibe' ) {
-									$this->display_accessibe_page( $data );
 								}
 								?>
 							</div>
@@ -1311,8 +1338,6 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					{echo $pagehookstylesheet;}
 				elseif ($_GET['page'] == 'link-library-reciprocal')
 					{echo $pagehookreciprocal;}
-				elseif ($_GET['page'] == 'link-library-accessibe')
-					{echo $pagehookstylesheet;}
 				?>');
 			});
 			//]]>
@@ -3721,19 +3746,6 @@ function general_custom_fields_meta_box( $data ) {
 		</div>
 	<?php }
 
-	function display_accessibe_page( $data ) { ?>
-
-	<div class="accessibead" style="width: 50%; background-color: #fff; padding: 20px; text-align: center">
-		<img src="<?php echo plugins_url( 'icons/AccessibeLogoLarge.png', __FILE__ ) ?>" style="max-width: 100%" />
-		<h1 style="font-size: 30px">The Forefront of <strong>Web Accessibility</strong> Technology</h1>
-		accessiBe is the first and only fully automated web accessibility technology that complies with the WCAG 2.1 and keeps your website accessible at all times.<br /><br />
-
-		<a href="https://accessibe.go2cloud.org/SHL"><div class="button button-primary"><span class="large_text">Get started now</span><br />7-day FREE trial</div></a>
-		<a href="https://accessibe.go2cloud.org/aff_c?offer_id=5&aff_id=8&url_id=7"><div class="button button-primary"><span class="large_text">FREE accesssibility test</span></div></a>
-	</div>
-
-	<?php }
-
 	function settingssets_usage_meta_box( $data ) {
 		$options    = $data['options'];
 		$settings   = $data['settings'];
@@ -3825,6 +3837,10 @@ function general_custom_fields_meta_box( $data ) {
 								<td>[link-library-cats settings="<?php echo $settings; ?>" excludecategoryoverride="28"]</td>
 								<td>Overrides the list of categories to be excluded in the category list, comma-separated list of category IDs</td>
 							</tr>
+							<tr>
+								<td>[link-library-cats settings="<?php echo $settings; ?>" targetlibrary="1"]</td>
+								<td>Specifies the library to be updated when making category selections</td>
+							</tr>
 						</table>
 					</td>
 				</tr>
@@ -3866,33 +3882,17 @@ function general_custom_fields_meta_box( $data ) {
 		$options    = $data['options'];
 		$settings   = $data['settings'];
 		$genoptions = $data['genoptions'];
+
+		$layout_list = simplexml_load_file( plugin_dir_path( __FILE__ ) . '/presets/PresetList.xml' );
 		?>
 		<div style='padding-top:15px' id="ll-presets" class="content-section">
-			<div style="text-align: center;float:left;padding:16px;" class="#preset1">
-				<strong>Layout 1: Simple Unordered List</strong><br /><br />
-				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout1-SimpleListNamesOnly.png", __FILE__ ); ?>"<br /><br /><br />
-				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=1'\""; ?>><?php _e( 'Apply Layout 1', 'link-library' ); ?> </button>
+			<?php foreach ( $layout_list as $layout ) { ?>
+			<div style="text-align: center;float:left;padding:16px;" class="#preset<?php echo $layout->ID; ?>">
+				<strong><?php _e( 'Layout', 'link-library' ); echo ' ' . $layout->ID . ": " . $layout->Desc; ?></strong><br /><br />
+				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "presets/" . $layout->Image, __FILE__ ); ?>"<br /><br /><br />
+				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s' and reset all its options\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=" . $layout->ID . "'\""; ?>><?php _e( 'Apply Layout', 'link-library' ); ?> <?php echo $layout->ID; ?></button>
 			</div>
-			<div style="text-align: center;float:left;padding:16px;" class="#preset2">
-				<strong>Layout 2: Unordered List with link descriptions</strong><br /><br />
-				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout2-SimpleListWithDesc.png", __FILE__ ); ?>"<br /><br /><br />
-				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=2'\""; ?>><?php _e( 'Apply Layout 2', 'link-library' ); ?> </button>
-			</div>
-			<div style="text-align: center;float:left;padding:16px;" class="#preset3">
-				<strong>Layout 3: Table with links and descriptions</strong><br /><br />
-				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout3-TableView.png", __FILE__ ); ?>"<br /><br /><br />
-				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=3'\""; ?>><?php _e( 'Apply Layout 3', 'link-library' ); ?> </button>
-			</div>
-			<div style="text-align: center;float:left;padding:16px;" class="#preset4">
-				<strong>Layout 4: Table with link images and descriptions</strong><br /><br />
-				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout4-TableWithImages.png", __FILE__ ); ?>"<br /><br /><br />
-				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=4'\""; ?>><?php _e( 'Apply Layout 4', 'link-library' ); ?> </button>
-			</div>
-			<div style="text-align: center;float:left;padding:16px;" class="#preset4">
-				<strong>Layout 5: Table with images separated from link info</strong><br /><br />
-				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "layoutimages/Layout5-TableWithImagesInSplitCells.png", __FILE__ ); ?>"<br /><br /><br />
-				<button type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s'\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=5'\""; ?>><?php _e( 'Apply Layout 5', 'link-library' ); ?> </button>
-			</div>
+			<?php } ?>
 		</div>
 	<?php }
 
@@ -4406,6 +4406,7 @@ function general_custom_fields_meta_box( $data ) {
 	function settingssets_linkelement_meta_box( $data ) {
 		$options  = $data['options'];
 		$settings = $data['settings'];
+		$genoptions = $data['genoptions'];
 		?>
 		<div style='padding-top:15px' id="ll-links" class="content-section">
 		<table>
@@ -4423,6 +4424,11 @@ function general_custom_fields_meta_box( $data ) {
 						<option value="hits"<?php selected( $options['linkorder'] == 'hits' ); ?>><?php _e( 'Order by number of link visits', 'link-library' ); ?></option>
 						<option value="uservotes"<?php selected( $options['linkorder'] == 'uservotes' ); ?>><?php _e( 'Order by number of user votes', 'link-library' ); ?></option>
 						<option value="scpo"<?php selected( $options['linkorder'] == 'scpo' ); ?>><?php _e( 'Order specified using Simple Custom Post Order plugin', 'link-library' ); ?></option>
+						<?php for ( $fieldcounter = 1; $fieldcounter < 6; $fieldcounter++ ) {
+							if ( $genoptions['customtext' . $fieldcounter . 'active'] ) { ?>
+								<option value="customtext<?php echo $fieldcounter; ?>"<?php selected( $options['linkorder'] == 'customtext' . $fieldcounter ); ?>><?php _e( 'Order by Custom Text Field #', 'link-library' ); echo $fieldcounter; ?></option>
+							<?php }
+						} ?>
 					</select>
 				</td>
 				<td style='width:100px'></td>

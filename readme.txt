@@ -48,6 +48,13 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.5 =
+* Links can now be ordered by using the values stored in custom text fields
+* Inline RSS feed display now shows an error if RSS feed is invalid
+* Added new div-based preset and re-wrote preset page code to be more flexible
+* Added new parameter for [link-library-cats] shortcode to specify target library (targetlibrary)
+* Removed accessibe menu
+
 = 6.8.4 =
 * Added new option to most advanced configuration fields to suppress their output if no value is set
 * Fixed issue where link hits are not displayed if value is 0 and library configured not to output empty items

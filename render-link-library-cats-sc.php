@@ -14,7 +14,7 @@ require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
  * @return                  List of categories output for browser
  */
 
-function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $parent_cat_id = 0, $level = 0 ) {
+function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $targetlibrary, $parent_cat_id = 0, $level = 0 ) {
     $generaloptions = wp_parse_args( $generaloptions, ll_reset_gen_settings( 'return' ) );
     extract( $generaloptions );
 
@@ -62,15 +62,12 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	        $output .= "<!-- Link Library Categories Output -->\n\n";
         }
 
-
-        if ( $showonecatonly && ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) ) {
+        if ( $showonecatonly && ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) && empty( $targetlibrary ) ) {
             $nonce = wp_create_nonce( 'link_library_ajax_refresh' );
 
             $output .= "<script type=\"text/javascript\">\n";
-            $output .= "var ajaxobject;\n";
 	        $output .= "if(typeof showLinkCat" . $settings . " !== 'function'){\n";
 	        $output .= "window.showLinkCat" . $settings . " = function ( _incomingID, _settingsID, _pagenumber, _searchll ) {\n";
-            $output .= "if (typeof(ajaxobject) != \"undefined\") { ajaxobject.abort(); }\n";
 
             $output .= "\tjQuery('#contentLoading" . $settings . "').toggle();" .
                 "jQuery.ajax( {" .
@@ -84,7 +81,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 "            searchll : _searchll, " .
                 "            linkresultpage: _pagenumber }, " .
                 "    success: function( data ){ " .
-                "            jQuery('#linklist" . $settings. "').html( data ); " .
+                "            jQuery('#linklist' + _settingsID ).html( data ); " .
                 "            jQuery('#contentLoading" . $settings . "').toggle();\n" .
                 "            } } ); ";
 	        $output .= "}\n";
@@ -203,9 +200,15 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 		            $output .= "<form name='catselect'><select ";
 		            if ( 'dropdowndirect' == $flatlist ) {
-			            $output .= "onchange='showcategory()' ";
+			            $output .= "onchange='showcategory( showcategory( jQuery(\".catdropdown" . $settings . "\").val() ) )' ";
 		            }
-		            $output .= "name='catdropdown' class='catdropdown'>";
+		            $output .= "name='catdropdown" . $settings . "' class='catdropdown catdropdown" . $settings . "' ";
+					
+					if ( !empty( $targetlibrary ) ) {
+						$output .= "data-linklist-id='" . $targetlibrary . "'>";
+					} else {
+						$output .= "data-linklist-id='" . $settings . "'>";
+					}
 
 		            if ( $dropdownselectionprompt && !empty( $dropdownselectionprompttext ) ) {
 		            	$output .= '<option value="">' . $dropdownselectionprompttext . '</option>';
@@ -329,7 +332,23 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                if ( $showonecatonly ) {
 		                if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
 			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
-				                $cattext = "<a href='#' onClick=\"showLinkCat" . $settings . "('" . $catname->term_id. "', '" . $settings . "', 1, '" . $searchstring . "');return false;\" >";
+				                $cattext = "<a href='#' onClick=\"showLinkCat";
+								
+								if ( !empty( $targetlibrary ) ) {
+									$cattext .= $targetlibrary;
+								} else {
+									$cattext .= $settings;
+								}
+
+								$cattext .= "('" . $catname->term_id. "', '";
+
+								if ( !empty( $targetlibrary ) ) {
+									$cattext .= $targetlibrary;
+								} else {
+									$cattext .= $settings;
+								}
+
+								$cattext .= "', 1, '" . $searchstring . "');return false;\" >";
 			                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 				                $cattext = $catname->term_id;
 			                }
@@ -507,7 +526,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            }
 
                 if ( $cat_has_children && ( empty( $catlistchildcatdepthlimit ) || ( !empty( $catlistchildcatdepthlimit ) && intval( $catlistchildcatdepthlimit ) - 1 > $level ) ) ) {
-	                $output .= RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $catname->term_id, $level + 1 );
+	                $output .= RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $targetlibrary, $catname->term_id, $level + 1 );
                 }
 
 	            $catterminator = '';
@@ -542,7 +561,13 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && $link_categories ) {
 		            $output .= "</select>\n";
 		            if ( 'dropdown' == $flatlist ) {
-			            $output .= "<button type='button' onclick='showcategory()'>" . __('Go!', 'link-library') . "</button>";
+			            $output .= "<button type='button' data-linklist-id='";
+						if ( !empty( $targetlibrary ) ) {
+							$output .= $targetlibrary;
+						} else {
+							$output .= $settings;
+						}
+						$output .= "' onclick='showcategory( jQuery(\".catdropdown" . $settings . "\").val() )'>" . __('Go!', 'link-library') . "</button>";
 		            }
 		            $output .= '</form>';
 	            }
@@ -562,14 +587,22 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
             if ( 0 == $level && ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) ) {
                 $output .= "<SCRIPT TYPE='text/javascript'>\n";
-                $output .= "\tfunction showcategory(){\n";
+                $output .= "\tfunction showcategory( catidvar ){\n";
 
                 if ( $showonecatonly && ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) ) {
-                    $output .= 'catidvar = document.catselect.catdropdown.options[document.catselect.catdropdown.selectedIndex].value;';
-                    $output .= "showLinkCat" . $settings . "(catidvar, '" . $settings . "', 1, '" . $searchstring  . "');return false; }";
+					$output .= "linklistID = event.target.dataset.linklistId;\n";
+                    $output .= "showLinkCat";
+					
+					if ( !empty( $targetlibrary ) ) {
+						$output .= $targetlibrary;
+					} else {
+						$output .= $settings;
+					}
+					
+					$output .= "(catidvar, linklistID, 1, '" . $searchstring  . "');return false; }";
                 } else {
                     $output .= "\t\tlocation=\n";
-                    $output .= "document.catselect.catdropdown.options[document.catselect.catdropdown.selectedIndex].value }\n";
+                    $output .= "document.catselect.catdropdown" . $settings . ".options[document.catselect.catdropdown" . $settings . ".selectedIndex].value }\n";
                 }
                 $output .= "</SCRIPT>\n";
             }

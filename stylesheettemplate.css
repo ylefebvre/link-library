@@ -251,3 +251,23 @@ text-decoration: none;text-align: left;text-indent: 0px;max-width:500px;}
     display: block;
   }
 }
+
+.LinkLibraryCat {
+	clear: both;
+	width: 100%;         
+	border-spacing: 5px;
+}
+
+.tablerow {
+	width: auto;
+	clear: both;
+}
+
+.tablecell {
+	float: left;
+	max-width: 400px; 
+	height: 300px;
+	padding:20px;
+	margin: 5px;
+	border: 2px solid #000;
+}
