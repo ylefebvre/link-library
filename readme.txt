@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.6 =
+* Added new link checker tool to find links without any category assigned
+* Hide category filter from link list if no categories defined
+* Hide tag filter from link list if no tags defined
+
 = 6.8.5 =
 * Links can now be ordered by using the values stored in custom text fields
 * Inline RSS feed display now shows an error if RSS feed is invalid

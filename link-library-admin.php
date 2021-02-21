@@ -1165,6 +1165,10 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				echo "<div id='message' class='updated fade'><p>";
 				$this->link_library_duplicate_link_checker( $this );
 				echo "</p></div>";
+			} elseif ( isset( $_GET['message'] ) && $_GET['message'] == '5' ) {
+				echo "<div id='message' class='updated fade'><p>";
+				$this->link_library_empty_cat_link_checker( $this );
+				echo "</p></div>";
 			}
 		}
 
@@ -2816,7 +2820,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 		update_option( 'LinkLibraryGeneral', $genoptions );
 
-		if ( !isset( $_POST['recipcheck'] ) && !isset( $_POST['brokencheck'] ) && !isset( $_POST['duplicatecheck'] ) ) {
+		if ( !isset( $_POST['recipcheck'] ) && !isset( $_POST['brokencheck'] ) && !isset( $_POST['duplicatecheck'] ) && !isset( $_POST['emptycatcheck'] ) ) {
 			$message = 1;
 		} elseif ( isset( $_POST['recipcheck'] ) ) {
 			$message = 2;
@@ -2824,6 +2828,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			$message = 3;
 		} elseif ( isset( $_POST['duplicatecheck'] ) ) {
 			$message = 4;
+		} elseif ( isset( $_POST['emptycatcheck'] ) ) {
+			$message = 5;
 		}
 
 		//lets redirect the post request into get request (you may add additional params at the url, if you need to show save results
@@ -6261,6 +6267,11 @@ function general_custom_fields_meta_box( $data ) {
 					<input type='submit' id="duplicatecheck" name="duplicatecheck" value="<?php _e( 'Check Duplicate Links', 'link-library' ); ?>" />
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<input type='submit' id="emptycatcheck" name="emptycatcheck" value="<?php _e( 'Check Links Missing Categories', 'link-library' ); ?>" />
+				</td>
+			</tr>
 		</table>
 
 	<?php
@@ -7126,7 +7137,7 @@ function general_custom_fields_meta_box( $data ) {
 		$screen = get_current_screen();
 		global $wp_query;
 
-		if ( $screen->post_type == 'link_library_links' ) {
+		if ( $screen->post_type == 'link_library_links' && !empty( get_tags( 'link_library_category' ) ) ) {
 			wp_dropdown_categories(array(
 					'show_option_all' => 'All Link Categories',
 					'taxonomy' => 'link_library_category',
@@ -7143,7 +7154,7 @@ function general_custom_fields_meta_box( $data ) {
 			);
 		}
 
-		if ( $screen->post_type == 'link_library_links' ) {
+		if ( $screen->post_type == 'link_library_links' && !empty( get_tags( 'link_library_tags' ) ) ) {
 			wp_dropdown_categories(array(
 					'show_option_all' => 'All Link Tags',
 					'taxonomy' => 'link_library_tags',
@@ -7219,6 +7230,33 @@ function general_custom_fields_meta_box( $data ) {
 
 		echo '<br />';
 	}
+
+	function link_library_empty_cat_link_checker( $ll_admin_class ) {
+		global $wpdb;  // Kept with CPT update
+		echo "<strong>" . __( 'Empty Cat Link Checker Report', 'link-library' ) . "</strong><br /><br />";
+
+		$linkquery = "SELECT p.ID, p.post_title, pm.meta_value FROM " . $ll_admin_class->db_prefix() . "posts p, " . $ll_admin_class->db_prefix() . "postmeta pm ";
+		$linkquery .= "WHERE p.ID = pm.post_id AND p.post_type = 'link_library_links' and p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) ";
+		$linkquery .= "and pm.meta_key = 'link_url' AND NOT EXISTS ( SELECT * FROM " . $ll_admin_class->db_prefix() . "term_relationships rel ";
+		$linkquery .= "JOIN " . $ll_admin_class->db_prefix() . "term_taxonomy tax ";
+		$linkquery .= "ON tax.term_taxonomy_id = rel.term_taxonomy_id ";
+		$linkquery .= "AND tax.taxonomy = 'link_library_category' ";
+		$linkquery .= "JOIN " . $ll_admin_class->db_prefix() . "terms term ";
+		$linkquery .= "ON term.term_id = tax.term_id ";
+		$linkquery .= "WHERE   p.ID = rel.object_id )";
+
+		$links  = $wpdb->get_results( $linkquery );
+
+		if ( $links ) {
+			foreach ( $links as $link ) {
+				echo $link->ID . ' - ' . $link->post_title . ': ' . $link->meta_value . '<br /><br />';
+			}
+		} else {
+			echo 'No duplicate URL links found';
+		}
+
+		echo '<br />';
+	}
 }
 
 function wp_dropdown_cats_multiple( $output, $r ) {
@@ -7243,7 +7281,7 @@ function link_library_reciprocal_link_checker() {
 	$recipcheckdelete403 = ( isset( $_POST['recipcheckdelete403'] ) && !empty( $_POST['recipcheckdelete403'] ) && 'true' == $_POST['recipcheckdelete403'] ? true : false );
 	$check_type = ( isset( $_POST['mode'] ) && !empty( $_POST['mode'] ) ? $_POST['mode'] : 'reciprocal' );
 
-	if ( ! empty( $RecipCheckAddress ) || ( empty( $RecipCheckAddress ) && 'reciprocal' != $check_type ) ) {
+	if ( ! empty( $RecipCheckAddress ) || ( empty( $RecipCheckAddress ) && ( 'reciprocal' != $check_type || 'emptycat' == $check_type ) )  ) {
 		$args = array(
 			'post_type' => 'link_library_links',
 			'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ),
