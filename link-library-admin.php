@@ -7237,7 +7237,7 @@ function general_custom_fields_meta_box( $data ) {
 
 		$linkquery = "SELECT p.ID, p.post_title, pm.meta_value FROM " . $ll_admin_class->db_prefix() . "posts p, " . $ll_admin_class->db_prefix() . "postmeta pm ";
 		$linkquery .= "WHERE p.ID = pm.post_id AND p.post_type = 'link_library_links' and p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) ";
-		$linkquery .= "and pm.meta_key = 'link_url' AND NOT EXISTS ( SELECT * FROM " . $ll_admin_class->db_prefix() . "term_relationships rel ";
+		$linkquery .= "and pm.meta_key = 'link_url'AND NOT EXISTS ( SELECT * FROM " . $ll_admin_class->db_prefix() . "term_relationships rel ";
 		$linkquery .= "JOIN " . $ll_admin_class->db_prefix() . "term_taxonomy tax ";
 		$linkquery .= "ON tax.term_taxonomy_id = rel.term_taxonomy_id ";
 		$linkquery .= "AND tax.taxonomy = 'link_library_category' ";
@@ -7249,7 +7249,7 @@ function general_custom_fields_meta_box( $data ) {
 
 		if ( $links ) {
 			foreach ( $links as $link ) {
-				echo $link->ID . ' - ' . $link->post_title . ': ' . $link->meta_value . '<br /><br />';
+				echo $link->ID . ' - ' . $link->post_title . ': ' . $link->meta_value . ' <a href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => $link->ID ), admin_url( 'post.php' ) ) ) . '">Edit</a><br /><br />';
 			}
 		} else {
 			echo 'No duplicate URL links found';
