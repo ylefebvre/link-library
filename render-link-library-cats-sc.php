@@ -200,7 +200,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 		            $output .= "<form name='catselect'><select ";
 		            if ( 'dropdowndirect' == $flatlist ) {
-			            $output .= "onchange='showcategory( showcategory( jQuery(\".catdropdown" . $settings . "\").val() ) )' ";
+			            $output .= "onchange='showcategory( jQuery(\".catdropdown" . $settings . "\").val() )' ";
 		            }
 		            $output .= "name='catdropdown" . $settings . "' class='catdropdown catdropdown" . $settings . "' ";
 					

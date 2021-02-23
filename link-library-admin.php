@@ -331,11 +331,11 @@ class link_library_plugin_admin {
 		}
 
 		if ( isset( $_POST['ll_category_url'] ) ) {
-			update_term_meta( $term_id, 'linkcaturl', $_POST['ll_category_url'] );
+			update_term_meta( $term_id, 'linkcaturl', esc_url( $_POST['ll_category_url'] ) );
 		}
 
 		if ( isset( $_POST['cat_extra_query_string'] ) ) {
-			update_term_meta( $term_id, 'linkextraquerystring', $_POST['cat_extra_query_string'] );
+			update_term_meta( $term_id, 'linkextraquerystring', sanitize_text_field( $_POST['cat_extra_query_string'] ) );
 		}
 	}
 
@@ -2461,7 +2461,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'catlistdescpos', 'rsspreviewwidth', 'rsspreviewheight', 'numberofrssitems',
 					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement', 'displaycustomurl1', 'displaycustomurl2', 'displaycustomurl3', 'displaycustomurl4', 'displaycustomurl5', 'displaycustomtext1', 'displaycustomtext2',
 					'displaycustomtext3', 'displaycustomtext4', 'displaycustomtext5', 'displaycustomlist1', 'displaycustomlist2',
-					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5'
+					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat'
 				)
 				as $option_name
 			) {
@@ -2535,7 +2535,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'suppress_custom_url_2_if_empty', 'suppress_custom_url_3_if_empty', 'suppress_custom_url_4_if_empty', 'suppress_custom_url_5_if_empty',
 					'suppress_custom_text_1_if_empty', 'suppress_custom_text_2_if_empty', 'suppress_custom_text_3_if_empty',
 					'suppress_custom_text_4_if_empty', 'suppress_custom_text_5_if_empty', 'suppress_custom_list_1_if_empty', 'suppress_custom_list_2_if_empty',
-					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty'
+					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty', 'catnamelink'
 				)
 				as $option_name
 			) {
@@ -4501,8 +4501,12 @@ function general_custom_fields_meta_box( $data ) {
 				</td>
 			</tr>
 			<tr>
-				<td></td>
-				<td></td>
+			<td style='width:150px'>
+					<?php _e( 'Make category name a link if URL assigned', 'link-library' ); ?>
+				</td>
+				<td style='width:75px;'>
+					<input type="checkbox" id="catnamelink" name="catnamelink" <?php checked( $options['catnamelink'] ); ?>/>
+				</td>
 				<td></td>
 				<td class="lltooltip" title="<?php _e( 'Leave empty to show all results', 'link-library' ); ?>">
 					<?php _e( 'Max number of links to display per category', 'link-library' ); ?>
@@ -5292,7 +5296,12 @@ function general_custom_fields_meta_box( $data ) {
 							<td style='background: #FFF' class="lltooltip" title='<?php _e( 'Code/Text to be displayed after Link Large Description', 'link-library' ); ?>'>
 								<input type="text" id="aftercatname" name="aftercatname" size="22" value="<?php echo stripslashes( $options['aftercatname'] ); ?>" />
 							</td>
-							<td style='background: #FFF'></td>
+							<td style='background: #FFF'>
+								<select name="catnameformat" id="catnameformat" style="width:200px;">
+									<option value="currentcatname"<?php selected( $options['catnameformat'] == 'currentcatname' ); ?>><?php _e( 'Current cat name only', 'link-library' ); ?></option>
+									<option value="allcatnames"<?php selected( $options['catnameformat'] == 'allcatnames' ); ?>><?php _e( 'All assigned categories', 'link-library' ); ?></option>
+								</select>
+							</td>
 							<td style='background: #FFF'></td>
 							<td style='background: #FFF'><input type="checkbox" id="suppress_cat_name_if_empty" name="suppress_cat_name_if_empty" <?php checked( $options['suppress_cat_name_if_empty'] );?>/></td>
 						</tr>

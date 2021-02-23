@@ -1022,7 +1022,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$catlink = '<div class="' . $catnameoutput . '"><!-- Div Cat Name -->';
 
 									if ( 'right' == $catdescpos || 'aftercatname' == $catdescpos || 'aftertoplevelcatname' == $catdescpos || empty( $catdescpos ) ) {
-										if ( !empty( $caturl ) ) {
+										if ( !empty( $caturl ) && $catnamelink ) {
 											$catlink .= '<a href="' . link_library_add_http( $caturl ) . '" ';
 
 											if ( !empty( $linktarget ) )
@@ -1033,7 +1033,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 											// Generating cat link
 										} */
 										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
-										if ( !empty( $caturl ) ) {
+										if ( !empty( $caturl && $catnamelink ) ) {
 											$catlink .= '</a>';
 										}
 									}
@@ -1047,7 +1047,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									}
 
 									if ( 'left' == $catdescpos ) {
-										if ( !empty( $caturl ) ) {
+										if ( !empty( $caturl ) && $catnamelink ) {
 											$catlink .= '<a href="' . link_library_add_http( $caturl ) . '" ';
 
 											if ( !empty( $linktarget ) )
@@ -1056,7 +1056,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 											$catlink .= '>';
 										}
 										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
-										if ( !empty( $caturl ) ) {
+										if ( !empty( $caturl ) && $catnamelink ) {
 											$catlink .= '</a>';
 										}
 									}
@@ -1101,7 +1101,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$catlink = '<'. $catnameoutput . '>';
 
 									if ( 'right' == $catdescpos || 'aftercatname' == $catdescpos || 'aftertoplevelcatname' == $catdescpos || empty( $catdescpos ) ) {
-										if ( !empty( $caturl ) ) {
+										if ( !empty( $caturl ) && $catnamelink ) {
 											$catlink .= '<a href="' . link_library_add_http( $caturl ). '" ';
 
 											if ( !empty( $linktarget ) )
@@ -1122,7 +1122,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 											$catlink .= '<a href="' . site_url() . '/' . $rewritepage . $cat_path . '">';
 										}
 										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
-										if ( !empty( $caturl ) || ( $catlinkspermalinksmode && !empty( $rewritepage ) ) ) {
+										if ( ( !empty( $caturl ) && $catnamelink ) || ( $catlinkspermalinksmode && !empty( $rewritepage ) ) ) {
 											$catlink .= '</a>';
 										}
 									}
@@ -1136,7 +1136,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									}
 
 									if ( 'left' == $catdescpos ) {
-										if ( !empty( $caturl ) ) {
+										if ( !empty( $caturl ) && $catnamelink ) {
 											$catlink .= '<a href="' . link_library_add_http( $caturl ) . '" ';
 
 											if ( !empty( $linktarget ) )
@@ -1145,7 +1145,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 											$catlink .= '>';
 										}
 										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
-										if ( !empty( $caturl ) ) {
+										if ( !empty( $caturl ) && $catnamelink ) {
 											$catlink .= '</a>';
 										}
 									}
@@ -2403,7 +2403,34 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$starttimedesc = microtime ( true );
 														}
 
-														$current_cat_output .= $linkitem['category_name'];
+														if ( 'currentcatname' == $catnameformat ) {
+															$current_cat_output .= $linkitem['category_name'];
+														} elseif( 'allcatnames' == $catnameformat ) {
+															$link_terms = wp_get_post_terms( get_the_ID(), 'link_library_category' );
+
+															$link_terms_array = array();
+															if ( !empty( $link_terms ) ) {
+																foreach( $link_terms as $link_term ) {
+																	$link_cat_string = '';
+																	$cat_url = get_term_meta( $link_term->term_id, 'linkcaturl', true );
+																	
+																	if ( !empty( $cat_url ) ) {
+																		$link_cat_string .= '<a href="' . $cat_url . '">';
+																	}
+																	
+																	$link_cat_string .= $link_term->name;
+
+																	if ( !empty( $cat_url ) ) {
+																		$link_cat_string .= '</a>';
+																	}
+
+																	$link_terms_array[] = $link_cat_string;
+																}
+															}
+															if ( !empty( $link_terms_array ) ) {
+																$current_cat_output .= implode( " | ", $link_terms_array );
+															}
+														}														
 
 														if ( true == $debugmode ) {
 															$current_cat_output .= "\n<!-- Time to render category name section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimedesc ) . " --> \n";

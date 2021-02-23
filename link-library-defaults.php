@@ -396,6 +396,8 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['suppress_custom_list_3_if_empty']	 = false;
 	$options['suppress_custom_list_4_if_empty']	 = false;
 	$options['suppress_custom_list_5_if_empty']	 = false;
+	$options['catnameformat']					 = 'currentcatname';
+	$options['catnamelink']						 = true;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

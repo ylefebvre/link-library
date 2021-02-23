@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.7 =
+* Removed unnecessary double call to showcategory function
+* Add option to Show category name to only show current category or to show all categories assigned to the link
+* Add option not to make category name a link even if link is assigned to category
+
 = 6.8.6 =
 * Added new link checker tool to find links without any category assigned
 * Hide category filter from link list if no categories defined
