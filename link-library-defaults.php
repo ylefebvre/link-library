@@ -398,6 +398,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['suppress_custom_list_5_if_empty']	 = false;
 	$options['catnameformat']					 = 'currentcatname';
 	$options['catnamelink']						 = true;
+	$options['categoryseparator']				 = ' | ';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

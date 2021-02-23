@@ -2428,7 +2428,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 																}
 															}
 															if ( !empty( $link_terms_array ) ) {
-																$current_cat_output .= implode( " | ", $link_terms_array );
+																$current_cat_output .= implode( $categoryseparator, $link_terms_array );
 															}
 														}														
 
