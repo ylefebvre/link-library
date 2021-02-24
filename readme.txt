@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.8 =
+* Category name links now use permalink configuration data if available
+
 = 6.8.7 =
 * Removed unnecessary double call to showcategory function
 * Add option to Show category name to only show current category or to show all categories assigned to the link

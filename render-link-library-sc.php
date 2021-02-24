@@ -2412,7 +2412,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															if ( !empty( $link_terms ) ) {
 																foreach( $link_terms as $link_term ) {
 																	$link_cat_string = '';
-																	$cat_url = get_term_meta( $link_term->term_id, 'linkcaturl', true );
+																	$cat_url = '';
+																	if ( $enablerewrite && !empty( $rewritepage ) ) {
+																		$cat_url = esc_url( '/' . $rewritepage . '/' . $link_term->slug );
+																	} else {
+																		$cat_url = get_term_meta( $link_term->term_id, 'linkcaturl', true );
+																	}																	
 																	
 																	if ( !empty( $cat_url ) ) {
 																		$link_cat_string .= '<a href="' . $cat_url . '">';
