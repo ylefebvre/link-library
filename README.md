@@ -1,4 +1,4 @@
-# Link Library Text
+# Link Library
 
 This plugin is used to be able to create a page on your web site that will contain a list of all of the link categories that you have defined inside of the Links section of the Wordpress administration, along with all links defined in these categories. The user can select a sub-set of categories to be displayed or not displayed. Link Library also offers a mode where only one category is shown at a time, using AJAX or HTML Get queries to load other categories based on user input. It can display a search box and find results based on queries. It can also display a form to accept user submissions and allow the site administrator to moderate them before listing the new entries. Finally, it can generate an RSS feed for your link collection so that people can be aware of additions to your link library.
 
@@ -12,3 +12,7 @@ All pages are generated using different configurations all managed by Link Libra
 
 - [Changelog](http://wordpress.org/extend/plugins/link-library/other_notes/)
 - [Support Forum](http://wordpress.org/tags/link-library)
+
+# Support
+
+Consider [making a donation](https://www.paypal.com/paypalme/ylefebvre/10USD) to support this plugin's development
