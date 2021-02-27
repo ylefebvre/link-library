@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.9 =
+* Added new options to specify a custom WP Query parameter and a value for this extra parameter to allow for custom post filtering
+
 = 6.8.8 =
 * Category name links now use permalink configuration data if available
 

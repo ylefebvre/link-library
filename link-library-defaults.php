@@ -399,6 +399,8 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['catnameformat']					 = 'currentcatname';
 	$options['catnamelink']						 = true;
 	$options['categoryseparator']				 = ' | ';
+	$options['customqueryarg']					 = '';
+	$options['customqueryargvalue']				 = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

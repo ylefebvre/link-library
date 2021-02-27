@@ -836,6 +836,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['s'] = $searchstring;
 				}
 
+				if ( !empty( $customqueryarg ) && !empty( $customqueryargvalue ) ) {
+					$link_query_args[$customqueryarg] = $customqueryargvalue;
+				}				
+
 				if ( isset( $_GET['linkname'] ) && in_array( $_GET['linkname'], array( 'ASC', 'DESC' ) ) ) {
 					$linkorder = 'name';
 					$linkdirection = $_GET['linkname'];
