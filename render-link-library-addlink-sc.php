@@ -909,6 +909,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 							remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft' );
 							remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending' );
 
+							$post_array = array();
 							foreach ( $link_categories as $link_category ) {
 								$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
 				
@@ -1009,35 +1010,148 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 				
 								$the_link_query = new WP_Query( $link_query_args );
 
-					
-								$output .= '<tr><th style="vertical-align: top;">' . $linkreferencelabel . '</th><td ';
-					
-								if ( !empty( $linkreferencetooltip ) ) {
-									$output .= 'class="lltooltip" title="' . $linkreferencetooltip . '"';
-								}
-					
-								$output .= '>';
-
 								if ( $the_link_query->have_posts() ) {
-									$output .= '<select name="ll_linkreference" id="ll_linkreference"';
-
-									if ( 'required' == $showlinkreferencelist ) {
-										$output .= 'data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
-									}
-
-									$output .= '><option value="">' . __( 'Select a link', 'link-library' ). '</option>';
 									while ( $the_link_query->have_posts() ) {
 										$the_link_query->the_post();
-										$output .= '<option value="' . get_the_ID() . '" ' . selected( get_the_ID(), ( isset( $captureddata['ll_linkreference'] ) ? $captureddata['ll_linkreference'] : '' ), false ). '>' . get_the_title() . '</option>';
+										$post_array[get_the_ID()] = get_the_title();
 									}
-									$output .= '</select>';
+								}								
+							}
+
+							$output .= '<tr><th style="vertical-align: top;">' . $linkreferencelabel . '</th><td ';
+					
+							if ( !empty( $linkreferencetooltip ) ) {
+								$output .= 'class="lltooltip" title="' . $linkreferencetooltip . '"';
+							}
+				
+							$output .= '>';
+
+							if ( !empty( $post_array ) ) {
+
+								asort( $post_array );
+								$output .= '<select name="ll_linkreference" id="ll_linkreference"';
+
+								if ( 'required' == $showlinkreferencelist ) {
+									$output .= 'data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
 								}
 
-								$output .= '</td></tr>';
+								$output .= '><option value="">' . __( 'Select a link', 'link-library' ). '</option>';
+								foreach ( $post_array as $post_id => $post_item ) {
+									$output .= '<option value="' . $post_id . '" ' . selected( $post_id, ( isset( $captureddata['ll_linkreference'] ) ? $captureddata['ll_linkreference'] : '' ), false ). '>' . $post_item . '</option>';
+								}
+								$output .= '</select>';
+							}
+
+							$output .= '</td></tr>';
+						}
+					break;
+					case 20: 	//------------------ Custom Fields --------------------  
+					case 21:
+					case 22:
+					case 23:
+					case 24:
+						$customurlfieldid = $arrayelements - 19;
+						$fieldactivevar = 'customurl' . $customurlfieldid . 'active';
+						$displayvar = 'showcustomurl' . $customurlfieldid;
+						$labelvar = 'customurl' . $customurlfieldid . 'label';
+						$tooltipvar = 'customurl' . $customurlfieldid . 'tooltip';
+
+						if ( $$fieldactivevar ) {
+							if ( 'show' == $$displayvar || 'required' == $$displayvar) {					
+								$output .= '<tr><th>' . $$labelvar . '</th><td ';
+					
+								if ( !empty( $$tooltipvar ) ) {
+									$output .= 'class="lltooltip" title="' . $$tooltipvar . '"';
+								}
+					
+								$output .= '><input ';
+					
+								if ( 'required' == $$displayvar ) {
+									$requiredtext = ' required url';
+								} else {
+									$requiredtext = '';
+								}
+					
+								$output .= 'data-validation="length' . $requiredtext . '" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, 1-255 chars', 'link-library' ) . '" ';
+					
+								$output .= 'type="text" name="ll_customurl' . $customurlfieldid . '" id="ll_customurl' . $customurlfieldid . '" value="' . ( isset( $captureddata['ll_customurl' . $customurlfieldid] ) ? esc_html(stripslashes($captureddata['ll_customurl' . $customurlfieldid]), '1') : $linkaddrdefvalue ) . "\" /></td></tr>\n";
 							}
 						}
 					break;
+					case 25: 	//------------------ Custom Fields --------------------  
+					case 26:
+					case 27:
+					case 28:
+					case 29:
+						$customtextfieldid = $arrayelements - 24;
+						$fieldactivevar = 'customtext' . $customtextfieldid . 'active';
+						$displayvar = 'showcustomtext' . $customtextfieldid;
+						$labelvar = 'customtext' . $customtextfieldid . 'label';
+						$tooltipvar = 'customtext' . $customtextfieldid . 'tooltip';
 
+						if ( $$fieldactivevar ) {
+							if ( 'show' == $$displayvar || 'required' == $$displayvar) {					
+								$output .= '<tr><th>' . $$labelvar . '</th><td ';
+					
+								if ( !empty( $$tooltipvar ) ) {
+									$output .= 'class="lltooltip" title="' . $$tooltipvar . '"';
+								}
+					
+								$output .= '><input ';
+					
+								if ( 'required' == $$displayvar ) {
+									$requiredtext = ' required ';
+								} else {
+									$requiredtext = '';
+								}
+					
+								$output .= 'data-validation="length' . $requiredtext . '" data-validation-length="max255" data-validation-error-msg-required="' . __( 'Required field, 1-255 chars', 'link-library' ) . '" ';
+					
+								$output .= 'type="text" name="ll_customtext' . $customtextfieldid . '" id="ll_customtext' . $customtextfieldid . '" value="' . ( isset( $captureddata['ll_customtext' . $customtextfieldid] ) ? sanitize_text_field(stripslashes($captureddata['ll_customtext' . $customtextfieldid])) : '' ) . "\" /></td></tr>\n";
+							}
+						}
+					break;
+					case 30: 	//------------------ Custom Fields --------------------  
+					case 31:
+					case 32:
+					case 33:
+					case 34:
+						$customlistfieldid = $arrayelements - 29;
+						$fieldactivevar = 'customlist' . $customlistfieldid . 'active';
+						$displayvar = 'showcustomlist' . $customlistfieldid;
+						$labelvar = 'customlist' . $customlistfieldid . 'label';
+						$tooltipvar = 'customlist' . $customlistfieldid . 'tooltip';
+
+						if ( $$fieldactivevar ) {
+							if ( 'show' == $$displayvar || 'required' == $$displayvar) {					
+								$output .= '<tr><th>' . $$labelvar . '</th><td ';
+					
+								if ( !empty( $$tooltipvar ) ) {
+									$output .= 'class="lltooltip" title="' . $$tooltipvar . '"';
+								}
+					
+								$output .= '>';
+								
+								$output .= '<select name="ll_customlist' . $customlistfieldid . '" id="ll_customlist' . $customlistfieldid . '"';
+
+								if ( 'required' == $$displayvar ) {
+									$output .= 'data-validation="required" data-validation-error-msg-required="' . __( 'Required field', 'link-library' ) . '" ';
+								}
+
+								$output .= '><option value="">' . __( 'Select an option', 'link-library' ). '</option>';
+
+								$list_values = explode( ',', $generaloptions['customlist' . $customlistfieldid . 'values'] );
+
+								if ( !empty( $list_values ) ) {
+									foreach ( $list_values as $index => $list_value ) {
+										$output .= '<option ' . selected( $index, ( isset( $captureddata['ll_customlist' . $customlistfieldid] ) ? $captureddata['ll_customlist' . $customlistfieldid] : '' ), false ) . ' value="' . $index . '">' . $list_value . '</option>';
+									}
+								}
+								
+								$output .= '</select>';
+							}
+						}
+					break;
 				}
 			}
 		}

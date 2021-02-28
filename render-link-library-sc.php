@@ -2461,7 +2461,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												$displayvar = 'displaycustomurl' . $customurlfieldid;
 												$beforevar = 'beforecustomurl' . $customurlfieldid;
 												$aftervar = 'aftercustomurl' . $customurlfieldid;
-												$labelvar = 'labelcustomurl' . $customurlfieldid;
+												$labelvar = 'customurl' . $customurlfieldid . 'label';
 												$targetvar = 'customurl' . $customurlfieldid . 'target';
 												$suppressvar = 'suppress_custom_url_' . $customurlfieldid . '_if_empty';
 

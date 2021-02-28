@@ -409,6 +409,37 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['showlinkreferencelist']			 = 'hide';
 	$options['linkreferencelabel']				 = __( 'Link Reference', 'link-library' );
 	$options['linkreferencetooltip']		     = '';
+	$options['showcustomurl1']				 	 = 'hide';
+	$options['showcustomurl2']				 	 = 'hide';
+	$options['showcustomurl3']				 	 = 'hide';
+	$options['showcustomurl4']				 	 = 'hide';
+	$options['showcustomurl5']				 	 = 'hide';
+	$options['customurl1tooltip']				 = '';
+	$options['customurl2tooltip']				 = '';
+	$options['customurl3tooltip']				 = '';
+	$options['customurl4tooltip']				 = '';
+	$options['customurl5tooltip']				 = '';
+	$options['showcustomtext1']				 	 = 'hide';
+	$options['showcustomtext2']				 	 = 'hide';
+	$options['showcustomtext3']				 	 = 'hide';
+	$options['showcustomtext4']				 	 = 'hide';
+	$options['showcustomtext5']				 	 = 'hide';
+	$options['customtext1tooltip']				 = '';
+	$options['customtext2tooltip']				 = '';
+	$options['customtext3tooltip']				 = '';
+	$options['customtext4tooltip']				 = '';
+	$options['customtext5tooltip']				 = '';
+	$options['showcustomlist1']				 	 = 'hide';
+	$options['showcustomlist2']				 	 = 'hide';
+	$options['showcustomlist3']				 	 = 'hide';
+	$options['showcustomlist4']				 	 = 'hide';
+	$options['showcustomlist5']				 	 = 'hide';
+	$options['customlist1tooltip']				 = '';
+	$options['customlist2tooltip']				 = '';
+	$options['customlist3tooltip']				 = '';
+	$options['customlist4tooltip']				 = '';
+	$options['customlist5tooltip']				 = '';	
+	$options['stylesheet']						 = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

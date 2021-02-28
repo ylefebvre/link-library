@@ -101,6 +101,12 @@ class link_library_plugin_admin {
 
 		if ( 'edit.php' === $hook && isset( $_GET['post_type'] ) && 'link_library_links' === $_GET['post_type'] ) {
 			wp_enqueue_script( 'll_quick_edit', plugins_url('js/ll_admin_edit.js', __FILE__), false, null, true );
+		} elseif ( 'link_library_links_page_link-library-stylesheet' === $hook || 'link_library_links_page_link-library-settingssets' === $hook ) {
+			$cm_settings['codeEditor'] = wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
+			wp_localize_script( 'jquery', 'cm_settings', $cm_settings );
+			
+			wp_enqueue_script( 'wp-theme-plugin-editor' );
+			wp_enqueue_style( 'wp-codemirror' );
 		}
 	}
 
@@ -1301,7 +1307,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 									$this->settingssets_categories_meta_box( $data );
 									$this->settingssets_linkelement_meta_box( $data );
 									$this->settingssets_subfieldtable_meta_box( $data );
-									$this->settingssets_linkpopup_meta_box( $data );
+									$this->settingssets_stylesheet_meta_box( $data );
+									$this->settingssets_linkpopup_meta_box( $data );									
 									$this->settingssets_rssconfig_meta_box( $data );
 									$this->settingssets_thumbnails_meta_box( $data );
 									$this->settingssets_rssgen_meta_box( $data );
@@ -1410,6 +1417,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			                    'll-categories' => __( 'Categories', 'link-library' ),
 			                    'll-links' => __( 'Links', 'link-library' ),
 			                    'll-advanced' => __( 'Advanced', 'link-library' ),
+								'll-style' => __( 'Stylesheet', 'link-library' ),
 			                    'll-popup' => __( 'Pop-Ups', 'link-library' ),
 			                    'll-rssdisplay' => __( 'RSS Display', 'link-library' ),
 			                    'll-thumbnails' => __( 'Thumbnails', 'link-library' ),
@@ -1431,20 +1439,23 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		?>
 		<div>
 			<input type="hidden" name="currenttab" class="current-tab" value="<?php echo $array_keys[$currenttab]; ?>">
-		<ul id="settings-sections" class="subsubsub hide-if-no-js">
-			<?php
-				$index = 0;
-				foreach ( $tabitems as $tabkey => $tabitem ) { ?>
-				<li><a href="#<?php echo $tabkey; ?>" class="ll-tab <?php echo $tabkey; ?> ll-general <?php if ( $currenttab == $index ) echo 'll-current'; ?>"><?php echo $tabitem; ?></a> | </li>
-			<?php
-				$index++;
-				} ?>
-		</ul>
+			<ul id="settings-sections" class="subsubsub hide-if-no-js">
+				<?php
+					$index = 0;
+					foreach ( $tabitems as $tabkey => $tabitem ) { ?>
+					<li><a href="#<?php echo $tabkey; ?>" class="ll-tab <?php echo $tabkey; ?> ll-general <?php if ( $currenttab == $index ) echo 'current'; ?>"><?php echo $tabitem; ?></a> | </li>
+				<?php
+					$index++;
+					} ?>
+			</ul>
 		</div>
 		<br /><br />
 
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
+				if ( jQuery( '.CodeMirror' ).length == 0 ) {
+					wp.codeEditor.initialize( jQuery('#fancy-textarea'), cm_settings );
+				}	
 				jQuery('.content-section:not(:eq(<?php echo $currenttab; ?>))').hide();
 				jQuery('.subsubsub a.ll-tab').click(function(e) {
 
@@ -1462,6 +1473,10 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					jQuery('.content-section#' + toShow).show();
 
 					jQuery('.current-tab').val(toShow);
+
+					if ( jQuery( '.CodeMirror' ).length == 0 ) {
+						wp.codeEditor.initialize( jQuery('#fancy-textarea'), cm_settings );
+					}					
 
 					return false;
 				});
@@ -2462,6 +2477,12 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				}
 			}
 
+			foreach ( array ( 'stylesheet' ) as $option_name ) {
+				if ( isset( $_POST[$option_name] ) ) {
+					$options[$option_name] = $_POST[$option_name];
+				}
+			}
+
 			foreach (
 				array(
 					'order', 'table_width', 'num_columns', 'position',
@@ -2516,7 +2537,11 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'linkcattooltip', 'linkusercattooltip', 'linkusertagtooltip', 'linkdesctooltip', 'linknotestooltip', 'linkimagetooltip', 'linkreciptooltip',
 					'linksecondtooltip', 'linktelephonetooltip', 'linkemailtooltip', 'submitternametooltip', 'submitteremailtooltip',
 					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes', 'uservotelikelabel', 'beforecustomtext1', 'beforecustomtext2', 'beforecustomtext3', 'beforecustomtext4', 'beforecustomtext5', 'aftercustomtext1', 'aftercustomtext2', 'aftercustomtext3', 'aftercustomtext4', 'aftercustomtext5', 'beforecustomlist1', 'beforecustomlist2', 'beforecustomlist3', 'beforecustomlist4', 'beforecustomlist5', 'aftercustomlist1', 'aftercustomlist2', 'aftercustomlist3', 'aftercustomlist4', 'aftercustomlist5', 'categoryseparator', 'customqueryarg', 'customqueryargvalue', 'usersubmissiondragndroporder',
-					'showlinkreferencelist', 'linkreferencelabel', 'linkreferencetooltip'
+					'showlinkreferencelist', 'linkreferencelabel', 'linkreferencetooltip', 'showcustomurl1', 'showcustomurl2', 'showcustomurl3', 'showcustomurl4',
+					'showcustomurl5', 'customurl1tooltip', 'customurl2tooltip', 'customurl3tooltip', 'customurl4tooltip', 'customurl5tooltip', 'showcustomtext1', 'showcustomtext2', 
+					'showcustomtext3', 'showcustomtext4', 'showcustomtext5', 'customtext1tooltip', 'customtext2tooltip', 'customtext3tooltip', 'customtext4tooltip',
+					'customtext5tooltip', 'showcustomlist1', 'showcustomlist2', 'showcustomlist3', 'showcustomlist4', 'showcustomlist5', 'customlist1tooltip', 'customlist2tooltip',
+					'customlist3tooltip', 'customlist4tooltip', 'customlist5tooltip'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -3604,6 +3629,8 @@ function general_custom_fields_meta_box( $data ) {
 				<th style='width: 200px'><?php _e( 'Link Tags', 'link-library' ); ?></th>
 				<th style='width: 300px'><?php _e( 'Link URL', 'link-library' ); ?></th>
 				<th><?php _e( 'Link Description', 'link-library' ); ?></th>
+				<th><?php _e( 'Submitter Comment', 'link-library' ); ?></th>
+				<th><?php _e( 'Referenced Link', 'link-library' ); ?></th>
 			</tr>
 			<?php
 			$links_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1, 'post_status' => 'pending' );
@@ -3617,6 +3644,14 @@ function general_custom_fields_meta_box( $data ) {
 					$link_url = esc_url( get_post_meta( get_the_ID(), 'link_url', true ) );
 					$link_description = esc_html( get_post_meta( get_the_ID(), 'link_description', true ) );
 					$link_categories = wp_get_post_terms( get_the_ID(), 'link_library_category' );
+					$link_comment = esc_html( get_post_meta( get_the_ID(), 'submitter_comment', true ) );
+					$link_reference = get_post_meta( get_the_ID(), 'link_reference', true );
+					$referenced_link = '';
+
+					if ( !empty( $link_reference ) ) {
+						$referenced_link = get_posts( array( 'post_type' => 'link_library_links', 'include' => array( $link_reference ), 'numberposts' => 1 ) );
+					}					
+
 					$link_cat_string = '';
 					$link_cat_id_string = '';
 					$link_cat_IDs = array();
@@ -3666,6 +3701,10 @@ function general_custom_fields_meta_box( $data ) {
 						<td><?php wp_dropdown_categories( array( 'taxonomy' => 'link_library_tags', 'hierarchical' => true, 'hide_empty' => false, 'multiple' => true, 'selected' => $link_tag_id_string, 'name' => 'link_tags_' . get_the_ID() ) ); ?></td>
 						<td><?php echo "<a href='" . $link_url . "'>" . $link_url . "</a>"; ?></td>
 						<td><?php echo $link_description; ?></td>
+						<td><?php echo esc_html( $link_comment ); ?></td>
+						<td><?php if ( !empty( $referenced_link ) ) {
+							echo '<a href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => $link_reference ), admin_url( 'post.php' ) ) ) . '" target="_blank">' , $referenced_link[0]->post_title . '</a>';
+					}	?></td>
 					</tr>
 					<?php
 				}
@@ -3713,10 +3752,16 @@ function general_custom_fields_meta_box( $data ) {
 		<?php _e( 'If the stylesheet editor is empty after upgrading, reset to the default stylesheet using the button below or copy/paste your backup stylesheet into the editor.', 'link-library' ); ?>
 		<br /><br />
 
-		<textarea name='fullstylesheet' id='fullstylesheet' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( $genoptions['fullstylesheet'] ); ?></textarea>
+		<textarea name='fullstylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( $genoptions['fullstylesheet'] ); ?></textarea>
 		<div>
 			<input type="submit" name="submitstyle" value="<?php _e( 'Submit', 'link-library' ); ?>" /><span style='padding-left: 650px'><input type="submit" name="resetstyle" value="<?php _e( 'Reset to default', 'link-library' ); ?>" /></span>
 		</div>
+
+		<script>
+			jQuery(document).ready(function() {
+				wp.codeEditor.initialize( jQuery('#fancy-textarea'), cm_settings );
+			})
+		</script>
 	<?php
 	}
 
@@ -3767,6 +3812,7 @@ function general_custom_fields_meta_box( $data ) {
 		$settings   = $data['settings'];
 		$genoptions = $data['genoptions'];
 		?>
+		
 		<div style='padding-top:15px' id="ll-usage" class="content-section">
 			<table class='widefat' style='clear:none;width:100%;background-color:#F1F1F1;background-image: linear-gradient(to top, #ECECEC, #F9F9F9);background-position:initial initial;background-repeat: initial initial'>
 				<thead>
@@ -5643,6 +5689,17 @@ function general_custom_fields_meta_box( $data ) {
 	<?php
 	}
 
+	function settingssets_stylesheet_meta_box( $data ) {
+		$options  = $data['options'];
+		$settings = $data['settings'];
+		?>
+
+		<div style='padding-top:15px' id="ll-style" class="content-section">
+			<textarea name='stylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo $settings['stylesheet']; ?></textarea>
+		</div>
+
+	<?php }
+
 	function settingssets_thumbnails_meta_box( $data ) {
 		$options    = $data['options'];
 		$genoptions = $data['genoptions'];
@@ -6391,6 +6448,72 @@ function general_custom_fields_meta_box( $data ) {
 							<td></td>
 						</tr>
 					<?php break;
+					case 20:  /* -------------------------------- Custom URL Fields -------------------------------------------*/
+					case 21:
+					case 22:
+					case 23:
+					case 24:
+						$customurlfieldid = $arrayelements - 19;
+						$colorindex = $arrayelements - 1;
+
+						if ( $genoptions['customurl' . $customurlfieldid . 'active'] ) {
+						?>
+						<tr>
+							<td style='width:200px;background-color:<?php echo $colorarray[$colorindex]; ?>;color:#fff;'><?php echo $arrayelements; ?>- <?php echo $genoptions['customurl' . $customurlfieldid . 'label']; ?></td>
+							<td><select name="showcustomurl<?php echo $customurlfieldid; ?>" id="showcustomurl<?php echo $customurlfieldid; ?>" style="width:80px;">
+									<option value="hide"<?php selected( $options['showcustomurl' . $customurlfieldid] == 'hide' ); ?>><?php _e( 'Hide', 'link-library' ); ?></option>
+									<option value="show"<?php selected( $options['showcustomurl' . $customurlfieldid] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
+									<option value="required"<?php selected( $options['showcustomurl' . $customurlfieldid] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
+								</select></td>
+							<td></td>
+							<td><input type="text" id="customurl<?php echo $customurlfieldid; ?>tooltip" name="customurl<?php echo $customurlfieldid; ?>tooltip" size="30" value="<?php echo $options['customurl' . $customurlfieldid . 'tooltip']; ?>" /></td>
+							<td></td>
+						</tr>
+					<?php } break;
+					case 25:  /* -------------------------------- Custom Text Fields -------------------------------------------*/
+					case 26:
+					case 27:
+					case 28:
+					case 29:
+						$customtextfieldid = $arrayelements - 24;
+						$colorindex = $arrayelements - 1;
+
+						if ( $genoptions['customtext' . $customtextfieldid . 'active'] ) {
+						?>
+						<tr>
+							<td style='width:200px;background-color:<?php echo $colorarray[$colorindex]; ?>;color:#fff;'><?php echo $arrayelements; ?>- <?php echo $genoptions['customtext' . $customtextfieldid . 'label']; ?></td>
+							<td><select name="showcustomtext<?php echo $customtextfieldid; ?>" id="showcustomtext<?php echo $customtextfieldid; ?>" style="width:80px;">
+									<option value="hide"<?php selected( $options['showcustomtext' . $customtextfieldid] == 'hide' ); ?>><?php _e( 'Hide', 'link-library' ); ?></option>
+									<option value="show"<?php selected( $options['showcustomtext' . $customtextfieldid] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
+									<option value="required"<?php selected( $options['showcustomtext' . $customtextfieldid] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
+								</select></td>
+							<td></td>
+							<td><input type="text" id="customtext<?php echo $customtextfieldid; ?>tooltip" name="customtext<?php echo $customtextfieldid; ?>tooltip" size="30" value="<?php echo $options['customtext' . $customtextfieldid . 'tooltip']; ?>" /></td>
+							<td></td>
+						</tr>
+					<?php } break;
+					case 30:  /* -------------------------------- Custom List Fields -------------------------------------------*/
+					case 31:
+					case 32:
+					case 33:
+					case 34:
+						$customlistfieldid = $arrayelements - 29;
+						$colorindex = $arrayelements - 1;
+
+						if ( $genoptions['customlist' . $customlistfieldid . 'active'] ) {
+						?>
+						<tr>
+							<td style='width:200px;background-color:<?php echo $colorarray[$colorindex]; ?>;color:#fff;'><?php echo $arrayelements; ?>- <?php echo $genoptions['customlist' . $customlistfieldid . 'label']; ?></td>
+							<td><select name="showcustomlist<?php echo $customlistfieldid; ?>" id="showcustomlist<?php echo $customlistfieldid; ?>" style="width:80px;">
+									<option value="hide"<?php selected( $options['showcustomlist' . $customlistfieldid] == 'hide' ); ?>><?php _e( 'Hide', 'link-library' ); ?></option>
+									<option value="show"<?php selected( $options['showcustomlist' . $customlistfieldid] == 'show' ); ?>><?php _e( 'Show', 'link-library' ); ?></option>
+									<option value="required"<?php selected( $options['showcustomlist' . $customlistfieldid] == 'required' ); ?>><?php _e( 'Required', 'link-library' ); ?></option>
+								</select></td>
+							<td></td>
+							<td><input type="text" id="customlist<?php echo $customlistfieldid; ?>tooltip" name="customlist<?php echo $customlistfieldid; ?>tooltip" size="30" value="<?php echo $options['customlist' . $customlistfieldid . 'tooltip']; ?>" /></td>
+							<td></td>
+						</tr>
+					<?php } break;
 				} } } ?>
 
 		<tr>
@@ -6885,6 +7008,8 @@ function general_custom_fields_meta_box( $data ) {
 		$link_submitter = get_post_meta( $link->ID, 'link_submitter', true );
 		$link_submitter_name = get_post_meta( $link->ID, 'link_submitter_name', true );
 		$link_submitter_email = get_post_meta( $link->ID, 'link_submitter_email', true );
+		$link_submitter_comment = get_post_meta( $link->ID, 'submitter_comment', true );
+		$link_reference = get_post_meta( $link->ID, 'link_reference', true );
 		$link_price = get_post_meta( $link->ID, 'link_price', true );
 		$link_reciprocal = get_post_meta( $link->ID, 'link_reciprocal', true );
 		$link_rel = get_post_meta( $link->ID, 'link_rel', true );
@@ -7043,6 +7168,27 @@ function general_custom_fields_meta_box( $data ) {
 				</td>
 			</tr>
 			<tr>
+				<td><?php _e( 'Submitter Comment', 'link-library' ); ?></td>
+				<td>
+					<textarea style="width: 100%" id="link_submitter_comment" name="link_submitter_comment"><?php echo esc_html( $link_submitter_comment ); ?></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Referenced Link', 'link-library' ); ?></td>
+				<td>
+					<?php if (!empty( $link_reference ) ) { 
+						$referenced_link = get_posts( array( 'post_type' => 'link_library_links', 'include' => array( $link_reference ), 'numberposts' => 1 ) );
+
+						if ( !empty( $referenced_link ) ) {
+							echo $referenced_link[0]->post_title . ' - ';
+						}							
+						?>
+						
+						<a href="<?php echo esc_url( add_query_arg( array( 'action' => 'edit', 'post' => $link_reference ), admin_url( 'post.php' ) ) ); ?>" target="_blank"><?php _e( 'Edit', 'link-library' ); ?></a>
+					<?php } ?>
+				</td>
+			</tr>			
+			<tr>
 				<td><?php _e( 'Rel Tags', 'link-library' ); ?></td>
 				<td>
 					<input type="text" id="link_rel" name="link_rel" size="80" value="<?php echo $link_rel; ?>" />
@@ -7131,7 +7277,7 @@ function general_custom_fields_meta_box( $data ) {
 				}
 			}
 
-			$array_escape_items = array( 'link_description', 'link_notes', 'link_telephone', 'link_reciprocal', 'link_submitter', 'link_submitter_name', 'link_rel', 'link_custom_text_1', 'link_custom_text_2', 'link_custom_text_3', 'link_custom_text_4', 'link_custom_text_5', 'link_custom_list_1', 'link_custom_list_2', 'link_custom_list_3', 'link_custom_list_4', 'link_custom_list_5' );
+			$array_escape_items = array( 'link_description', 'link_notes', 'link_telephone', 'link_reciprocal', 'link_submitter', 'link_submitter_name', 'link_rel', 'link_custom_text_1', 'link_custom_text_2', 'link_custom_text_3', 'link_custom_text_4', 'link_custom_text_5', 'link_custom_list_1', 'link_custom_list_2', 'link_custom_list_3', 'link_custom_list_4', 'link_custom_list_5', 'link_submitter_comment' );
 			foreach ( $array_escape_items as $array_escape_item ) {
 				if ( isset( $_POST[$array_escape_item] ) ) {
 					update_post_meta( $link_id, $array_escape_item, sanitize_text_field( $_POST[$array_escape_item] ) );

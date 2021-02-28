@@ -48,8 +48,15 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.10 =
+* Added per-library configutation stylesheet editor
+* Added new field to user submission form to select an existing link as reference. Useful to allow users to propose a correction to a link
+* Added custom URL, text and list fields to user submissions
+* Stylesheet editors now do syntax highlighting
+
 = 6.8.9 =
 * Added new options to specify a custom WP Query parameter and a value for this extra parameter to allow for custom post filtering
+* Allowed users to reorder fields in user submission form
 * Fixes for HTML + Permalink mode when working in sub-directories
 
 = 6.8.8 =
