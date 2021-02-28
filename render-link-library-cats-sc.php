@@ -406,7 +406,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 				                $cattext = "<a href='";
 			                }
 
-			                $cattargetaddress = '/' . $rewritepage . '/' . $catname->slug;
+			                $cattargetaddress = esc_url( site_url() . '/' . $rewritepage . '/' . $catname->slug );
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
 				                $cattargetaddress = add_query_arg( 'searchll', $_GET['searchll'], $cattargetaddress );
 			                }

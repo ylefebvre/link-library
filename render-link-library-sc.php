@@ -53,7 +53,7 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 		}
 	}
 
-	$new_link = home_url() . '/' . $rewritepage . link_library_get_category_path( $slug );
+	$new_link = esc_url( home_url() . '/' . $rewritepage . link_library_get_category_path( $slug ) );
 	if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 		$new_link = add_query_arg( 'link_tags', $_GET['link_tags'], $new_link );
 	}
@@ -65,7 +65,7 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 	$cat_path .= '<a href="' . $new_link . '">' . $term->name . '</a>';
 
 	if ( $level == 0 ) {
-		$new_top_link = home_url() . '/' . $rewritepage;
+		$new_top_link = esc_url( home_url() . '/' . $rewritepage );
 
 		if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 			$new_top_link = add_query_arg( 'link_tags', $_GET['link_tags'], $new_top_link );
@@ -1123,7 +1123,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												$cat_path = add_query_arg( 'link_price', $_GET['link_price'], $cat_path );
 											}
 
-											$catlink .= '<a href="' . site_url() . '/' . $rewritepage . $cat_path . '">';
+											$catlink .= '<a href="' . esc_url( site_url() . '/' . $rewritepage . $cat_path ) . '">';
 										}
 										$catlink .= '<span class="linklistcatclass">' . $link_category->name . '</span>';
 										if ( ( !empty( $caturl ) && $catnamelink ) || ( $catlinkspermalinksmode && !empty( $rewritepage ) ) ) {
@@ -2418,7 +2418,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 																	$link_cat_string = '';
 																	$cat_url = '';
 																	if ( $enablerewrite && !empty( $rewritepage ) ) {
-																		$cat_url = esc_url( '/' . $rewritepage . '/' . $link_term->slug );
+																		$cat_url = esc_url( site_url() . '/' . $rewritepage . '/' . $link_term->slug );
 																	} else {
 																		$cat_url = get_term_meta( $link_term->term_id, 'linkcaturl', true );
 																	}																	

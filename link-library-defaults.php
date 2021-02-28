@@ -3,6 +3,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
 
+global $colorarray;
+
+$colorarray = array( "#67b484", "#4c6be0", "#9fbb32", "#4d7ad3", "#62c655", "#ce4050", "#45c37c", "#da4f2e", "#41c8d7", "#de862e", "#55a3d9", "#d5ac31", "#4865a2", "#4b9b2f", "#8a96de", "#beb54c", "#2ba198", "#a94c27", "#5ecead", "#e8866b", "#115e41", "#bd6569", "#4e9953", "#925e2a", "#3a9371", "#dba268", "#25735a", "#97831e", "#3b8554", "#a17d3f", "#296437", "#bdb26f", "#387533", "#97ba6d", "#666020", "#3f7821", "#848a49", "#4d6318", "#75902f", "#597236" );
+
 /************************** Function called to create default settings or to reset them on user request **************************/
 function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'return' ) {
 
@@ -401,6 +405,10 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['categoryseparator']				 = ' | ';
 	$options['customqueryarg']					 = '';
 	$options['customqueryargvalue']				 = '';
+	$options['usersubmissiondragndroporder']	 = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33';
+	$options['showlinkreferencelist']			 = 'hide';
+	$options['linkreferencelabel']				 = __( 'Link Reference', 'link-library' );
+	$options['linkreferencetooltip']		     = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

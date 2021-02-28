@@ -43,6 +43,7 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 	$captureddata['ll_customcaptchaanswer'] = ( isset( $_POST['ll_customcaptchaanswer'] ) ? $_POST['ll_customcaptchaanswer'] : '' );
 	$captureddata['link_category']          = ( isset( $_POST['link_category'] ) ? $_POST['link_category'] : '' );
 	$captureddata['link_tags']              = ( isset( $_POST['link_tags'] ) ? $_POST['link_tags'] : '' );
+	$captureddata['ll_linkreference']		= ( isset( $_POST['ll_linkreference'] ) ? $_POST['ll_linkreference'] : '' );
 
 	$uploads = wp_upload_dir();
 
@@ -564,7 +565,16 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						$emailmessage .= __( 'Link Submitter', 'link-library' ) . ": " . $username . "<br /><br />";
 						$emailmessage .= __( 'Link Submitter Name', 'link-library' ) . ": " . $captureddata['ll_submittername'] . "<br /><br />";
 						$emailmessage .= __( 'Link Submitter E-mail', 'link-library' ) . ": " . $captureddata['ll_submitteremail'] . "<br /><br />";
+						
 						$emailmessage .= __( 'Link Comment', 'link-library' ) . ": " . $captureddata['ll_submittercomment'] . "<br /><br />";
+
+						if ( !empty( $captureddata['ll_linkreference'] ) ) {
+							$referenced_link = get_posts( array( 'post_type' => 'link_library_links', 'include' => array( $captureddata['ll_linkreference'] ), 'numberposts' => 1 ) );
+
+							if ( !empty( $referenced_link ) ) {
+								$emailmessage .= __( 'Referenced Link', 'link-library' ) . ": " . $referenced_link[0]->post_title . "<br /><br />";
+							}							
+						}						
 
 						if ( $options['showuserlinks'] == false ) {
 							$emailmessage .= '<a href="' . esc_url( add_query_arg( array( 'post_type' => 'link_library_links', 'page' => 'link-library-moderate' ), admin_url( 'edit.php' ) ) ) . '">Moderate new links</a>';
@@ -658,6 +668,16 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 						if ( 'show' == $options['showlinksubmittercomment'] || 'required' == $options['showlinksubmittercomment'] ) {
 							$submitteremailmessage .= __( 'Link Comment', 'link-library' ) . ": " . $captureddata['ll_submittercomment'] . "<br /><br />";
 						}
+
+						if ( 'show' == $options['showlinkreferencelist'] || 'required' == $options['showlinkreferencelist'] ) {
+							if ( !empty( $captureddata['ll_linkreference'] ) ) {
+								$referenced_link = get_posts( array( 'post_type' => 'link_library_links', 'include' => array( $captureddata['ll_linkreference'] ), 'numberposts' => 1 ) );
+	
+								if ( !empty( $referenced_link ) ) {
+									$submitteremailmessage .= __( 'Referenced Link', 'link-library' ) . ": " . $referenced_link[0]->post_title . "<br /><br />";
+								}							
+							}
+						}						
 
 						wp_mail( $captureddata['ll_submitteremail'], $submitteremailtitle, $submitteremailmessage, $submitteremailheaders );
 					}
