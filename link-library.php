@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.8.10
+Version: 6.8.11
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.home.blog/
 Text Domain: link-library
@@ -684,7 +684,7 @@ class link_library_plugin {
 	/******************************************** Print style data to header *********************************************/
 
 	function ll_rss_link() {
-		global $llstylesheet, $rss_settings;
+		global $llstylesheet, $rss_settings, $settingssetsids;
 
 		if ( !empty( $rss_settings ) ) {
 			$settingsname = 'LinkLibraryPP' . $rss_settings;
@@ -704,6 +704,20 @@ class link_library_plugin {
 				echo "<style id='LinkLibraryStyle' type='text/css'>\n";
 				echo stripslashes( $genoptions['fullstylesheet'] );
 				echo "</style>\n";
+			}
+		}
+
+		if ( !empty( $settingssetsids ) ) {
+			foreach ( $settingssetsids as $setting ) {
+				$settingsname = 'LinkLibraryPP' . $setting;
+				$options = get_option( $settingsname );
+				$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
+
+				if ( !empty( $options['stylesheet'] ) ) {
+					echo "<style id='LinkLibrarySettings" . $setting . "Style' type='text/css'>\n";
+					echo stripslashes( $options['stylesheet'] ) . "\n";
+					echo "</style>\n";
+				}
 			}
 		}
 	}
@@ -1439,9 +1453,12 @@ class link_library_plugin {
 		}
 
 		global $llstylesheet;
+		global $settingssetsids;
+		$settingssetsids = array();
 		$load_jquery = false;
 		$load_thickbox = false;
 		$load_recaptcha = false;
+		$load_style = '';
 
 		if ( $llstylesheet ) {
 			$load_style = true;
@@ -1458,53 +1475,35 @@ class link_library_plugin {
 			$load_style = false;
 		} else {
 			foreach ( $posts as $post ) {
-				$continuesearch = true;
-				$searchpos = 0;
-				$settingsetids = array();
-
-				while ( $continuesearch ) {
-					$linklibrarypos = stripos( $post->post_content, 'link-library ', $searchpos );
-					if ( !$linklibrarypos ) {
-						$linklibrarypos = stripos( $post->post_content, 'link-library]', $searchpos );
-						if ( !$linklibrarypos ) {
-							if ( stripos( $post->post_content, 'link-library-cats' ) || stripos( $post->post_content, 'link-library-addlink' ) ) {
-								$load_style = true;
-								if ( 'recaptcha' == $genoptions['captchagenerator'] ) {
+				$tag_array = array( 'link-library', 'link-library-cats', 'link-library-addlink', 'link-library-search', 'link-library-count' );
+				preg_match_all( '/' . get_shortcode_regex() . '/s', $post->post_content, $matches );
+				if( isset( $matches[2] ) ) {
+					foreach( ( array ) $matches[2] as $key => $value ) {
+						$load_style = true;
+						foreach( $tag_array as $tag ) {
+							if( $tag === $value ) {
+								if ( 'link-library-addlink' == $tag ) {
 									$load_recaptcha = true;
 								}
-							}
-						}
-					}
-
-					$continuesearch = $linklibrarypos;
-
-					if ( $continuesearch ) {
-						$load_style = true;
-						$load_jquery = true;
-						$shortcodeend = stripos( $post->post_content, ']', $linklibrarypos );
-						if ( $shortcodeend ) {
-							$searchpos = $shortcodeend;
-						} else {
-							$searchpos = $linklibrarypos + 1;
-						}
-
-						if ( $shortcodeend ) {
-							$settingconfigpos = stripos( $post->post_content, 'settings=', $linklibrarypos );
-							if ( $settingconfigpos && $settingconfigpos < $shortcodeend ) {
-								$settingset = substr( $post->post_content, $settingconfigpos + 9, $shortcodeend - $settingconfigpos - 9 );
-
-								$settingsetids[] = trim($settingset,'"');
-
-							} else if ( 0 == count($settingsetids) ) {
-								$settingsetids[] = 1;
-							}
-						}
+								$atts_list = shortcode_parse_atts( $matches[3][$key] );
+								if ( !empty( $atts_list ) ) {
+									foreach ( $atts_list as $key => $value ) {
+										if ( $key = 'settings' && ( empty( $settingssetsids ) || false === array_search( $value, $settingssetsids ) ) ) {
+											$settingssetsids[] = intval( $value );
+										}								 
+									}								
+								} else {
+									$settingssetsids[] = 1;
+								}
+								
+							}							
+						}						
 					}
 				}
-			}
+			}		
 
-			if ( $settingsetids ) {
-				foreach ( $settingsetids as $settingsetid ) {
+			if ( $settingssetsids ) {
+				foreach ( $settingssetsids as $settingsetid ) {
 					$settingsname = 'LinkLibraryPP' . $settingsetid;
 					$options = get_option( $settingsname );
 					$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );

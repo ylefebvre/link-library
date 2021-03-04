@@ -48,6 +48,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.11 =
+* Library-specific stylesheets are actually output in pages
+* Added import/export functions to global options
+* Fix tabs in general options section
+* Refreshed some aspects of Link Library GUI to match current WordPress styling
+
 = 6.8.10 =
 * Added per-library configutation stylesheet editor
 * Added new field to user submission form to select an existing link as reference. Useful to allow users to propose a correction to a link

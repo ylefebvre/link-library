@@ -848,11 +848,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$linkdirection = $_GET['linkprice'];
 				}
 
-				$link_query_args['meta_query']['relation'] = 'AND';
-
 				if ( $featuredfirst && 'random' != $linkorder ) {
 					$link_query_args['meta_query']['link_featured_clause'] = array( 'key' => 'link_featured' );
-					$link_query_args['orderby']['link_featured_clause'] = 'DESC';
+					$link_query_args['orderby']['meta_value_num'] = 'DESC';
 				}
 
 				if ( 'name' == $linkorder ) {
@@ -927,6 +925,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['posts_per_page'] = intval ( $maxlinks );
 				} elseif ( !empty( $maxlinkspercat ) && 0 < intval( $maxlinkspercat ) ) {
 					$link_query_args['posts_per_page'] = intval ( $maxlinkspercat );
+				}
+
+				if ( sizeof( $link_query_args['meta_query'] ) > 1 ) {
+					$link_query_args['meta_query']['relation'] = 'AND';
 				}
 
 				$the_link_query = new WP_Query( $link_query_args );
