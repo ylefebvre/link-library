@@ -927,7 +927,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['posts_per_page'] = intval ( $maxlinkspercat );
 				}
 
-				if ( sizeof( $link_query_args['meta_query'] ) > 1 ) {
+				if ( is_array( $link_query_args['meta_query'] ) && sizeof( $link_query_args['meta_query'] ) > 1 ) {
 					$link_query_args['meta_query']['relation'] = 'AND';
 				}
 
