@@ -5799,7 +5799,7 @@ function general_custom_fields_meta_box( $data ) {
 		?>
 
 		<div style='padding-top:15px' id="ll-style" class="content-section">
-			<textarea name='stylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo $settings['stylesheet']; ?></textarea>
+			<textarea name='stylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo $options['stylesheet']; ?></textarea>
 		</div>
 
 	<?php }

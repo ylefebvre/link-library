@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.12 =
+* Fix bug with library-speficic stylesheet editor
+
 = 6.8.11 =
 * Library-specific stylesheets are actually output in pages
 * Added import/export functions to global options
