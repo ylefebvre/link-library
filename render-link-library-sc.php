@@ -1538,7 +1538,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 
 								$between = "\n";
-								$rss_items = array();
+								$rss_array_items = array();
 
 								if ( $rssfeedinline ) {
 									include_once( ABSPATH . WPINC . '/feed.php' );
@@ -1547,27 +1547,42 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 										$starttimerssfeed = microtime ( true );
 									}
 
-									$rss = fetch_feed( $linkitem['link_rss'] );
-									if ( !is_wp_error( $rss ) ) {
-										$maxitems = $rss->get_item_quantity( $rssfeedinlinecount );
+									$rss_array_items = get_transient( 'Link' . get_the_ID() . 'RSSItems' );
 
-										$rss_items = $rss->get_items( 0, $maxitems );
+									if ( false === $rss_array_items ) {
+										$rss_array_items = array();
+										$rss = fetch_feed( $linkitem['link_rss'] );
+										if ( !is_wp_error( $rss ) ) {
+											$maxitems = $rss->get_item_quantity( $rssfeedinlinecount );
 
-										if ( $rss_items && !empty( $rssfeedinlinedayspublished ) && $rssfeedinlinedayspublished != 0 ) {
-											foreach ( $rss_items as $index => $item ) {
-												$diff_published = current_time( 'timestamp' ) - strtotime( $item->get_date( 'j F o' ) );
-												if ( $diff_published > 60 * 60 * 24 * intval( $rssfeedinlinedayspublished ) ) {
-													unset( $rss_items[$index] );
+											$rss_items = $rss->get_items( 0, $maxitems );
+
+											if ( $rss_items ) {
+												foreach ( $rss_items as $index => $item ) {
+													$new_rss_item = array();
+													$diff_published = current_time( 'timestamp' ) - strtotime( $item->get_date( 'j F o' ) );
+													if ( $diff_published > 60 * 60 * 24 * intval( $rssfeedinlinedayspublished ) ) {
+														unset( $rss_items[$index] );
+													} else {
+														$new_rss_item['pub_date'] = $item->get_date( 'F j, Y, g:i a' );
+														$new_rss_item['permalink'] = $item->get_permalink();
+														$new_rss_item['title'] = $item->get_title();
+														$new_rss_item['description'] = $item->get_description();
+
+														$rss_array_items[] = $new_rss_item;														
+													}
+												}
+
+												if ( empty( $rss_array_items ) && $rssfeedinlineskipempty ) {
+													continue;
 												}
 											}
-
-											if ( empty( $rss_items ) && $rssfeedinlineskipempty ) {
-												continue;
-											}
+										} else {
+											$rss_array_items = 'ERROR';
 										}
-									} else {
-										$rss_items = 'ERROR';
-									}
+
+										set_transient( 'Link' . get_the_ID() . 'RSSItems', $rss_array_items, $rsscachedelay );
+									}									
 
 									if ( true == $debugmode ) {
 										$current_cat_output .= "\n<!-- Time to render RSS Feed section of link id " . $linkitem['proper_link_id'] . ': ' . ( microtime( true ) - $starttimerssfeed ) . " --> \n";
@@ -1993,19 +2008,19 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												}
 
 												if ( $rssfeedinline && $linkitem['link_rss'] ) {
-													if ( !empty( $rss_items ) && 'ERROR' != $rss_items ) {
+													if ( !empty( $rss_array_items ) && 'ERROR' != $rss_array_items ) {
 														$current_cat_output .= '<div id="ll_rss_results">';
 														$date_format_string = get_option( 'date_format' );
 
-														foreach ( $rss_items as $item ) {
+														foreach ( $rss_array_items as $item ) {
 															$current_cat_output .= '<div class="chunk" style="padding:0 5px 5px;">';
-															$item_timestamp = strtotime( $item->get_date( 'F j, Y, g:i a' ) );
+															$item_timestamp = strtotime( $item['pub_date'] );
 
 															$formatted_date = date_i18n( $date_format_string, $item_timestamp );
-															$current_cat_output .= '<div class="rsstitle"><a target="feedwindow" href="' . $item->get_permalink() . '">' . $item->get_title() . '</a><span class="rsstimestamp"> - ' . $formatted_date . '</span></div><!-- RSS Feed title -->';
+															$current_cat_output .= '<div class="rsstitle"><a target="feedwindow" href="' . $item['permalink'] . '">' . $item['title'] . '</a><span class="rsstimestamp"> - ' . $formatted_date . '</span></div><!-- RSS Feed title -->';
 
 															if ( $rssfeedinlinecontent ) {
-																$current_cat_output .= '<div class="rsscontent">' . $item->get_description() . '</div><!-- RSS Content -->';
+																$current_cat_output .= '<div class="rsscontent">' . $item['description'] . '</div><!-- RSS Content -->';
 															}
 
 															$current_cat_output .= '</div><!-- RSS Chunk -->';
@@ -2013,7 +2028,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														}
 
 														$current_cat_output .= '</div><!-- RSS Results -->';
-													} elseif ( 'ERROR' == $rss_items ) {
+													} elseif ( 'ERROR' == $rss_array_items ) {
 														$current_cat_output .= '<div class="rss_feed_error">' . __( 'Invalid RSS feed', 'link-library' ) . '</div>';
 													}
 												}

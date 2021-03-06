@@ -6,7 +6,7 @@ For links that carry RSS feed information, Link Library can display a preview of
 
 This plugin uses the filter method to add contents to the pages. It also contains a configuration page under the admin tools to be able to configure all outputs. This page allows for an unlimited number of different configurations to be created to display links on different pages of a Wordpress site.
 
-For screenshots showing how to achieve these results, check out my [site](https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/)
+For screenshots showing how to achieve these results, check out my [site](https://github.com/ylefebvre/link-library/wiki)
 
 All pages are generated using different configurations all managed by Link Library. Link Library is compatible with the [My Link Order](http://wordpress.org/extend/plugins/my-link-order/) plugin to define category and link ordering.
 

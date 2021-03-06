@@ -362,7 +362,7 @@ class link_library_plugin_admin {
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 
 		if ( substr( $plugin_file, 0, 25 ) == substr( plugin_basename( __FILE__ ), 0, 25 ) && ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) ) {
-			$links_array = array_merge( $links_array, array( '<a target="_blank" href="https://ylefebvre.home.blog/wordpress-plugins/link-library/">Donate</a>' ) );
+			$links_array = array_merge( $links_array, array( '<a target="_blank" href="https://ylefebvre.github.io/wordpress-plugins/link-library/">Donate</a>' ) );
 		}
 
 		return $links_array;
@@ -535,7 +535,10 @@ class link_library_plugin_admin {
 	function action_admin_init() {
 
 		if ( isset($_GET['page']) && $_GET['page'] == 'link-library-faq' ) {
-			wp_redirect( 'https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/' );
+			wp_redirect( 'https://github.com/ylefebvre/link-library/wiki' );
+			exit();
+		} elseif ( isset($_GET['page']) && $_GET['page'] == 'link-library-donate' ) {
+			wp_redirect( 'https://ylefebvre.github.io/wordpress-plugins/link-library/' );
 			exit();
 		} elseif ( !empty( $_GET['linkurl'] ) && !empty( $_GET['action'] ) ) {
 			$incoming_link_url = esc_url( urldecode( $_GET['linkurl'] ) );
@@ -673,7 +676,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 	}
 
 	function ll67update() {
-		echo "<div id='ll-warning' class='updated fade'><span style='float: left; margin-right: 20px; margin-top: 40px; margin-bottom: 40px'><img src='" . plugins_url( 'icons/new_icon.png', __FILE__ ) . "' /></span><p><strong>Link Library 6.7: Recent new features and supporting your humble developer</strong></p> <p>You may not have noticed, but Link Library keeps adding a steady stream of new features, along with bug fixes, with each new version. In recent months, new capabilities such a <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-advanced', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>User Voting system</a>, <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-customfields', 'page' => 'link-library-general-options'), admin_url( 'edit.php' )) . "'>Custom URL Fields</a>, the <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-userform', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>ability for users to upload files to be used as the link URL</a> and <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-userform', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>User-Submission Form Tooltips</a> and many more have been added to Link Library. If you have ideas for new features, drop me a line in the <a href='https://wordpress.org/support/plugin/link-library/'>support forum</a>. I can't promise I'll put them all in, but all ideas are considered.<br /><br />If you use the plugin as a regular feature of your site and have never contributed to Link Library's development, <a href='https://ylefebvre.home.blog/wordpress-plugins/link-library/'>please consider a donation</a>. Repeat donations are just as welcome :) Answering support questions and implementing new features for this free plugin takes time and effort and your support helps with this work and its associated costs. Thanks in advance!<br /><br /><a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-usage', 'page' => 'link-library-settingssets', 'dismissll67update' => 'true'), admin_url( 'edit.php' )) . "'>Dismiss</a></p></div>";
+		echo "<div id='ll-warning' class='updated fade'><span style='float: left; margin-right: 20px; margin-top: 40px; margin-bottom: 40px'><img src='" . plugins_url( 'icons/new_icon.png', __FILE__ ) . "' /></span><p><strong>Link Library 6.7: Recent new features and supporting your humble developer</strong></p> <p>You may not have noticed, but Link Library keeps adding a steady stream of new features, along with bug fixes, with each new version. In recent months, new capabilities such a <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-advanced', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>User Voting system</a>, <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-customfields', 'page' => 'link-library-general-options'), admin_url( 'edit.php' )) . "'>Custom URL Fields</a>, the <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-userform', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>ability for users to upload files to be used as the link URL</a> and <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-userform', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>User-Submission Form Tooltips</a> and many more have been added to Link Library. If you have ideas for new features, drop me a line in the <a href='https://wordpress.org/support/plugin/link-library/'>support forum</a>. I can't promise I'll put them all in, but all ideas are considered.<br /><br />If you use the plugin as a regular feature of your site and have never contributed to Link Library's development, <a href='https://ylefebvre.github.io/wordpress-plugins/link-library/'>please consider a donation</a>. Repeat donations are just as welcome :) Answering support questions and implementing new features for this free plugin takes time and effort and your support helps with this work and its associated costs. Thanks in advance!<br /><br /><a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-usage', 'page' => 'link-library-settingssets', 'dismissll67update' => 'true'), admin_url( 'edit.php' )) . "'>Dismiss</a></p></div>";
 	}
 
 	function filter_mce_buttons( $buttons ) {
@@ -787,6 +790,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		$pagehookstylesheet = add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'Stylesheet', 'link-library' ), __( 'Stylesheet', 'link-library' ), $admin_capability, 'link-library-stylesheet', array( $this, 'on_show_page' ) );
 
 		$pagehookreciprocal = add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'Link checking tools', 'link-library' ), __( 'Link checking tools', 'link-library' ), $admin_capability, 'link-library-reciprocal', array( $this, 'on_show_page' ) );
+
+		add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'Donate', 'link-library' ), __( 'Donate', 'link-library' ), $admin_capability, 'link-library-donate', array( $this, 'on_show_page' ) );
 
 		add_submenu_page( LINK_LIBRARY_ADMIN_PAGE_NAME, 'Link Library - ' . __( 'FAQ', 'link-library' ), __( 'FAQ', 'link-library' ), $admin_capability, 'link-library-faq', array( $this, 'on_show_page' ) );
 
@@ -1223,11 +1228,11 @@ wp_editor( $post->post_content, 'content', $editor_config );
 								} ?>><?php _e( 'Reciprocal Check', 'link-library' ); ?></a>
 							</li>
 							<li class="link-library-page">
-								<a target="LinkLibraryFAQ" href="https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/"><?php _e( 'FAQ', 'link-library' ); ?></a>
+								<a target="LinkLibraryFAQ" href="https://github.com/ylefebvre/link-library/wiki"><?php _e( 'FAQ', 'link-library' ); ?></a>
 							</li>
 							<?php if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) { ?>
 								<li class="link-library-page">
-									<a href="https://ylefebvre.home.blog/wordpress-plugins/link-library/"><img src="<?php echo plugins_url( '/icons/btn_donate_LG.gif', __FILE__ ); ?>" /></a>
+									<a href="https://ylefebvre.github.io/wordpress-plugins/link-library/"><img src="<?php echo plugins_url( '/icons/btn_donate_LG.gif', __FILE__ ); ?>" /></a>
 								</li>
 							<?php } ?>
 
@@ -2821,7 +2826,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					$message = $emailbody;
 
 					if ( !$genoptions['suppressemailfooter'] ) {
-						$message .= "<br /><br />" . __( 'Message generated by', 'link-library' ) . " <a href='https://ylefebvre.home.blog/wordpress-plugins/link-library/'>Link Library</a> for Wordpress";
+						$message .= "<br /><br />" . __( 'Message generated by', 'link-library' ) . " <a href='https://ylefebvre.github.io/wordpress-plugins/link-library/'>Link Library</a> for Wordpress";
 					}
 
 					wp_mail( $submitter_email, $emailtitle, $message, $headers );
@@ -2865,7 +2870,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					$message = $emailbody;
 
 					if ( !$genoptions['suppressemailfooter'] ) {
-						$message .= "<br /><br />" . __('Message generated by', 'link-library') . " <a href='https://ylefebvre.home.blog/wordpress-plugins/link-library/'>Link Library</a> for Wordpress";
+						$message .= "<br /><br />" . __('Message generated by', 'link-library') . " <a href='https://ylefebvre.github.io/wordpress-plugins/link-library/'>Link Library</a> for Wordpress";
 					}
 
 					wp_mail( $submitter_email, $emailtitle, $message, $headers );

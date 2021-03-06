@@ -106,7 +106,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['rssfeedinline']                 = false;
 	$options['rssfeedinlinecontent']          = false;
 	$options['rssfeedinlinecount']            = 1;
-	$options['rssfeedinlinedayspublished']    = 0;
+	$options['rssfeedinlinedayspublished']    = 90;
 	$options['rssfeedinlineskipempty']        = false;
 	$options['direction']                     = 'ASC';
 	$options['linkdirection']                 = 'ASC';

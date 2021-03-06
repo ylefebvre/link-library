@@ -1,6 +1,6 @@
 === Link Library ===
 Contributors: jackdewey
-Donate link: https://ylefebvre.home.blog/wordpress-plugins/link-library/
+Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
 Tested up to: 5.6
@@ -16,7 +16,7 @@ For links that carry RSS feed information, Link Library can display a preview of
 
 This plugin uses the filter method to add contents to the pages. It also contains a configuration page under the admin tools to be able to configure all outputs. This page allows for an unlimited number of different configurations to be created to display links on different pages of a Wordpress site.
 
-For screenshots showing how to achieve these results, check out my [site](https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/)
+For screenshots showing how to achieve these results, check out my [site](https://github.com/ylefebvre/link-library/wiki)
 
 All pages are generated using different configurations all managed by Link Library. Link Library is compatible with the [My Link Order](http://wordpress.org/extend/plugins/my-link-order/) plugin to define category and link ordering.
 
@@ -48,8 +48,12 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.13 =
+* Improved RSS Inline item rendering by using transients
+* Updated links to new github site
+
 = 6.8.12 =
-* Fix bug with library-speficic stylesheet editor
+* Fix bug with library-specific stylesheet editor
 
 = 6.8.11 =
 * Library-specific stylesheets are actually output in pages
@@ -222,7 +226,7 @@ Further configuration is available under the Link Library Settings panel.
 
 = Where can I find documentation for Link Library? =
 
-Visit the [official documentation for Link Library](https://ylefebvre.home.blog/wordpress-plugins/link-library/link-library-faq/)
+Visit the [official documentation for Link Library](https://github.com/ylefebvre/link-library/wiki)
 
 = Who are the translators behind Link Library? =
 
