@@ -1561,7 +1561,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 												foreach ( $rss_items as $index => $item ) {
 													$new_rss_item = array();
 													$diff_published = current_time( 'timestamp' ) - strtotime( $item->get_date( 'j F o' ) );
-													if ( $diff_published > 60 * 60 * 24 * intval( $rssfeedinlinedayspublished ) ) {
+													if ( 0 != $rssfeedinlinedayspublished && $diff_published > 60 * 60 * 24 * intval( $rssfeedinlinedayspublished ) ) {
 														unset( $rss_items[$index] );
 													} else {
 														$new_rss_item['pub_date'] = $item->get_date( 'F j, Y, g:i a' );

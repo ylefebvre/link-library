@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.14 =
+* Fix for RSS inline items publication date limit
+* Added code to translate word ALL in alpha filter function
+
 = 6.8.13 =
 * Improved RSS Inline item rendering by using transients
 * Updated links to new github site
