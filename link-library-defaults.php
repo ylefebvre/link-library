@@ -440,6 +440,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['customlist4tooltip']				 = '';
 	$options['customlist5tooltip']				 = '';	
 	$options['stylesheet']						 = '';
+	$options['masonry']							 = 'inactive';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
@@ -542,6 +543,9 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['customlist3html']               = '';
 	$genoptions['customlist4html']               = '';
 	$genoptions['customlist5html']               = '';
+	$genoptions['global_search_results_layout']  = '[link_description]';
+	$genoptions['globalsearchresultslinkurl']	 = true;
+	$genoptions['globalsearchresultstitleprefix'] = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

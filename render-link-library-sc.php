@@ -685,7 +685,13 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		}
 
 		if ( $level == 0 ) {
-			$output .= "<div id='linklist" . $settings . "' class='linklist'><!-- Div Linklist -->\n";
+			$output .= "<div id='linklist" . $settings . "' class='linklist";
+
+			/* if ( 'categories' == $masonry ) {
+				$output .= ' grid';
+			} */
+			
+			$output .= "'><!-- Div Linklist -->\n";
 		}
 
 		if ( $level == 0 && $pagination && $mode != "search" && 'BEFORE' == $paginationposition ) {
@@ -927,7 +933,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['posts_per_page'] = intval ( $maxlinkspercat );
 				}
 
-				if ( is_array( $link_query_args['meta_query'] ) && sizeof( $link_query_args['meta_query'] ) > 1 ) {
+				if ( isset( $link_query_args['meta_query'] ) && is_array( $link_query_args['meta_query'] ) && sizeof( $link_query_args['meta_query'] ) > 1 ) {
 					$link_query_args['meta_query']['relation'] = 'AND';
 				}
 
@@ -970,7 +976,13 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 						$start_link_count = $linkcount;
 						if ( ! $combineresults ) {
 							$currentcategoryid = $link_category->term_id;
-							$current_cat_output .= '<div class="LinkLibraryCat LinkLibraryCat' . $currentcategoryid . ( $level == 0 ? '' : ' childlevel'). ' level' . $level .'"><!-- Div Category -->';
+							$current_cat_output .= '<div class="LinkLibraryCat LinkLibraryCat' . $currentcategoryid;
+							
+							/* if ( 'categories' == $masonry ) {
+								$current_cat_output .= ' grid-item ';
+							} */
+							
+							$current_cat_output .=  ( $level == 0 ? '' : ' childlevel'). ' level' . $level .'"><!-- Div Category -->';
 
 							$catlink = '';
 							$cattext = '';
@@ -2769,8 +2781,17 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$nonce = wp_create_nonce( 'll_tracker' );
 
 		$output .= "<script type='text/javascript'>\n";
+
 		$output .= "jQuery(document).ready(function()\n";
 		$output .= "{\n";
+		
+		/* if ( 'links' == $masonry || 'categories' == $masonry ) {
+			$output .= "jQuery('.grid').masonry({\n";
+			$output .= "\titemSelector: '.grid-item',\n";
+			$output .= "\tcolumnWidth: 0\n";
+			$output .= "});\n";
+		} */	
+		
 		$output .= "jQuery('.arrow-up').hide();\n";
 		$output .= "jQuery('#linklist" . $settings . " a.track_this_link').click(function() {\n";
 		$output .= "linkid = this.id;\n";

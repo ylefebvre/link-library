@@ -48,6 +48,13 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.16 =
+* Added global search results customization for links
+* Realigned colors in advanced configuration grid
+
+= 6.8.15 =
+* Fix for PHP notice in render-link-library-sc.php, line 930
+
 = 6.8.14 =
 * Fix for RSS inline items publication date limit
 * Added code to translate word ALL in alpha filter function

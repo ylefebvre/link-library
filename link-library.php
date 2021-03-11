@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.8.14
+Version: 6.8.15
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -284,6 +284,10 @@ class link_library_plugin {
 		add_action( 'wp_head', array( $this, 'll_rss_link' ) );
 
 		add_filter( 'wp_title', array( $this, 'll_title_creator' ) );
+
+		add_filter( 'get_the_excerpt', array( $this, 'll_display_single_link' ) );
+		add_filter( 'post_type_link', array( $this, 'll_get_permalink' ), 10, 4 );
+		add_filter( 'the_title', array( $this, 'll_get_title' ), 10, 2 );
 
 		// Re-write rules filters to allow for custom permalinks
 		add_filter( 'rewrite_rules_array', array( $this, 'll_insertMyRewriteRules' ) );
@@ -753,11 +757,42 @@ class link_library_plugin {
 		return $title;
 	}
 
+	function ll_get_permalink( $url, $post_id, $sample, $type ) {
+		if ( is_search() && 'link_library_links' == get_post_type() ) {
+			$genoptions = get_option( 'LinkLibraryGeneral' );
+			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+			if ( $genoptions['globalsearchresultslinkurl'] ) {
+				$link_url = get_post_meta( get_the_ID(), 'link_url', true );
+
+				if ( !empty( $link_url ) ) {
+					return $link_url;
+				}	
+			}
+		}
+
+		return $url;		
+	}
+
+	function ll_get_title( $title, $id ) {
+		if ( is_search() && 'link_library_links' == get_post_type() ) {
+			$genoptions = get_option( 'LinkLibraryGeneral' );
+			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+			if ( !empty( $genoptions['globalsearchresultstitleprefix'] ) ) {
+				return $genoptions['globalsearchresultstitleprefix'] . $title;
+			}			
+		}
+
+		return $title;
+	}
+
 	/************************************* Function to add to rewrite rules for permalink support **********************************/
 	function ll_insertMyRewriteRules( $rules ) {
 		$newrules = array();
 
-		$genoptions = get_option('LinkLibraryGeneral');
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
 		if ( !empty( $genoptions ) ) {
 			for ( $i = 1; $i <= $genoptions['numberstylesets']; $i++ ) {
@@ -1458,6 +1493,7 @@ class link_library_plugin {
 		$load_jquery = false;
 		$load_thickbox = false;
 		$load_recaptcha = false;
+		$load_masonry = false;
 		$load_style = '';
 
 		if ( $llstylesheet ) {
@@ -1512,6 +1548,10 @@ class link_library_plugin {
 						$load_jquery = true;
 					}
 
+					if ( 'links' == $options['masonry'] || 'categories' == $options['masonry'] ) {
+						$load_masonry = true;
+					}
+
 					if ( $options['rsspreview'] || ( isset( $options['enable_link_popup'] ) && $options['enable_link_popup'] ) ) {
 						$load_thickbox = true;
 					}
@@ -1557,6 +1597,10 @@ class link_library_plugin {
 		if ( $load_recaptcha && $genoptions['captchagenerator'] ) {
 			wp_enqueue_script( 'google_recaptcha', 'https://www.google.com/recaptcha/api.js', array(), false, true );
 		}
+
+		if ( $load_masonry ) {
+			wp_enqueue_script( 'jquery-masonry' );
+		}		
 
 		return $posts;
 	}
@@ -1619,7 +1663,13 @@ class link_library_plugin {
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
-		$content = htmlspecialchars_decode( stripslashes( $genoptions['single_link_layout'] ) );
+		if ( is_search() && 'link_library_links' == get_post_type() ) {
+			$content = htmlspecialchars_decode( stripslashes( $genoptions['global_search_results_layout'] ) );	
+		} elseif ( is_single() && 'link_library_links' == get_post_type() ) {
+			$content = htmlspecialchars_decode( stripslashes( $genoptions['single_link_layout'] ) );
+		} else {
+			return $content;
+		}		
 
 		$item_id = get_the_ID();
 		if ( !empty( $item_id ) ) {

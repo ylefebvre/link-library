@@ -615,5 +615,22 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
         }
 
     }
+
+	/* $output .= '<div class="cattoggle active" data-cat="36">Toggle Entry</div>';
+	$output .= '<script type="text/javascript">';
+	$output .= "jQuery(document).ready(function() {\n";
+	$output .= "jQuery( '.cattoggle' ).click( function() {\n";
+	$output .= "if ( jQuery( this ).hasClass( 'active' ) ) {\n";
+	$output .= "jQuery(this).removeClass( 'active' );";
+	$output .= "jQuery(this).addClass( 'inactive' );";
+	$output .= "} else {";
+	$output .= "jQuery(this).removeClass( 'inactive' );";
+	$output .= "jQuery(this).addClass( 'active' );";
+	$output .= "}";
+	$output .= "jQuery( '.LinkLibraryCat' + jQuery( this ).data( 'cat' )).toggle();\n";
+	$output .= "jQuery('.grid').masonry();";
+	$output .= "\t});\n";
+	$output .= "});\n";
+	$output .= '</script>'; */
     return $output;
 }
