@@ -3,7 +3,7 @@ Contributors: jackdewey
 Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
-Tested up to: 5.6
+Tested up to: 5.7
 Stable tag: trunk
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
@@ -47,6 +47,15 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 6.8.18 =
+* Added support for Block editor
+* Added new Masonry link display methods
+* Added a new display mode for categories to allow you to toggle category visibility
+* Added two new presets showcasing Masonry layouts
+
+= 6.8.17 =
+* Fix for ll_get_title function definition
 
 = 6.8.16 =
 * Added global search results customization for links

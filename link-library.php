@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.8.15
+Version: 6.8.18
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -289,6 +289,10 @@ class link_library_plugin {
 		add_filter( 'post_type_link', array( $this, 'll_get_permalink' ), 10, 4 );
 		add_filter( 'the_title', array( $this, 'll_get_title' ), 10, 2 );
 
+		add_filter( 'block_categories', array( $this, 'll_block_categories' ), 10, 2 );
+		add_action( 'rest_api_init', array( $this, 'll_rest_api_init' ) );
+		
+
 		// Re-write rules filters to allow for custom permalinks
 		add_filter( 'rewrite_rules_array', array( $this, 'll_insertMyRewriteRules' ) );
 		add_filter( 'query_vars', array( $this, 'll_insertMyRewriteQueryVars' ) );
@@ -319,6 +323,52 @@ class link_library_plugin {
 
 		add_action('auth_redirect', array( $this, 'add_pending_count_filter') ); // modify esc_attr on auth_redirect
 		add_action('admin_menu', array( $this, 'esc_attr_restore' ) ); // restore on admin_menu (very soon)
+	}
+
+	function ll_rest_api_init() {
+		register_rest_route( 'link-library/v1', '/settingslist', array(
+			'methods' => 'GET',
+			'callback' => array( $this, 'll_rest_settings_list' ),
+			'permission_callback' => '__return_true'
+		) );
+	}
+
+	function ll_rest_settings_list( WP_REST_Request $request ) {
+
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+		
+		if ( empty( $genoptions['numberstylesets'] ) ) {
+			$numberofsets = 1;
+		} else {
+			$numberofsets = $genoptions['numberstylesets'];
+		}
+		$settings_array = array();
+		for ( $counter = 1; $counter <= $numberofsets; $counter ++ ) {
+			$tempoptionname = "LinkLibraryPP" . $counter;
+			$tempoptions          = get_option( $tempoptionname );
+			
+			if ( ! empty( $tempoptions ) && isset( $tempoptions['settingssetname'] ) ) {
+				$settings_array[$counter] = $tempoptions['settingssetname'];
+			}
+		}
+
+		$response = new WP_REST_Response( $settings_array );
+
+		return $response;
+	}
+
+	function ll_block_categories( $categories, $post ) {
+		return array_merge(
+			$categories,
+			array(
+				array(
+					'slug' => 'link-library',
+					'title' => __( 'Link Library', 'link-library' ),
+					'icon'  => 'wordpress',
+				),
+			)
+		);
 	}
 
 	function ll_posts_where( $where, $query ) {
@@ -431,6 +481,7 @@ class link_library_plugin {
 				'show_tagcloud' => false,
 				'hierarchical' => true,
 				'rewrite' => $genoptions['publicly_queryable'],
+				'show_in_rest' => true
 			)
 		);
 
@@ -444,10 +495,211 @@ class link_library_plugin {
 								   'new_item_name' => 'New Link Library Tag' ),
 				'show_ui' => true,
 				'rewrite' => false,
+				'show_in_rest' => true
 			)
 		);
 
 		add_feed( 'linklibraryfeed', 'link_library_generate_rss_feed' );
+
+		if ( function_exists( 'register_block_type' ) ) {
+			$asset_file = include( plugin_dir_path( __FILE__ ) . 'build/index.asset.php');
+	 
+			wp_register_script(
+				'link-library-block',
+				plugins_url( 'build/index.js', __FILE__ ),
+				$asset_file['dependencies'],
+				$asset_file['version']
+			);
+		
+			register_block_type( 'link-library/link-block', [
+				'editor_script' => 'link-library-block',
+				'render_callback' => array( $this, 'link_library_func' ),
+				'attributes'  => [
+					'settings'    => [
+						'type'  => 'string',
+						'default'   => '1',
+					],
+					'linkorderoverride'    => [
+						'type'  => 'string',
+						'default'   => '',
+					],
+					'linkdirectionoverride'    => [
+						'type'  => 'string',
+						'default'   => '',
+					],
+					'categorylistoverride'    => [
+						'type'  => 'array',
+						'default'   => [],
+						'items'   => [
+							'type' => 'string',
+						],
+					],
+					'excludecategoryoverride'    => [
+						'type'  => 'array',
+						'default'   => [],
+						'items'   => [
+							'type' => 'string',
+						],
+					],
+					'taglistoverride'    => [
+						'type'  => 'array',
+						'default'   => [],
+						'items'   => [
+							'type' => 'string',
+						],
+					],
+					'maxlinksoverride'    => [
+						'type'  => 'string',
+						'default'   => '',
+					],
+					'notesoverride'    => [
+						'type'  => 'boolean',
+						'default'   => false,
+					],
+					'descoverride'    => [
+						'type'  => 'boolean',
+						'default'   => false,
+					],
+					'rssoverride'    => [
+						'type'  => 'boolean',
+						'default'   => false,
+					],
+					'categorylistoverrideCSV' => [
+						'type' => 'string',
+						'default' => '',
+					],
+					'excludecategoryoverrideCSV' => [
+						'type' => 'string',
+						'default' => '',
+					],
+					'taglistoverrideCSV' => [
+						'type' => 'string',
+						'default' => '',
+					],
+				],
+			] );
+
+			register_block_type( 'link-library/cats-block', [
+				'editor_script' => 'link-library-block',
+				'render_callback' => array( $this, 'link_library_cats_func' ),
+				'attributes'  => [
+					'settings'    => [
+						'type'  => 'string',
+						'default'   => '1',
+					],
+					'categorylistoverride'    => [
+						'type'  => 'array',
+						'default'   => [],
+						'items'   => [
+							'type' => 'string',
+						],
+					],
+					'excludecategoryoverride'    => [
+						'type'  => 'array',
+						'default'   => [],
+						'items'   => [
+							'type' => 'string',
+						],
+					],
+					'targetlibrary'    => [
+						'type'  => 'string',
+						'default'   => '',
+					],
+					'categorylistoverrideCSV' => [
+						'type' => 'string',
+						'default' => '',
+					],
+					'excludecategoryoverrideCSV' => [
+						'type' => 'string',
+						'default' => '',
+					],
+				],
+			] );
+			
+			register_block_type( 'link-library/addlink-block', [
+				'editor_script' => 'link-library-block',
+				'render_callback' => array( $this, 'link_library_addlink_func' ),
+				'attributes'  => [
+					'settings'    => [
+						'type'  => 'string',
+						'default'   => '1',
+					],
+				],
+			] );
+
+			register_block_type( 'link-library/search-block', [
+				'editor_script' => 'link-library-block',
+				'render_callback' => array( $this, 'link_library_search_func' ),
+				'attributes'  => [
+					'settings'    => [
+						'type'  => 'string',
+						'default'   => '1',
+					],
+				],
+			] );
+
+			register_block_type( 'link-library/count-block', [
+				'editor_script' => 'link-library-block',
+				'render_callback' => array( $this, 'link_library_count_func' ),
+				'attributes'  => [
+					'settings'    => [
+						'type'  => 'string',
+						'default'   => '1',
+					],
+				],
+			] );
+		}	
+	}
+
+	function link_library_block_callback( $attributes ) {
+		$settings = 1;
+
+		if ( isset( $attributes['settingsid']) && !empty( $attributes['settingsid'] ) ) {
+			$settings = $attributes['settingsid'];
+		}
+		
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+		$linkcount = 1;
+		
+		$settingsname = 'LinkLibraryPP' . $settings;
+		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
+
+		if ( isset( $attributes['categoryOverrideArray'] ) && !empty( $attributes['categoryOverrideArray'] ) ) {
+			$options['categorylist_cpt'] = implode( ',', $attributes['categoryOverrideArray'] );
+		}		
+
+		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-sc.php';
+	  
+		return RenderLinkLibrary( $this, $genoptions, $options, $settings, false, 0, 0, true, false, $linkcount );	  
+	}
+
+	function link_library_cats_block_callback( $attributes ) {
+		$settings = 1;
+
+		if ( isset( $attributes['settingsid']) && !empty( $attributes['settingsid'] ) ) {
+			$settings = $attributes['settingsid'];
+		}
+		
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+		$linkcount = 1;
+		
+		$settingsname = 'LinkLibraryPP' . $settings;
+		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
+
+		if ( isset( $attributes['categoryOverrideArray'] ) && !empty( $attributes['categoryOverrideArray'] ) ) {
+			$options['categorylist_cpt'] = implode( ',', $attributes['categoryOverrideArray'] );
+		}		
+		$targetlibrary = $settings;
+
+		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-cats-sc.php';
+	  
+		return RenderLinkLibraryCategories( $this, $genoptions, $options, $settings, $targetlibrary );	  
 	}
 
 	function ll_update_60() {
@@ -758,7 +1010,7 @@ class link_library_plugin {
 	}
 
 	function ll_get_permalink( $url, $post_id, $sample, $type ) {
-		if ( is_search() && 'link_library_links' == get_post_type() ) {
+		if ( !is_admin() && is_search() && 'link_library_links' == get_post_type() ) {
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
@@ -774,8 +1026,8 @@ class link_library_plugin {
 		return $url;		
 	}
 
-	function ll_get_title( $title, $id ) {
-		if ( is_search() && 'link_library_links' == get_post_type() ) {
+	function ll_get_title( $title, $id = null ) {
+		if ( !is_admin() && is_search() && 'link_library_links' == get_post_type() ) {
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
@@ -894,6 +1146,22 @@ class link_library_plugin {
 		$excludecategoryoverride = '';
 		$settings = '';
 		$targetlibrary = '';
+
+		if ( isset( $atts['categorylistoverride'] ) && !empty( $atts['categorylistoverride'] ) && is_array( $atts['categorylistoverride'] ) ) {
+			$atts['categorylistoverride'] = implode( ',', $atts['categorylistoverride'] );
+		}
+
+		if ( isset( $atts['categorylistoverrideCSV'] ) && !empty( $atts['categorylistoverrideCSV'] ) ) {
+			$atts['categorylistoverride'] = $atts['categorylistoverrideCSV'];
+		}
+
+		if ( isset( $atts['excludecategoryoverride'] ) && !empty( $atts['excludecategoryoverride'] ) && is_array( $atts['excludecategoryoverride'] ) ) {
+			$atts['excludecategoryoverride'] = implode( ',', $atts['excludecategoryoverride'] );
+		}
+
+		if ( isset( $atts['excludecategoryoverrideCSV'] ) && !empty( $atts['excludecategoryoverrideCSV'] ) ) {
+			$atts['excludecategoryoverride'] = $atts['excludecategoryoverrideCSV'];
+		}
 
 		extract( shortcode_atts( array (
 			'categorylistoverride' => '',
@@ -1060,7 +1328,7 @@ class link_library_plugin {
 
 	/********************************************** Function to Process [link-library-add-link] shortcode *********************************************/
 
-	function link_library_addlink_func($atts, $content, $code) {
+	function link_library_addlink_func( $atts, $content, $code ) {
 		$settings = '';
 		$categorylistoverride = '';
 		$excludecategoryoverride = '';
@@ -1072,6 +1340,10 @@ class link_library_plugin {
 			'excludecategoryoverride' => '',
 			'addlinkdefaultcatoverride' => ''
 		), $atts));
+
+		if ( empty( $code ) || is_object( $code ) ) {
+			$code = 'link-library-addlink';
+		}
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
@@ -1255,6 +1527,30 @@ class link_library_plugin {
 		$linkdirectionoverride = '';
 		$addlinkdefaultcatoverride = '';
 
+		if ( isset( $atts['categorylistoverride'] ) && !empty( $atts['categorylistoverride'] ) && is_array( $atts['categorylistoverride'] ) ) {
+			$atts['categorylistoverride'] = implode( ',', $atts['categorylistoverride'] );
+		}
+
+		if ( isset( $atts['categorylistoverrideCSV'] ) && !empty( $atts['categorylistoverrideCSV'] ) ) {
+			$atts['categorylistoverride'] = $atts['categorylistoverrideCSV'];
+		}
+
+		if ( isset( $atts['excludecategoryoverride'] ) && !empty( $atts['excludecategoryoverride'] ) && is_array( $atts['excludecategoryoverride'] ) ) {
+			$atts['excludecategoryoverride'] = implode( ',', $atts['excludecategoryoverride'] );
+		}
+
+		if ( isset( $atts['excludecategoryoverrideCSV'] ) && !empty( $atts['excludecategoryoverrideCSV'] ) ) {
+			$atts['excludecategoryoverride'] = $atts['excludecategoryoverrideCSV'];
+		}
+
+		if ( isset( $atts['taglistoverride'] ) && !empty( $atts['taglistoverride'] ) && is_array( $atts['taglistoverride'] ) ) {
+			$atts['taglistoverride'] = implode( ',', $atts['taglistoverride'] );
+		}
+		
+		if ( isset( $atts['taglistoverrideCSV'] ) && !empty( $atts['taglistoverrideCSV'] ) ) {
+			$atts['taglistoverride'] = $atts['taglistoverrideCSV'];
+		}	
+
 		extract( shortcode_atts( array(
 			'categorylistoverride' => '',
 			'excludecategoryoverride' => '',
@@ -1316,7 +1612,7 @@ class link_library_plugin {
 		}
 
 		if ( !empty( $maxlinksoverride ) ) {
-			$options['maxlinks'] = $maxlinksoverride;
+			$options['maxlinks'] = intval( $maxlinksoverride );
 		}
 
 		if ( !empty( $linkorderoverride ) ) {
@@ -1495,6 +1791,7 @@ class link_library_plugin {
 		$load_recaptcha = false;
 		$load_masonry = false;
 		$load_style = '';
+		$has_block = false;
 
 		if ( $llstylesheet ) {
 			$load_style = true;
@@ -1511,32 +1808,58 @@ class link_library_plugin {
 			$load_style = false;
 		} else {
 			foreach ( $posts as $post ) {
-				$tag_array = array( 'link-library', 'link-library-cats', 'link-library-addlink', 'link-library-search', 'link-library-count' );
-				preg_match_all( '/' . get_shortcode_regex() . '/s', $post->post_content, $matches );
-				if( isset( $matches[2] ) ) {
-					foreach( ( array ) $matches[2] as $key => $value ) {
-						$load_style = true;
-						foreach( $tag_array as $tag ) {
-							if( $tag === $value ) {
-								if ( 'link-library-addlink' == $tag ) {
-									$load_recaptcha = true;
-								}
-								$atts_list = shortcode_parse_atts( $matches[3][$key] );
-								if ( !empty( $atts_list ) ) {
-									foreach ( $atts_list as $key => $value ) {
-										if ( $key = 'settings' && ( empty( $settingssetsids ) || false === array_search( $value, $settingssetsids ) ) ) {
-											$settingssetsids[] = intval( $value );
-										}								 
-									}								
-								} else {
-									$settingssetsids[] = 1;
-								}
-								
-							}							
-						}						
+				if ( 'link_library_links' != get_post_type( $post->ID ) ) {
+					$tag_array = array( 'link-library', 'link-library-cats', 'link-library-addlink', 'link-library-search', 'link-library-count' );
+					preg_match_all( '/' . get_shortcode_regex() . '/s', $post->post_content, $matches );
+					if( isset( $matches[2] ) ) {
+						foreach( ( array ) $matches[2] as $key => $value ) {
+							$load_style = true;
+							foreach( $tag_array as $tag ) {
+								if( $tag === $value ) {
+									if ( 'link-library-addlink' == $tag ) {
+										$load_recaptcha = true;
+									}
+									$atts_list = shortcode_parse_atts( $matches[3][$key] );
+									if ( !empty( $atts_list ) ) {
+										foreach ( $atts_list as $key => $value ) {
+											if ( $key = 'settings' && ( empty( $settingssetsids ) || false === array_search( $value, $settingssetsids ) ) ) {
+												$settingssetsids[] = intval( $value );
+											}							 
+										}								
+									} else {
+										$settingssetsids[] = 1;
+									}
+									
+								}							
+							}						
+						}
+					}
+
+					if ( has_blocks( $post->ID ) ) {
+						$blocks = parse_blocks( $post->post_content );
+	
+						foreach ( $blocks as $block ) {
+							if ( in_array( $block['blockName'], array( 'link-library/link-block', 'link-library/cat-block', 'link-library/search-block', 'link-library/addlink-block', 'link-library/count-block' ) ) ) {
+								$load_style = true;
+							}
+
+							if ( in_array( $block['blockName'], array( 'link-library/addlink-block' ) ) ) {
+								$load_recaptcha = true;
+							}
+
+							if ( isset( $block['attr']['settings'] ) && false === array_search( $block['attr']['settings'], $settingssetsids ) ) {
+								$settingssetsids[] = $block['attr']['settings'];
+							} elseif ( !isset( $block['attr']['settings'] ) ) {
+								$settingssetsids[] = 1;
+							}
+						}
 					}
 				}
-			}		
+			}
+
+			if ( empty( $settingssetsids ) ) {
+				$settingssetsids[] = 1;
+			}
 
 			if ( $settingssetsids ) {
 				foreach ( $settingssetsids as $settingsetid ) {
@@ -1548,7 +1871,7 @@ class link_library_plugin {
 						$load_jquery = true;
 					}
 
-					if ( 'links' == $options['masonry'] || 'categories' == $options['masonry'] ) {
+					if ( 'linkmasonrygrid' == $options['displayastable'] || 'categorymasonrygrid' == $options['displayastable'] ) {
 						$load_masonry = true;
 					}
 
@@ -1619,13 +1942,17 @@ class link_library_plugin {
 			require_once plugin_dir_path( __FILE__ ) . 'rsspreview.php';
 			link_library_generate_rss_preview( $this );
 			return '';
+		} elseif( !empty( $_GET['link_library_css'] ) ) {
+			require_once plugin_dir_path( __FILE__ ) . 'cssgenerator.php';
+			link_library_generate_css( $this );
+			return '';
 		} else {
 			return $template;
 		}
 	}
 
 	function ll_template_include( $template_path ) {
-		if ( get_post_type() == 'link_library_links' && is_single() ) {
+		if ( get_post_type() == 'link_library_links' && is_single() && !is_admin() ) {
 			// checks if the file exists in the theme first,
 			// otherwise serve the file from the plugin
 			if ( $theme_file = locate_template( array ( 'single-link_library_links.php' ) ) ) {

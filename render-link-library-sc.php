@@ -687,9 +687,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		if ( $level == 0 ) {
 			$output .= "<div id='linklist" . $settings . "' class='linklist";
 
-			/* if ( 'categories' == $masonry ) {
+			if ( 'categorymasonrygrid' == $displayastable ) {
 				$output .= ' grid';
-			} */
+			}
 			
 			$output .= "'><!-- Div Linklist -->\n";
 		}
@@ -978,9 +978,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							$currentcategoryid = $link_category->term_id;
 							$current_cat_output .= '<div class="LinkLibraryCat LinkLibraryCat' . $currentcategoryid;
 							
-							/* if ( 'categories' == $masonry ) {
-								$current_cat_output .= ' grid-item ';
-							} */
+							if ( 'categorymasonrygrid' == $displayastable ) {
+								$current_cat_output .= ' ll-grid-item ';
+							}
 							
 							$current_cat_output .=  ( $level == 0 ? '' : ' childlevel'). ' level' . $level .'"><!-- Div Category -->';
 
@@ -1220,13 +1220,17 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							$current_cat_output .= stripslashes( $beforefirstlink );
 						}
 
+						if ( 'linkmasonrygrid' == $displayastable ) {
+							$current_cat_output .= '<div class="grid">';
+						}
+
 						$display_as_table = 'false';
 
 						if ( is_bool( $displayastable ) && $displayastable ) {
 							$display_as_table = 'true';
 						} elseif( is_bool( $displayastable ) && !$displayastable ) {
 							$display_as_table = 'false';
-						} elseif ( in_array( $displayastable, array( 'true', 'false', 'nosurroundingtags' ) ) ) {
+						} elseif ( in_array( $displayastable, array( 'true', 'false', 'nosurroundingtags', 'linkmasonrygrid', 'categorymasonrygrid' ) ) ) {
 							$display_as_table = $displayastable;
 						}
 
@@ -1352,6 +1356,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 							while ( $the_link_query->have_posts() ) {
 								$the_link_query->the_post();
+
+								if ( 'linkmasonrygrid' == $displayastable ) {
+									$current_cat_output .= '<div class="ll-grid-item">';
+								}
 
 								if ( !empty( $maxlinks ) && is_numeric( $maxlinks ) && 0 < $maxlinks && $linkcount > $maxlinks ) {
 									break;
@@ -2679,8 +2687,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 								$linkcount++;
 
-
-
+								if ( 'linkmasonrygrid' == $displayastable ) {
+									$current_cat_output .= '</div>';
+								}
 							}
 
 							// Close the category
@@ -2689,6 +2698,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									$current_cat_output .= "\t</table>\n";
 								} elseif ( 'false' == $display_as_table ) {
 									$current_cat_output .= "\t</ul>\n";
+								}
+
+								if ( 'linkmasonrygrid' == $displayastable ) {
+									$current_cat_output .= '</div>';
 								}
 							}
 						}
@@ -2785,12 +2798,12 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$output .= "jQuery(document).ready(function()\n";
 		$output .= "{\n";
 		
-		/* if ( 'links' == $masonry || 'categories' == $masonry ) {
-			$output .= "jQuery('.grid').masonry({\n";
-			$output .= "\titemSelector: '.grid-item',\n";
+		if ( 'linkmasonrygrid' == $displayastable || 'categorymasonrygrid' == $displayastable ) {
+			$output .= "jQuery( '.grid' ).masonry({\n";
+			$output .= "\titemSelector: '.ll-grid-item',\n";
 			$output .= "\tcolumnWidth: 0\n";
 			$output .= "});\n";
-		} */	
+		}
 		
 		$output .= "jQuery('.arrow-up').hide();\n";
 		$output .= "jQuery('#linklist" . $settings . " a.track_this_link').click(function() {\n";

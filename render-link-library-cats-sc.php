@@ -419,17 +419,17 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		                }
 	                } else if ( $catanchor ) {
 		                if ( !$pagination || ( !$pagination && $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
-			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
 				                $cattext = '<a href="';
 			                }
 
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
 				                $cattext .= '?searchll=' . $_GET['searchll'] . '&cat_id=' . $catname->term_id;
-			                } else {
+			                } elseif ( 'toggles' != $flatlist ) {
 				                $cattext .= '#' . $catname->slug;
 			                }
 
-			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
 				                $cattext .= '">';
 			                }
 		                } elseif ( $pagination ) {
@@ -441,23 +441,23 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 			                $ceilpageposition = ceil( $pageposition );
 
 			                if ( 0 == $ceilpageposition && !isset( $_GET['linkresultpage'] ) ) {
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
 					                $cattext = '<a href="';
 				                }
 
 				                $cattext .= get_permalink() . '#' . $catname->slug;
 
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
 					                $cattext .= '">';
 				                }
 			                } else {
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
 					                $cattext = '<a href="';
 				                }
 
 				                $cattext .= '?linkresultpage=' . ( $ceilpageposition == 0 ? 1 : $ceilpageposition ) . '#' . $catname->slug;
 
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
 					                $cattext .= '">';
 				                }
 			                }
@@ -474,7 +474,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 }
 
                 if ( !$showcategorydescheaders || ( $showcategorydescheaders && ( 'right' == $catlistdescpos || empty( $catlistdescpos ) ) ) ) {
-	                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+	                if ( 'toggles' == $flatlist ) {
+						$catitem .= '<div class="linkcatname cattoggle catactive" data-cat="' . $catname->term_id . '">';
+					} elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 		                $catitem .= '<span class="linkcatname">';
 	                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 		                $space_str = "&nbsp;&nbsp;&nbsp;";
@@ -484,7 +486,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
-	                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+	                if ( 'toggles' == $flatlist ) {
+						$catitem .= '</div>';
+					} elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 		                $catitem .= '</span>';
 	                }
                 }
@@ -498,17 +502,25 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 }
 
                 if ( $showcategorydescheaders && 'left' == $catlistdescpos ) {
-	                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+	                if ( 'toggles' == $flatlist ) {
+						$catitem .= '<div class="linkcatname cattoggle active" data-cat="' . $catname->term_id . '">';
+					} elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 		                $catitem .= '<span class="linkcatname">';
 	                } elseif ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 	                	$space_str = "&nbsp;&nbsp;&nbsp;";
 	                	$catitem .= str_repeat( $space_str, $level );
-	                }
+	                } 
+
 	                $catitem .= $catname->name;
 	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
-	                $catitem .= '</span>';
+					
+					if ( 'toggles' == $flatlist ) {
+						$catitem .= '</div>';
+					} else {
+						$catitem .= '</span>';
+					}	                
                 }
 
                 if ( $linkcount > 0 ) {
@@ -611,26 +623,36 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
         }
 
         if ( 0 == $level ) {
-	        $output .= "\n<!-- End of Link Library Categories Output -->\n\n";
+	        $output .= "\n<div style='clear:both' /><!-- End of Link Library Categories Output -->\n\n";
         }
 
     }
 
-	/* $output .= '<div class="cattoggle active" data-cat="36">Toggle Entry</div>';
-	$output .= '<script type="text/javascript">';
-	$output .= "jQuery(document).ready(function() {\n";
-	$output .= "jQuery( '.cattoggle' ).click( function() {\n";
-	$output .= "if ( jQuery( this ).hasClass( 'active' ) ) {\n";
-	$output .= "jQuery(this).removeClass( 'active' );";
-	$output .= "jQuery(this).addClass( 'inactive' );";
-	$output .= "} else {";
-	$output .= "jQuery(this).removeClass( 'inactive' );";
-	$output .= "jQuery(this).addClass( 'active' );";
-	$output .= "}";
-	$output .= "jQuery( '.LinkLibraryCat' + jQuery( this ).data( 'cat' )).toggle();\n";
-	$output .= "jQuery('.grid').masonry();";
-	$output .= "\t});\n";
-	$output .= "});\n";
-	$output .= '</script>'; */
+	if ( 'toggles' == $flatlist ) {
+		$output .= '<script type="text/javascript">';
+		$output .= "jQuery(document).ready(function() {\n";
+		$output .= "\tjQuery( '.cattoggle' ).click( function() {\n";
+		$output .= "\t\tif ( jQuery( this ).hasClass( 'catactive' ) ) {\n";
+		$output .= "\t\t\tjQuery(this).removeClass( 'catactive' );";
+		$output .= "\t\t\tjQuery(this).addClass( 'catinactive' );";
+		$output .= "\t\t} else {";
+		$output .= "\t\t\tjQuery(this).removeClass( 'catinactive' );";
+		$output .= "\t\t\tjQuery(this).addClass( 'catactive' );";
+		$output .= "\t\t}";
+		$output .= "\t\tvar targetLibrary = '.LinkLibraryCat' + jQuery( this ).data( 'cat' );\n";
+		$output .= "\t\tif ( jQuery( targetLibrary ).hasClass( 'grid-item' ) ) {\n";
+		$output .= "\t\t\tjQuery( targetLibrary ).removeClass( 'grid-item' );\n";
+		$output .= "\t\t\tjQuery( targetLibrary ).removeClass( 'masonry-brick' );\n";
+		$output .= "\t\t} else {\n";
+		$output .= "\t\t\tjQuery( targetLibrary ).addClass( 'grid-item' );\n";
+		$output .= "\t\t}\n";
+		$output .= "\t\tjQuery( targetLibrary ).toggle();\n";
+		$output .= "\t\tjQuery('.grid').masonry('reloadItems');";
+		$output .= "\t\tjQuery('.grid').masonry('layout');";
+		$output .= "\t});\n";
+		$output .= "});\n";
+		$output .= '</script>';
+	}
+	
     return $output;
 }

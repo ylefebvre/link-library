@@ -266,6 +266,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 	}
 
 	if ( ( 'link-library-addlink' == $code || 'addlink-link-library' == $code ) && ( ( $addlinkreqlogin && current_user_can( 'read' ) ) || !$addlinkreqlogin ) ) {
+
 		$output .= '<form enctype="multipart/form-data" method="post" id="lladdlink" action="">';
 		$output .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . wp_max_upload_size() . '" />';
 

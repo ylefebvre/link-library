@@ -440,7 +440,6 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['customlist4tooltip']				 = '';
 	$options['customlist5tooltip']				 = '';	
 	$options['stylesheet']						 = '';
-	$options['masonry']							 = 'inactive';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

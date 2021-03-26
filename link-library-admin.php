@@ -54,6 +54,7 @@ class link_library_plugin_admin {
 		add_action( 'created_link_library_category', array( $this, 'll_save_link_library_category_new_fields' ), 10, 2 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ), 99 );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'admin_scripts' ), 99 );
 
 		add_action( 'restrict_manage_posts', array( $this, 'll_link_cat_filter_list' ) );
 
@@ -101,6 +102,8 @@ class link_library_plugin_admin {
 
 		if ( 'edit.php' === $hook && isset( $_GET['post_type'] ) && 'link_library_links' === $_GET['post_type'] ) {
 			wp_enqueue_script( 'll_quick_edit', plugins_url('js/ll_admin_edit.js', __FILE__), false, null, true );
+		} elseif ( 'post.php' === $hook ) {
+			wp_enqueue_style( 'll_general_css', site_url( '/?link_library_css=1' ) );
 		} elseif ( 'link_library_links_page_link-library-stylesheet' === $hook || 'link_library_links_page_link-library-settingssets' === $hook ) {
 			$cm_settings['codeEditor'] = wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
 			wp_localize_script( 'jquery', 'cm_settings', $cm_settings );
@@ -2586,7 +2589,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'catlistdescpos', 'rsspreviewwidth', 'rsspreviewheight', 'numberofrssitems',
 					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement', 'displaycustomurl1', 'displaycustomurl2', 'displaycustomurl3', 'displaycustomurl4', 'displaycustomurl5', 'displaycustomtext1', 'displaycustomtext2',
 					'displaycustomtext3', 'displaycustomtext4', 'displaycustomtext5', 'displaycustomlist1', 'displaycustomlist2',
-					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat', 'masonry'
+					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat'
 				)
 				as $option_name
 			) {
@@ -4064,10 +4067,10 @@ function general_custom_fields_meta_box( $data ) {
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" linkorderoverride="date"]</td>
-								<td>Changes the link display order. Valid values are 'name', 'id', 'random', 'date', 'hits', 'scpo'</td>
+								<td>Changes the link display order. Valid values are 'name', 'id', 'random', 'date', 'pubdate', 'hits', 'uservotes', 'scpo'</td>
 							</tr>
 							<tr>
-								<td>[link-library settings="<?php echo $settings; ?>" linkdirectionoverride="date"]</td>
+								<td>[link-library settings="<?php echo $settings; ?>" linkdirectionoverride="ASC"]</td>
 								<td>Changes the order in which links are displayed. Valid values are 'ASC', 'DESC'</td>
 							</tr>
 						</table></td>
@@ -4140,7 +4143,7 @@ function general_custom_fields_meta_box( $data ) {
 		?>
 		<div style='padding-top:15px' id="ll-presets" class="content-section">
 			<?php foreach ( $layout_list as $layout ) { ?>
-			<div style="text-align: center;float:left;padding:16px;" class="#preset<?php echo $layout->ID; ?>">
+			<div class="ll_preset" id="#preset<?php echo $layout->ID; ?>">
 				<strong><?php _e( 'Layout', 'link-library' ); echo ' ' . $layout->ID . ": " . $layout->Desc; ?></strong><br /><br />
 				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "presets/" . $layout->Image, __FILE__ ); ?>"<br /><br /><br />
 				<button class="button" type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s' and reset all its options\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&newlayout=" . $layout->ID . "'\""; ?>><?php _e( 'Apply Layout', 'link-library' ); ?> <?php echo $layout->ID; ?></button>
@@ -4511,11 +4514,11 @@ function general_custom_fields_meta_box( $data ) {
 					</td>
 					<td>
 						<select name="flatlist" id="flatlist" style="width:200px;">
-							<option value="table"<?php selected( $options['flatlist'] == 'table' ); ?>><?php _e( 'Table', 'link-library' ); ?></option>
-							<option value="unordered"<?php selected( $options['flatlist'] == 'unordered' ); ?>><?php _e( 'Unordered List', 'link-library' ); ?></option>
-							<option value="dropdown"<?php selected( $options['flatlist'] == 'dropdown' ); ?>><?php _e( 'Drop-Down List', 'link-library' ); ?></option>
-							<option value="dropdowndirect"<?php selected( $options['flatlist'] == 'dropdowndirect' ); ?>><?php _e( 'Drop-Down List Direct Access', 'link-library' ); ?></option>
-							<!-- <option value="toggles"<?php selected( $options['flatlist'] == 'toggles' ); ?>><?php _e( 'Visibility Toggles', 'link-library' ); ?></option> -->
+							<option value="table" <?php selected( $options['flatlist'] == 'table' ); ?>><?php _e( 'Table', 'link-library' ); ?></option>
+							<option value="unordered" <?php selected( $options['flatlist'] == 'unordered' ); ?>><?php _e( 'Unordered List', 'link-library' ); ?></option>
+							<option value="dropdown" <?php selected( $options['flatlist'] == 'dropdown' ); ?>><?php _e( 'Drop-Down List', 'link-library' ); ?></option>
+							<option value="dropdowndirect" <?php selected( $options['flatlist'] == 'dropdowndirect' ); ?>><?php _e( 'Drop-Down List Direct Access', 'link-library' ); ?></option>
+							<option value="toggles" <?php selected( $options['flatlist'] == 'toggles' ); ?>><?php _e( 'Visibility Toggles', 'link-library' ); ?></option>
 						</select>
 					</td>
 				</tr>
@@ -4820,7 +4823,7 @@ function general_custom_fields_meta_box( $data ) {
 							$display_as_table = 'true';
 						} elseif( is_bool( $options['displayastable'] ) && !$options['displayastable'] ) {
 							$display_as_table = 'false';
-						} elseif ( in_array( $options['displayastable'], array( 'true', 'false', 'nosurroundingtags' ) ) ) {
+						} elseif ( in_array( $options['displayastable'], array( 'true', 'false', 'nosurroundingtags', 'linkmasonrygrid', 'categorymasonrygrid' ) ) ) {
 							$display_as_table = $options['displayastable'];
 						}
 					?>
@@ -4830,6 +4833,8 @@ function general_custom_fields_meta_box( $data ) {
 						<option value="true"<?php selected( $display_as_table === 'true' ); ?>><?php _e( 'Table', 'link-library' ); ?></option>
 						<option value="false"<?php selected( $display_as_table === 'false' ); ?>><?php _e( 'Unordered List', 'link-library' ); ?></option>
 						<option value="nosurroundingtags"<?php selected( $display_as_table, 'nosurroundingtags' ); ?>><?php _e( 'No surrounding tags', 'link-library' ); ?></option>
+						<option value="linkmasonrygrid"<?php selected( $display_as_table, 'linkmasonrygrid' ); ?>><?php _e( 'Show link items in a Masonry grid', 'link-library' ); ?></option>
+						<option value="categorymasonrygrid"<?php selected( $display_as_table, 'categorymasonrygrid' ); ?>><?php _e( 'Show categories in a Masonry grid', 'link-library' ); ?></option>
 					</select>
 				</td>
 			</tr>
@@ -5736,15 +5741,6 @@ function general_custom_fields_meta_box( $data ) {
 				<td style='width:75px;padding:0px 20px 0px 20px'>
 					<input type="checkbox" id="showadmineditlinks" name="showadmineditlinks" <?php checked( $options['showadmineditlinks'] ); ?>/>
 				</td>
-				<td></td>
-				<!-- <td><?php _e( 'Display items using Masonry library grid', 'link-library' ); ?></td> -->
-				<!-- <td style='width:75px;padding:0px 20px 0px 20px'>
-					<select name="masonry" id="masonry" style="width:200px;">
-						<option value="inactive"<?php selected( $options['masonry'] == 'inactive' ); ?>><?php _e( 'Inactive', 'link-library' ); ?></option>
-						<option value="links"<?php selected( $options['masonry'] == 'links' ); ?>><?php _e( 'Links', 'link-library' ); ?></option>
-						<option value="categories"<?php selected( $options['masonry'] == 'categories' ); ?>><?php _e( 'Categories', 'link-library' ); ?></option>
-					</select>
-				</td> -->
 			</tr>
 			<tr>
 				<td>
