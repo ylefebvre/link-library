@@ -53,6 +53,7 @@ Further configuration is available under the Link Library Settings panel.
 * Added new Masonry link display methods
 * Added a new display mode for categories to allow you to toggle category visibility
 * Added two new presets showcasing Masonry layouts
+* Added new filter hook link_library_export_all_links to allow filtering when exporting all links
 
 = 6.8.17 =
 * Fix for ll_get_title function definition

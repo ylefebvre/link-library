@@ -2187,6 +2187,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				}
 
 				wp_reset_postdata();
+				
+				$link_items = apply_filters( 'link_library_export_all_links', $link_items );
 
 				if ( $link_items ) {
 					$headerrow = array();
