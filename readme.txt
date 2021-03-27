@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 6.8.19 =
+* Check if has_blocks and parse_blocks functions exist before calling it for pre-5.0 WordPress
+
 = 6.8.18 =
 * Added support for Block editor
 * Added new Masonry link display methods

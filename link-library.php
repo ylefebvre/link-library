@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.8.18
+Version: 6.8.19
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -1835,25 +1835,27 @@ class link_library_plugin {
 						}
 					}
 
-					if ( has_blocks( $post->ID ) ) {
-						$blocks = parse_blocks( $post->post_content );
+					if ( function_exists( 'has_blocks' ) && function_exists( 'parse_blocks' ) ) {
+						if ( has_blocks( $post->ID ) ) {
+							$blocks = parse_blocks( $post->post_content );
+		
+							foreach ( $blocks as $block ) {
+								if ( in_array( $block['blockName'], array( 'link-library/link-block', 'link-library/cat-block', 'link-library/search-block', 'link-library/addlink-block', 'link-library/count-block' ) ) ) {
+									$load_style = true;
+								}
 	
-						foreach ( $blocks as $block ) {
-							if ( in_array( $block['blockName'], array( 'link-library/link-block', 'link-library/cat-block', 'link-library/search-block', 'link-library/addlink-block', 'link-library/count-block' ) ) ) {
-								$load_style = true;
-							}
-
-							if ( in_array( $block['blockName'], array( 'link-library/addlink-block' ) ) ) {
-								$load_recaptcha = true;
-							}
-
-							if ( isset( $block['attr']['settings'] ) && false === array_search( $block['attr']['settings'], $settingssetsids ) ) {
-								$settingssetsids[] = $block['attr']['settings'];
-							} elseif ( !isset( $block['attr']['settings'] ) ) {
-								$settingssetsids[] = 1;
+								if ( in_array( $block['blockName'], array( 'link-library/addlink-block' ) ) ) {
+									$load_recaptcha = true;
+								}
+	
+								if ( isset( $block['attr']['settings'] ) && false === array_search( $block['attr']['settings'], $settingssetsids ) ) {
+									$settingssetsids[] = $block['attr']['settings'];
+								} elseif ( !isset( $block['attr']['settings'] ) ) {
+									$settingssetsids[] = 1;
+								}
 							}
 						}
-					}
+					}					
 				}
 			}
 
