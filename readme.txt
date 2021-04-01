@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0 =
+* New admin icon for Link Library using dashicons
+* Fix for better match of duplicate links entered through bookmarklet
+* Updated new feature pop-up
+
 = 6.8.19 =
 * Check if has_blocks and parse_blocks functions exist before calling it for pre-5.0 WordPress
 

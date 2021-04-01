@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 6.8.19
+Version: 7.0
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -455,7 +455,7 @@ class link_library_plugin {
 				array( 'title', 'editor', 'comments' ),
 			'taxonomies' => array( 'link_library_category' ),
 			'menu_icon' =>
-				plugins_url( 'icons/link-icon.png', __FILE__ ),
+				'dashicons-admin-links',
 			'has_archive' => false,
 			'rewrite' => array( 'slug' => $genoptions['cptslug'] . '/%link_library_category%' )
 		);

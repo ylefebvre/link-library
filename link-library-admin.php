@@ -550,7 +550,7 @@ class link_library_plugin_admin {
 			$find_post_args = array( 'post_type' => 'link_library_links',
 				'meta_key' => 'link_url',
 				'meta_value' => $incoming_link_url,
-				'meta_compare' => 'LIKE',
+				'meta_compare' => '=',
 				'numberposts' => 1 );
 
 			$posts_same_url_array = get_posts( $find_post_args );
@@ -604,11 +604,11 @@ class link_library_plugin_admin {
 				add_action( 'admin_notices', array( $this, 'll_shrinktheweb_warning' ) );
 			}
 
-			if ( isset( $_GET['dismissll67update'] ) ) {
-				$genoptions['dismissll67update'] = true;
+			if ( isset( $_GET['dismissll70update'] ) ) {
+				$genoptions['dismissll70update'] = true;
 				update_option( 'LinkLibraryGeneral', $genoptions );
-			} elseif ( !$dismissll67update ) {
-				add_action( 'admin_notices', array( $this, 'll67update' ) );
+			} elseif ( !isset( $dismissll70update ) ) {
+				add_action( 'admin_notices', array( $this, 'll70update' ) );
 			}
 		}
 
@@ -678,8 +678,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
         <div id='ll-warning' class='updated fade'><p><strong>" . __( 'Link Library: No Link Categories on your site', 'link-library' ) . "</strong></p> <p>" . __( 'There are currently no link categories defined in your WordPress site. Link Library will not work correctly without categories. Please create at least one before trying to use Link Library and make sure each link is assigned a category.', 'link-library' ) . "</p></div>";
 	}
 
-	function ll67update() {
-		echo "<div id='ll-warning' class='updated fade'><span style='float: left; margin-right: 20px; margin-top: 40px; margin-bottom: 40px'><img src='" . plugins_url( 'icons/new_icon.png', __FILE__ ) . "' /></span><p><strong>Link Library 6.7: Recent new features and supporting your humble developer</strong></p> <p>You may not have noticed, but Link Library keeps adding a steady stream of new features, along with bug fixes, with each new version. In recent months, new capabilities such a <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-advanced', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>User Voting system</a>, <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-customfields', 'page' => 'link-library-general-options'), admin_url( 'edit.php' )) . "'>Custom URL Fields</a>, the <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-userform', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>ability for users to upload files to be used as the link URL</a> and <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-userform', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>User-Submission Form Tooltips</a> and many more have been added to Link Library. If you have ideas for new features, drop me a line in the <a href='https://wordpress.org/support/plugin/link-library/'>support forum</a>. I can't promise I'll put them all in, but all ideas are considered.<br /><br />If you use the plugin as a regular feature of your site and have never contributed to Link Library's development, <a href='https://ylefebvre.github.io/wordpress-plugins/link-library/'>please consider a donation</a>. Repeat donations are just as welcome :) Answering support questions and implementing new features for this free plugin takes time and effort and your support helps with this work and its associated costs. Thanks in advance!<br /><br /><a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-usage', 'page' => 'link-library-settingssets', 'dismissll67update' => 'true'), admin_url( 'edit.php' )) . "'>Dismiss</a></p></div>";
+	function ll70update() {
+		echo "<div id='ll-warning' class='updated fade'><span style='float: left; margin-right: 20px; margin-top: 40px; margin-bottom: 40px'><img src='" . plugins_url( 'icons/new_icon.png', __FILE__ ) . "' /></span><p><strong>Link Library 7.0: Recent new features and supporting your humble developer</strong></p> <p>You may not have noticed, but Link Library keeps adding a steady stream of new features, along with bug fixes, with each new version. In recent months, new capabilities such as Link Library blocks in the WordPress Block Editor, <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-userform', 'page' => 'link-library-settingssets'), admin_url( 'edit.php' )) . "'>the ability to re-order fields and add custom fields in user-submission forms</a>, <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-globalsearchresultslayout', 'page' => 'link-library-general-options'), admin_url( 'edit.php' )) . "'>customization of link output in Global site search results</a>, an <a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'page' => 'link-library-stylesheet'), admin_url( 'edit.php' )) . "'>updated stylesheet editor with syntax highlighting and error checking</a> and many more have been added to Link Library. If you have ideas for new features, drop me a line in the <a href='https://wordpress.org/support/plugin/link-library/'>support forum</a>. I can't promise I'll put them all in, but all ideas are considered.<br /><br />If you use the plugin as a regular feature of your site and have never contributed to Link Library's development, <a href='https://ylefebvre.github.io/wordpress-plugins/link-library/'>please consider a donation</a>. Repeat donations are just as welcome :) Answering support questions and implementing new features for this free plugin takes time and effort and your support helps with this work and its associated costs. Thanks in advance!<br /><br /><a href='" . add_query_arg( array( 'post_type' => 'link_library_links', 'currenttab' => 'll-usage', 'page' => 'link-library-settingssets', 'dismissll70update' => 'true'), admin_url( 'edit.php' )) . "'>Dismiss</a></p></div>";
 	}
 
 	function filter_mce_buttons( $buttons ) {
