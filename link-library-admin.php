@@ -7456,7 +7456,7 @@ function general_custom_fields_meta_box( $data ) {
 
 								$attachment = array(
 									'post_mime_type' => $wpFileType['type'],  // file type
-									'post_title' => sanitize_file_name( $submitted_url ),  // sanitize and use image name as file name
+									'post_title' => esc_url( $submitted_url ),  // sanitize and use image name as file name
 									'post_content' => '',  // could use the image description here as the content
 									'post_status' => 'inherit'
 								);
@@ -7465,6 +7465,8 @@ function general_custom_fields_meta_box( $data ) {
 								$attachmentId = wp_insert_attachment( $attachment, $submitted_url, $link_id );
 								$attachmentData = wp_generate_attachment_metadata( $attachmentId, $submitted_url );
 								wp_update_attachment_metadata( $attachmentId, $attachmentData );
+
+								set_post_thumbnail( $link_id, $attachmentId );
 							} else {
 								set_post_thumbnail( $link_id, $attachmentId );
 							}

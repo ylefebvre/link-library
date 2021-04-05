@@ -655,8 +655,50 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			}
 
 			$number_of_links = 0;
-			foreach ( $link_categories as $link_category ) {
-				$number_of_links += $link_category->count;
+
+			if ( !empty( $taglist_cpt ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
+
+				$tag_array = array();
+
+				if ( ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
+					$tag_array = explode( '.', $_GET['link_tags'] );
+				} elseif( !empty( $taglist_cpt ) ) {
+					$tag_array = explode( ',', $taglist_cpt );
+				}				
+			}
+
+			foreach ( $link_categories as $cat_array_index => $link_category ) {
+
+				$args = array(
+					'post_type' => 'link_library_links',
+					'tax_query' => array( 
+						array(
+							'taxonomy'  => 'link_library_category',
+							'field'     => 'term_id',
+							'terms'     => $link_category->term_id
+						)
+					),
+					'numberposts' => '-1'
+				);
+
+				if ( !empty( $tag_array ) ) {
+					$args['tax_query'][] = array( 
+						array(
+							'taxonomy'  => 'link_library_tags',
+							'field'     => 'slug',
+							'terms'     => $tag_array
+						)
+					);
+				}
+
+				if ( isset( $args['tax_query'] ) && is_array( $args['tax_query'] ) && sizeof( $args['tax_query'] ) > 1 ) {
+					$args['tax_query']['relation'] = 'AND';
+				}
+
+				$posts_array = get_posts( $args );				
+
+				$number_of_links += sizeof( $posts_array );
+				$link_categories[$cat_array_index]->count = sizeof( $posts_array );
 			}
 
 			if ( $number_of_links > $linksperpage ) {
@@ -753,9 +795,6 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							'include_children' => false
 
 						);
-					if ( sizeof( $link_query_args['tax_query'] ) > 1 ) {
-						$link_query_args['tax_query']['relation'] = 'AND';
-					}
 				}
 
 				if ( !empty( $taglist_cpt ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
@@ -785,11 +824,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							'field' => 'id',
 							'terms' => $tag_array,
 						);
-					}
-
-					if ( sizeof( $link_query_args['tax_query'] ) > 1 ) {
-						$link_query_args['tax_query']['relation'] = 'AND';
-					}
+					}					
 				}
 
 				if ( !empty( $excludetaglist_cpt ) ) {
@@ -812,10 +847,6 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 							'terms' => $exclude_tag_array,
 							'operator' => 'NOT IN'
 						);
-					}
-
-					if ( sizeof( $link_query_args['tax_query'] ) > 1 ) {
-						$link_query_args['tax_query']['relation'] = 'AND';
 					}
 				}
 
@@ -935,6 +966,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 				if ( isset( $link_query_args['meta_query'] ) && is_array( $link_query_args['meta_query'] ) && sizeof( $link_query_args['meta_query'] ) > 1 ) {
 					$link_query_args['meta_query']['relation'] = 'AND';
+				}
+
+				if ( isset( $link_query_args['tax_query'] ) && is_array( $link_query_args['tax_query'] ) && sizeof( $link_query_args['tax_query'] ) > 1 ) {
+					$link_query_args['tax_query']['relation'] = 'AND';
 				}
 
 				$the_link_query = new WP_Query( $link_query_args );

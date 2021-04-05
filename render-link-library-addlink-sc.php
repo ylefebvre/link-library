@@ -391,7 +391,7 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 							$excluded_links_array = explode( ',', $excludecategorylist_cpt );
 						}
 
-						$link_categories_query_args = array( 'hide_empty' => false, 'parent' => 0 );
+						$link_categories_query_args = array( 'hide_empty' => false );
 						if ( !empty( $include_links_array ) ) {
 							$link_categories_query_args['include'] = $include_links_array;
 						}

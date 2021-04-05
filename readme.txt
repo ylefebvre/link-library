@@ -48,6 +48,11 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0.1 =
+* Fix to avoid duplicate media library entries for link images
+* Fixed issue with pagination when filtering by link tags
+* Fix to show sub-categories in user-form when no top-level categories are selected
+
 = 7.0 =
 * New admin icon for Link Library using dashicons
 * Fix for better match of duplicate links entered through bookmarklet
