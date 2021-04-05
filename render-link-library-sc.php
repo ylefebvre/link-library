@@ -2386,11 +2386,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											case 15: 	//------------------ Link Tags Output --------------------
 
+												$link_tags = wp_get_post_terms( $linkitem['proper_link_id'], 'link_library_tags' );
+
 												if ( $suppress_link_tags_if_empty && empty( $link_tags ) ) {
 													break;
 												}
-
-												$link_tags = wp_get_post_terms( $linkitem['proper_link_id'], 'link_library_tags' );
 
 												if ( $showlinktags ) {
 													$current_cat_output .= $between . stripslashes( $beforelinktags );

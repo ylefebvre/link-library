@@ -52,6 +52,9 @@ Further configuration is available under the Link Library Settings panel.
 * Fix to avoid duplicate media library entries for link images
 * Fixed issue with pagination when filtering by link tags
 * Fix to show sub-categories in user-form when no top-level categories are selected
+* Bump up copyright version
+* Add missing styling for block editor warning box
+* Fix issue where link tags not displayed if option to suppress empty output is selected
 
 = 7.0 =
 * New admin icon for Link Library using dashicons
