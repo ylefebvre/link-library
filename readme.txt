@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0.2 =
+* Added labels in user-submission form for accessibility
+* Removed unnecessary file
+
 = 7.0.1 =
 * Fix to avoid duplicate media library entries for link images
 * Fixed issue with pagination when filtering by link tags
