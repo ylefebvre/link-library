@@ -544,19 +544,34 @@ class link_library_plugin_admin {
 			wp_redirect( 'https://ylefebvre.github.io/wordpress-plugins/link-library/' );
 			exit();
 		} elseif ( !empty( $_GET['linkurl'] ) && !empty( $_GET['action'] ) ) {
-			$incoming_link_url = esc_url( urldecode( $_GET['linkurl'] ) );
-			$incoming_link_url = preg_replace("(^https?://)", "", $incoming_link_url );
-
+			$incoming_link_url = esc_url( urldecode( $_GET['linkurl'] ) );			
+			$reg_incoming_link_url = str_replace("https://", "http://", $incoming_link_url );
+			$ssl_incoming_link_url = str_replace("http://", "https://", $incoming_link_url );	
+		
 			$find_post_args = array( 'post_type' => 'link_library_links',
 				'meta_key' => 'link_url',
-				'meta_value' => $incoming_link_url,
+				'meta_value' => $reg_incoming_link_url,
 				'meta_compare' => '=',
 				'numberposts' => 1 );
 
-			$posts_same_url_array = get_posts( $find_post_args );
+			$reg_posts_same_url_array = get_posts( $find_post_args );
+			
+			$find_post_args = array( 'post_type' => 'link_library_links',
+				'meta_key' => 'link_url',
+				'meta_value' => $ssl_incoming_link_url,
+				'meta_compare' => '=',
+				'numberposts' => 1 );
 
-			if ( !empty( $posts_same_url_array ) ) {
-				$existing_link_post_id = $posts_same_url_array[0]->ID;
+			$ssl_posts_same_url_array = get_posts( $find_post_args );
+
+			if ( !empty( $reg_posts_same_url_array ) || !empty( $ssl_posts_same_url_array ) ) {
+				$existing_link_post_id = '';
+				if ( !empty( $reg_posts_same_url_array ) ) {
+					$existing_link_post_id = $reg_posts_same_url_array[0]->ID;
+				} else if ( !empty( $ssl_posts_same_url_array ) ) {
+					$existing_link_post_id = $ssl_posts_same_url_array[0]->ID;
+				}
+				
 				wp_redirect( add_query_arg( array( 'post' => $existing_link_post_id, 'action' => 'edit', 'existinglink' => 'true' ), admin_url( 'post.php') ) );
 			}
 		}

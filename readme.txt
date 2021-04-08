@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0.3 =
+* Corrected problem with duplicate detection when using bookmarklet
+
 = 7.0.2 =
 * Added labels in user-submission form for accessibility
 * Removed unnecessary file
