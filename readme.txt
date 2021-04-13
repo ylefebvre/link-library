@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0.4 =
+* Added option to include links in main site RSS feed
+* Added option in RSS feed configuration to select displaying the link updated date value or the publication date
+
 = 7.0.3 =
 * Corrected problem with duplicate detection when using bookmarklet
 

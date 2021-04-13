@@ -1428,7 +1428,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			$tabitems = array ( 'll-general' => __( 'General', 'link-library' ),
 								'll-customfields' => __( 'Custom Fields', 'link-library ' ),
 								'll-singleitem' => __( 'Single Item Layout', 'link-library' ),
-								'll-globalsearchresultslayout' => __( 'Global Search Results Layout', 'link-library' ),
+								'll-globalsearchresultslayout' => __( 'Global Search Results / Main Site RSS Feed Item Layout', 'link-library' ),
 			                    'll-images' => __( 'Images', 'link-library' ),
 			                    'll-bookmarklet' => __( 'Bookmarklet', 'link-library' ),
 			                    'll-moderation' => __( 'Moderation', 'link-library' ),
@@ -2429,7 +2429,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			foreach ( array( 'debugmode', 'emaillinksubmitter', 'suppressemailfooter', 'usefirstpartsubmittername', 'hidedonation', 'publicly_queryable', 'exclude_from_search', 'bp_log_activity', 'deletelocalfile', 'customurl1active',
 				'customurl2active', 'customurl3active', 'customurl4active', 'customurl5active', 'customtext1active', 'customtext2active',
 				'customtext3active', 'customtext4active', 'customtext5active', 'customlist1active', 'customlist2active',
-				'customlist3active', 'customlist4active', 'customlist5active', 'globalsearchresultslinkurl' ) as $option_name ) {
+				'customlist3active', 'customlist4active', 'customlist5active', 'globalsearchresultslinkurl', 'add_to_main_rss' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					$genoptions[$option_name] = true;
 				} else {
@@ -2656,7 +2656,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'showcustomurl5', 'customurl1tooltip', 'customurl2tooltip', 'customurl3tooltip', 'customurl4tooltip', 'customurl5tooltip', 'showcustomtext1', 'showcustomtext2', 
 					'showcustomtext3', 'showcustomtext4', 'showcustomtext5', 'customtext1tooltip', 'customtext2tooltip', 'customtext3tooltip', 'customtext4tooltip',
 					'customtext5tooltip', 'showcustomlist1', 'showcustomlist2', 'showcustomlist3', 'showcustomlist4', 'showcustomlist5', 'customlist1tooltip', 'customlist2tooltip',
-					'customlist3tooltip', 'customlist4tooltip', 'customlist5tooltip'
+					'customlist3tooltip', 'customlist4tooltip', 'customlist5tooltip', 'rss_item_date_source'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -3048,12 +3048,16 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							</td>
 						</tr>
 						<tr>
-							<td>Individual link pages can be seen by visitors</td>
+							<td><?php _e(  'Individual link pages can be seen by visitors', 'link-library' ); ?></td>
 							<td><input type="checkbox" id="publicly_queryable" name="publicly_queryable" <?php checked( $genoptions['publicly_queryable'] ); ?>/></td>
 						</tr>
 						<tr>
-							<td>Links appear in search results</td>
+							<td><?php _e( 'Links appear in search results', 'link-library' ); ?></td>
 							<td><input type="checkbox" id="exclude_from_search" name="exclude_from_search" <?php checked( $genoptions['exclude_from_search'] ); ?>/></td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Links appear in main site RSS feed', 'link-library' ); ?></td>
+							<td><input type="checkbox" id="add_to_main_rss" name="add_to_main_rss" <?php checked( $genoptions['add_to_main_rss'] ); ?>/></td>
 						</tr>
 						<tr>
 							<td>Minimum role for Link Library configuration</td>
@@ -5844,6 +5848,8 @@ function general_custom_fields_meta_box( $data ) {
 				<td style='width:75px;padding-right:20px'>
 					<input type="checkbox" id="show_rss" name="show_rss" <?php checked( $options['show_rss'] ); ?>/>
 				</td>
+			</tr>
+			<tr>
 				<td>
 					<?php _e( 'Show RSS Link using Standard Icon', 'link-library' ); ?>
 				</td>
@@ -5853,18 +5859,16 @@ function general_custom_fields_meta_box( $data ) {
 				<td></td>
 				<td style='width:75px;padding-right:20px'></td>
 			</tr>
+		</table>
+
+		<h2>Inline RSS Preview</h2>
+		<table>	
 			<tr>
 				<td>
-					<?php _e( 'Show RSS Preview Link', 'link-library' ); ?>
+					<?php _e( 'Show RSS Feed Headers in PopUp Preview Link', 'link-library' ); ?>
 				</td>
 				<td>
 					<input type="checkbox" id="rsspreview" name="rsspreview" <?php checked( $options['rsspreview'] ); ?>/>
-				</td>
-				<td>
-					<?php _e( 'Number of articles shown in RSS Preview', 'link-library' ); ?>
-				</td>
-				<td>
-					<input type="text" id="rsspreviewcount" name="rsspreviewcount" size="2" value="<?php echo strval( $options['rsspreviewcount'] ); ?>" />
 				</td>
 				<td>
 					<?php _e( 'Show RSS Feed Headers in Link Library output', 'link-library' ); ?>
@@ -5872,29 +5876,39 @@ function general_custom_fields_meta_box( $data ) {
 				<td>
 					<input type="checkbox" id="rssfeedinline" name="rssfeedinline" <?php checked( $options['rssfeedinline'] ); ?>/>
 				</td>
-			</tr>
-			<tr>
 				<td>
 					<?php _e( 'Show RSS Feed Content in Link Library output', 'link-library' ); ?>
 				</td>
 				<td>
 					<input type="checkbox" id="rssfeedinlinecontent" name="rssfeedinlinecontent" <?php checked( $options['rssfeedinlinecontent'] ); ?>/>
 				</td>
-				<td>
-					<?php _e( 'Number of RSS articles shown in Link Library Output', 'link-library' ); ?>
-				</td>
-				<td>
-					<input type="text" id="rssfeedinlinecount" name="rssfeedinlinecount" size="2" value="<?php echo strval( $options['rssfeedinlinecount'] ); ?>" />
-				</td>
-				<td><?php _e( 'Max number of days since published', 'link-library' ); ?></td>
-				<td><input type="text" id="rssfeedinlinedayspublished" name="rssfeedinlinedayspublished" size="2" value="<?php echo strval( $options['rssfeedinlinedayspublished'] ); ?>" /></td>
 			</tr>
-			<tr>
+			<tr>	
+				<td>
+					<?php _e( 'Number of articles shown in RSS Preview Popup', 'link-library' ); ?>
+				</td>
+				<td>
+					<input type="text" id="rsspreviewcount" name="rsspreviewcount" size="2" value="<?php echo strval( $options['rsspreviewcount'] ); ?>" />
+				</td>
 				<td><?php _e( 'RSS Preview Width', 'link-library' ); ?></td>
 				<td>
 					<input type="text" id="rsspreviewwidth" name="rsspreviewwidth" size="5" value="<?php echo strval( $options['rsspreviewwidth'] ); ?>" /></td></td>
 				<td><?php _e( 'RSS Preview Height', 'link-library' ); ?></td>
 				<td><input type="text" id="rsspreviewheight" name="rsspreviewheight" size="5" value="<?php echo strval( $options['rsspreviewheight'] ); ?>" /></td>
+			</tr>
+			<tr>	
+				<td>
+					<?php _e( 'Number of RSS articles shown in Inline Link Library Output', 'link-library' ); ?>
+				</td>
+				<td>
+					<input type="text" id="rssfeedinlinecount" name="rssfeedinlinecount" size="2" value="<?php echo strval( $options['rssfeedinlinecount'] ); ?>" />
+				</td>
+			</tr>
+			<tr>				
+				<td><?php _e( 'Max number of days since published', 'link-library' ); ?></td>
+				<td><input type="text" id="rssfeedinlinedayspublished" name="rssfeedinlinedayspublished" size="2" value="<?php echo strval( $options['rssfeedinlinedayspublished'] ); ?>" /></td>
+			</tr>
+			<tr>				
 				<td><?php _e( 'Skip links with no RSS inline items', 'link-library' ); ?></td>
 				<td><input type="checkbox" id="rssfeedinlineskipempty" name="rssfeedinlineskipempty" <?php checked( $options['rssfeedinlineskipempty'] ); ?>/></td>
 			</tr>
@@ -5995,6 +6009,15 @@ function general_custom_fields_meta_box( $data ) {
 				<td><?php _e( 'RSS Feed Web Address (default yoursite.com/feed/linklibraryfeed?settingsset=1 )', 'link-library' ); ?></td>
 				<td colspan=3>
 					<input type="text" id="rssfeedaddress" name="rssfeedaddress" size="80" value="<?php echo strval( esc_html( stripslashes( $options['rssfeedaddress'] ) ) ); ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Item Date Source', 'link-library' ); ?></td>
+				<td>
+					<select name="rss_item_date_source">
+						<option <?php selected( 'updated_date', $options['rss_item_date_source'] ); ?> value="updated_date"><?php _e( 'Updated Date', 'link-library' ); ?></option>
+						<option <?php selected( 'pub_date', $options['rss_item_date_source'] ); ?> value="pub_date"><?php _e( 'Publication Date', 'link-library' ); ?></option>
+					</select>
 				</td>
 			</tr>
 		</table>

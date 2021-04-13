@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.0.3
+Version: 7.0.4
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -262,6 +262,9 @@ class link_library_plugin {
 			ll_reset_gen_settings( 'return_and_set' );
 		}
 
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
 		// Add short codes
 		add_shortcode( 'link-library', array( $this, 'link_library_func' ) );
 		add_shortcode( 'link-library-cats', array( $this, 'link_library_cats_func' ) );
@@ -324,6 +327,11 @@ class link_library_plugin {
 
 		add_action('auth_redirect', array( $this, 'add_pending_count_filter') ); // modify esc_attr on auth_redirect
 		add_action('admin_menu', array( $this, 'esc_attr_restore' ) ); // restore on admin_menu (very soon)
+
+		if ( $genoptions['add_to_main_rss'] ) {
+			add_action( 'request', array( $this, 'link_library_rss_feed_request' ) );
+			add_filter( 'the_content_feed', array( $this, 'll_display_single_link' ) );
+		}		
 	}
 
 	function ll_rest_api_init() {
@@ -382,6 +390,17 @@ class link_library_plugin {
 		}
 
 		return $where;
+	}
+
+	function link_library_rss_feed_request( $qv ) {
+
+ 		if ( isset( $qv['feed'] ) && !isset( $qv['post_type'] ) ) {
+			$qv['post_type'] = array( 'post', 'link_library_links' );
+		} elseif ( isset( $qv['feed'] ) && isset( $qv['post_type'] ) ) {
+			$qv['post_type'][] = 'link_library_links';
+		}
+			
+		return $qv;
 	}
 
 
@@ -1993,7 +2012,7 @@ class link_library_plugin {
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
-		if ( is_search() && 'link_library_links' == get_post_type() ) {
+		if ( ( is_search() || is_feed() ) && 'link_library_links' == get_post_type() ) {
 			$content = htmlspecialchars_decode( stripslashes( $genoptions['global_search_results_layout'] ) );	
 		} elseif ( is_single() && 'link_library_links' == get_post_type() ) {
 			$content = htmlspecialchars_decode( stripslashes( $genoptions['single_link_layout'] ) );
