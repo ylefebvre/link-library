@@ -2968,6 +2968,19 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		$genoptions['recipcheckaddress']   = ( ( isset( $_POST['recipcheckaddress'] ) && $_POST['recipcheckaddress'] !== '' ) ? $_POST['recipcheckaddress'] : "" );
 		$genoptions['recipcheckdelete403'] = ( ( isset( $_POST['recipcheckdelete403'] ) && $_POST['recipcheckdelete403'] !== '' ) ? $_POST['recipcheckdelete403'] : "" );
 
+		foreach (
+			array(
+				'suppresssubdomainredirection', 'suppressprotocolchangeredirection', 'suppresssubfolderredirection', 'suppressbadconfigredirection'
+			)
+			as $option_name
+		) {
+			if ( isset( $_POST[$option_name] ) ) {
+				$genoptions[$option_name] = true;
+			} else {
+				$genoptions[$option_name] = false;
+			}
+		}
+
 		update_option( 'LinkLibraryGeneral', $genoptions );
 
 		if ( !isset( $_POST['recipcheck'] ) && !isset( $_POST['brokencheck'] ) && !isset( $_POST['duplicatecheck'] ) && !isset( $_POST['emptycatcheck'] ) ) {
@@ -6922,6 +6935,27 @@ function general_custom_fields_meta_box( $data ) {
 				</td>
 			</tr>
 			<tr>
+				<td><?php _e( 'Suppress protocol change redirections', 'link-library' ); ?></td>
+				<td>
+					<input type="checkbox" id="suppressprotocolchangeredirection" name="suppressprotocolchangeredirection" <?php checked( $genoptions['suppressprotocolchangeredirection'] ); ?>/></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Suppress subdomain redirections', 'link-library' ); ?></td>
+				<td>
+					<input type="checkbox" id="suppresssubdomainredirection" name="suppresssubdomainredirection" <?php checked( $genoptions['suppresssubdomainredirection'] ); ?>/></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Suppress subfolder redirections', 'link-library' ); ?></td>
+				<td>
+					<input type="checkbox" id="suppresssubfolderredirection" name="suppresssubfolderredirection" <?php checked( $genoptions['suppresssubfolderredirection'] ); ?>/></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Suppress redirection due to badly configured server', 'link-library' ); ?></td>
+				<td>
+					<input type="checkbox" id="suppressbadconfigredirection" name="suppressbadconfigredirection" <?php checked( $genoptions['suppressbadconfigredirection'] ); ?>/></td>
+			</tr>
+			<tr><td colspan="2"><hr /></td></tr>
+			<tr>
 				<td>
 					<input class="button" type='submit' id="duplicatecheck" name="duplicatecheck" value="<?php _e( 'Check Duplicate Links', 'link-library' ); ?>" />
 				</td>
@@ -7961,6 +7995,9 @@ function wp_dropdown_cats_multiple( $output, $r ) {
 
 function link_library_reciprocal_link_checker() {
 
+	$genoptions = get_option( 'LinkLibraryGeneral' );
+	$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
 	$RecipCheckAddress = ( isset( $_POST['RecipCheckAddress'] ) && !empty( $_POST['RecipCheckAddress'] ) ? $_POST['RecipCheckAddress'] : '' );
 	$recipcheckdelete403 = ( isset( $_POST['recipcheckdelete403'] ) && !empty( $_POST['recipcheckdelete403'] ) && 'true' == $_POST['recipcheckdelete403'] ? true : false );
 	$check_type = ( isset( $_POST['mode'] ) && !empty( $_POST['mode'] ) ? $_POST['mode'] : 'reciprocal' );
@@ -7995,12 +8032,32 @@ function link_library_reciprocal_link_checker() {
 
 				if ( 'reciprocal' == $check_type ) {
 					$link_reciprocal = get_post_meta( get_the_ID(), 'link_reciprocal', true );
-					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_reciprocal );
+					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_reciprocal, 'reciprocal' );
 				} elseif ( 'broken' == $check_type ) {
-					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_url );
+					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_url, 'broken' );
 				}
 
-				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && $reciprocal_result != 'exists_redirected' && strpos( $reciprocal_result, 'exists' ) !== false ) {
+				$broken_responses = array( 'exists_redirected', 'exists_protocol_redirect', 'exists_subdomain_redirect', 'exists_redirected_subfolder', 'exists_redirected_fileurl' );
+
+				foreach( $broken_responses as $key => $value ) {
+					if ( $genoptions['suppressprotocolchangeredirection'] && 'exists_protocol_redirect' == $value ) {
+						unset( $broken_responses[$key] );
+					}
+
+					if ( $genoptions['suppresssubdomainredirection'] && 'exists_subdomain_redirect' == $value ) {
+						unset( $broken_responses[$key] );
+					}
+
+					if ( $genoptions['suppresssubfolderredirection'] && 'exists_redirected_subfolder' == $value ) {
+						unset( $broken_responses[$key] );
+					}
+
+					if ( $genoptions['suppressbadconfigredirection'] && 'exists_redirected_fileurl' == $value ) {
+						unset( $broken_responses[$key] );
+					}
+				}
+
+				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && !in_array( $reciprocal_result, $broken_responses ) && strpos( $reciprocal_result, 'exists' ) !== false ) {
 					echo '<div class="nextcheckitem"></div>';
 					continue;
 				}
@@ -8009,6 +8066,14 @@ function link_library_reciprocal_link_checker() {
 
 				if ( 'broken' == $check_type && $reciprocal_result == 'exists_redirected' ) {
 					echo '<span style="color: #FF0000">' . __( 'Redirected to a different address', 'link-library' ) . '</span>';
+				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_protocol_redirect' ) {
+					echo '<span style="color: #D77D00">' . __( 'Redirection to a different protocol', 'link-library' ) . '</span>';
+				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_subdomain_redirect' ) {
+					echo '<span style="color: #151B54">' . __( 'Redirected to a sub-domain on same server', 'link-library' ) . '</span>';
+				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_redirected_subfolder' ) {
+					echo '<span style="color: #1B5415">' . __( 'Redirected to a different subfolder on same server', 'link-library' ) . '</span>';
+				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_redirected_fileurl' ) {
+					echo '<span style="color: #4E1554">' . __( 'Redirected to a different subfolder on same server with bad configuration', 'link-library' ) . '</span>';
 				} elseif ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_notfound' ) {
 					echo '<span style="color: #FF0000">' . __( 'Not Found', 'link-library' ) . '</span>';
 				} elseif ( $reciprocal_result == 'error_403' && $recipcheckdelete403 == true ) {

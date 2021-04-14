@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.0.4
+Version: 7.0.5
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -1117,7 +1117,7 @@ class link_library_plugin {
 		return $return;
 	}
 
-	function CheckReciprocalLink( $RecipCheckAddress = '', $external_link = '' ) {
+	function CheckReciprocalLink( $RecipCheckAddress = '', $external_link = '', $request_type = 'reciprocal' ) {
 		$response = wp_remote_get( $external_link, array( 'user-agent' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36', 'timeout' => 10 ) );
 
 		if( is_wp_error( $response ) ) {
@@ -1127,6 +1127,21 @@ class link_library_plugin {
 			}
 		} elseif ( $response['response']['code'] == '200' ) {
 
+			$original_protocol = '';
+			$actual_protocol = '';
+
+			if ( false !== strpos( $external_link, 'http://' ) ) {
+				$original_protocol = 'http://';
+			} else if ( false !== strpos( $external_link, 'https://' ) ) {
+				$original_protocol = 'https://';
+			}
+
+			if ( false !== strpos( $response['http_response']->get_response_object()->url, 'http://' ) ) {
+				$actual_protocol = 'http://';
+			} else if ( false !== strpos( $response['http_response']->get_response_object()->url, 'https://' ) ) {
+				$actual_protocol = 'https://';
+			}
+
 			$link_url_without_protocol = str_replace( 'http://', '', $external_link );
 			$link_url_without_protocol = str_replace( 'https://', '', $link_url_without_protocol );
 			$link_url_without_protocol = rtrim( $link_url_without_protocol, '/' );
@@ -1135,13 +1150,38 @@ class link_library_plugin {
 			$response_url_without_protocol = str_replace( 'https://', '', $response_url_without_protocol );
 			$response_url_without_protocol = rtrim( $response_url_without_protocol, '/' );
 
-			if ( $link_url_without_protocol != $response_url_without_protocol ) {
+			$parse_original_url = parse_url( $external_link );
+			$parse_actual_url = parse_url( $response['http_response']->get_response_object()->url );
+
+			if ( 'broken' == $request_type && $parse_original_url['host'] != $parse_actual_url['host'] ) {
+				$original_host_segments = explode( '.', $parse_original_url['host'] );
+				$actual_host_segments = explode( '.', $parse_actual_url['host'] );
+
+				if ( sizeof( $actual_host_segments ) > sizeof( $original_host_segments ) ) {
+					if ( $original_host_segments[ sizeof( $original_host_segments ) - 1 ] == $actual_host_segments[ sizeof( $actual_host_segments ) - 1] && $original_host_segments[ sizeof( $original_host_segments ) - 2 ] == $actual_host_segments[ sizeof( $actual_host_segments ) - 2] ) {
+						return 'exists_subdomain_redirect';
+					}
+				}				
+			}
+
+			if ( 'broken' == $request_type && $parse_original_url['host'] == $parse_actual_url['host'] && $link_url_without_protocol != $response_url_without_protocol ) {
+				$basename = basename( $parse_actual_url['path'] );
+				if ( false !== strpos( $basename, '.' ) ) {
+					return 'exists_redirected_fileurl';
+				} else {
+					return 'exists_redirected_subfolder';
+				}				
+			}
+			
+			if ( 'broken' == $request_type && $link_url_without_protocol != $response_url_without_protocol ) {
 				return 'exists_redirected';
-			} else if ( empty( $RecipCheckAddress ) ) {
+			} elseif ( 'broken' == $request_type && !empty( $original_protocol ) && !empty( $actual_protocol ) && $original_protocol != $actual_protocol ) {
+				return 'exists_protocol_redirect';
+			} elseif ( 'broken' == $request_type && empty( $RecipCheckAddress ) ) {
 				return 'exists_notfound';
-			} elseif ( strpos( $response['body'], $RecipCheckAddress ) === false ) {
+			} elseif ( 'reciprocal' == $request_type && strpos( $response['body'], $RecipCheckAddress ) === false ) {
 				return 'exists_notfound';
-			} elseif ( strpos( $response['body'], $RecipCheckAddress ) !== false ) {
+			} elseif ( 'reciprocal' == $request_type && strpos( $response['body'], $RecipCheckAddress ) !== false ) {
 				return 'exists_found';
 			}
 		}

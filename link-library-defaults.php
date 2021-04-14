@@ -547,6 +547,10 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['globalsearchresultslinkurl']	 = true;
 	$genoptions['globalsearchresultstitleprefix'] = '';
 	$genoptions['add_to_main_rss']				  = false;
+	$genoptions['suppressprotocolchangeredirection'] = false;
+	$genoptions['suppresssubdomainredirection']	  = false;
+	$genoptions['suppresssubfolderredirection']	  = false;
+	$genoptions['suppressbadconfigredirection']   = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );
