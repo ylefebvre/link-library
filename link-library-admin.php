@@ -8067,13 +8067,13 @@ function link_library_reciprocal_link_checker() {
 				if ( 'broken' == $check_type && $reciprocal_result == 'exists_redirected' ) {
 					echo '<span style="color: #FF0000">' . __( 'Redirected to a different address', 'link-library' ) . '</span>';
 				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_protocol_redirect' ) {
-					echo '<span style="color: #D77D00">' . __( 'Redirection to a different protocol', 'link-library' ) . '</span>';
+					echo '<span style="color: #ff7948">' . __( 'Redirection to a different protocol', 'link-library' ) . '</span>';
 				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_subdomain_redirect' ) {
-					echo '<span style="color: #151B54">' . __( 'Redirected to a sub-domain on same server', 'link-library' ) . '</span>';
+					echo '<span style="color: #6581ce">' . __( 'Redirected to a sub-domain on same server', 'link-library' ) . '</span>';
 				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_redirected_subfolder' ) {
-					echo '<span style="color: #1B5415">' . __( 'Redirected to a different subfolder on same server', 'link-library' ) . '</span>';
+					echo '<span style="color: #b362b9">' . __( 'Redirected to a different subfolder on same server', 'link-library' ) . '</span>';
 				} elseif ( 'broken' == $check_type && $reciprocal_result == 'exists_redirected_fileurl' ) {
-					echo '<span style="color: #4E1554">' . __( 'Redirected to a different subfolder on same server with bad configuration', 'link-library' ) . '</span>';
+					echo '<span style="color: #ff4887">' . __( 'Redirected to a different subfolder on same server with bad configuration', 'link-library' ) . '</span>';
 				} elseif ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_notfound' ) {
 					echo '<span style="color: #FF0000">' . __( 'Not Found', 'link-library' ) . '</span>';
 				} elseif ( $reciprocal_result == 'error_403' && $recipcheckdelete403 == true ) {

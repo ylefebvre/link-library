@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0.5 =
+* Improved broken link checker to report on the type of redirection that took place
+
 = 7.0.4 =
 * Added option to include links in main site RSS feed
 * Added option in RSS feed configuration to select displaying the link updated date value or the publication date
