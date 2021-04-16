@@ -253,6 +253,16 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 $cattext = '';
                 $catitem = '';
 
+				if ( !empty( $taglist_cpt ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
+					$tag_array = array();
+	
+					if ( ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
+						$tag_array = explode( '.', $_GET['link_tags'] );
+					} elseif( !empty( $taglist_cpt ) ) {
+						$tag_array = explode( ',', $taglist_cpt );
+					}				
+				}
+
 	            $link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
 	            $link_query_args['post_status'] = array( 'publish' );
 
@@ -263,6 +273,20 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 			            'terms'    => $catname->term_id,
 			            'include_children' => false
 		            );
+
+				if ( !empty( $tag_array ) ) {
+					$link_query_args['tax_query'][] = array( 
+						array(
+							'taxonomy'  => 'link_library_tags',
+							'field'     => 'slug',
+							'terms'     => $tag_array
+						)
+					);
+				}
+
+				if ( isset( $link_query_args['tax_query'] ) && is_array( $link_query_args['tax_query'] ) && sizeof( $link_query_args['tax_query'] ) > 1 ) {
+					$link_query_args['tax_query']['relation'] = 'AND';
+				}
 
 	            if ( $showuserlinks ) {
 		            $link_query_args['post_status'][] = 'pending';

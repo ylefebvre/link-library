@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0.6 =
+* Fixed [link-library-cats] shortcode to react to tag selection
+
 = 7.0.5 =
 * Improved broken link checker to report on the type of redirection that took place
 
