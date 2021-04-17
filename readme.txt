@@ -50,6 +50,7 @@ Further configuration is available under the Link Library Settings panel.
 
 = 7.0.6 =
 * Fixed [link-library-cats] shortcode to react to tag selection
+* Fix for duplicate link checker where it was previous showing items from other post types with same name as links
 
 = 7.0.5 =
 * Improved broken link checker to report on the type of redirection that took place

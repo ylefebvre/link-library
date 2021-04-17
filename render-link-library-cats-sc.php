@@ -252,14 +252,17 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 $catfront = '';
                 $cattext = '';
                 $catitem = '';
+				$tag_type = '';
 
 				if ( !empty( $taglist_cpt ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
 					$tag_array = array();
 	
 					if ( ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
 						$tag_array = explode( '.', $_GET['link_tags'] );
+						$tag_type = 'slug';
 					} elseif( !empty( $taglist_cpt ) ) {
 						$tag_array = explode( ',', $taglist_cpt );
+						$tag_type = 'term_id';
 					}				
 				}
 
@@ -278,7 +281,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 					$link_query_args['tax_query'][] = array( 
 						array(
 							'taxonomy'  => 'link_library_tags',
-							'field'     => 'slug',
+							'field'     => $tag_type,
 							'terms'     => $tag_array
 						)
 					);

@@ -7929,7 +7929,7 @@ function general_custom_fields_meta_box( $data ) {
 
 		$linkquery = "SELECT p.ID, p.post_title FROM " . $ll_admin_class->db_prefix() . "posts p INNER JOIN";
 		$linkquery .= "(SELECT trim( TRAILING '/' FROM post_title ) as trim_post_title ";
-		$linkquery .= "FROM " . $ll_admin_class->db_prefix() . "posts p WHERE p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) GROUP BY post_title HAVING count(p.ID) > 1) dup ";
+		$linkquery .= "FROM " . $ll_admin_class->db_prefix() . "posts p WHERE p.post_type = 'link_library_links' AND p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) GROUP BY post_title HAVING count(p.ID) > 1) dup ";
 		$linkquery .= "ON p.post_title = dup.trim_post_title ";
 		$linkquery .= "WHERE p.post_type = 'link_library_links' AND p.post_status in ( 'publish', 'pending', 'draft', 'future', 'private' ) ";
 
