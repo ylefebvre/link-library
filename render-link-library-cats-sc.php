@@ -355,7 +355,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                }
                 }
 
-                if ( $linkcount > 0 || ( $linkcount == 0 && $cat_has_children ) ) {
+                if ( $linkcount > 0 ) {
 	                if ( $showonecatonly ) {
 		                if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
 			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
