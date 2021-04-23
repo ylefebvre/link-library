@@ -325,6 +325,10 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            $linkcount = $the_link_query->post_count;
 	            wp_reset_postdata();
 
+				if ( $hideemptycats && !$cat_has_children && $linkcount == 0 ) {
+					continue;
+				}
+
                 // Display the category name
                 $countcat += 1;
                 if ( $level == 0 ) {

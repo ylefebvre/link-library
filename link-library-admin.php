@@ -2685,7 +2685,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'suppress_custom_url_2_if_empty', 'suppress_custom_url_3_if_empty', 'suppress_custom_url_4_if_empty', 'suppress_custom_url_5_if_empty',
 					'suppress_custom_text_1_if_empty', 'suppress_custom_text_2_if_empty', 'suppress_custom_text_3_if_empty',
 					'suppress_custom_text_4_if_empty', 'suppress_custom_text_5_if_empty', 'suppress_custom_list_1_if_empty', 'suppress_custom_list_2_if_empty',
-					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty', 'catnamelink'
+					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty', 'catnamelink', 'hideemptycats'
 				)
 				as $option_name
 			) {
@@ -4570,6 +4570,13 @@ function general_custom_fields_meta_box( $data ) {
 					<td>
 						<input type="checkbox" id="showcatlinkcount" name="showcatlinkcount" <?php checked( $options['showcatlinkcount'] ); ?>/>
 					</td>
+					<td style='width:100px'></td>
+					<td>
+						<?php _e( 'Hide empty categories from category list', 'link-library' ); ?>
+					</td>
+					<td>
+						<input type="checkbox" id="hideemptycats" name="hideemptycats" <?php checked( $options['hideemptycats'] ); ?>/>
+					</td>					
 				</tr>
 				<tr>
 					<td style='width:200px'><?php _e( 'Display categories with search results', 'link-library' ); ?>    </td>

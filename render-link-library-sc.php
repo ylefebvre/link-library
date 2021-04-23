@@ -2836,7 +2836,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		if ( 'linkmasonrygrid' == $displayastable || 'categorymasonrygrid' == $displayastable ) {
 			$output .= "jQuery( '.grid' ).masonry({\n";
 			$output .= "\titemSelector: '.ll-grid-item',\n";
-			$output .= "\tcolumnWidth: 0\n";
+			$output .= "\tcolumnWidth: 1\n";
 			$output .= "});\n";
 		}
 		

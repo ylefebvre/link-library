@@ -441,6 +441,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['customlist5tooltip']				 = '';	
 	$options['stylesheet']						 = '';
 	$options['rss_item_date_source']			 = 'updated_date';
+	$options['hideemptycats']					 = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
