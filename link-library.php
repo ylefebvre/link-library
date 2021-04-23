@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.0.6
+Version: 7.0.8
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -621,6 +621,13 @@ class link_library_plugin {
 							'type' => 'string',
 						],
 					],
+					'taglistoverride'    => [
+						'type'  => 'array',
+						'default'   => [],
+						'items'   => [
+							'type' => 'string',
+						],
+					],
 					'targetlibrary'    => [
 						'type'  => 'string',
 						'default'   => '',
@@ -630,6 +637,10 @@ class link_library_plugin {
 						'default' => '',
 					],
 					'excludecategoryoverrideCSV' => [
+						'type' => 'string',
+						'default' => '',
+					],
+					'taglistoverrideCSV' => [
 						'type' => 'string',
 						'default' => '',
 					],
@@ -1223,11 +1234,20 @@ class link_library_plugin {
 			$atts['excludecategoryoverride'] = $atts['excludecategoryoverrideCSV'];
 		}
 
+		if ( isset( $atts['taglistoverride'] ) && !empty( $atts['taglistoverride'] ) && is_array( $atts['taglistoverride'] ) ) {
+			$atts['taglistoverride'] = implode( ',', $atts['taglistoverride'] );
+		}
+
+		if ( isset( $atts['taglistoverrideCSV'] ) && !empty( $atts['taglistoverrideCSV'] ) ) {
+			$atts['taglistoverrideCSV'] = $atts['taglistoverrideCSV'];
+		}
+
 		extract( shortcode_atts( array (
 			'categorylistoverride' => '',
 			'excludecategoryoverride' => '',
 			'settings' => '',
-			'targetlibrary' => ''
+			'targetlibrary' => '',
+			'taglistoverride' => ''
 		), $atts ) );
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );

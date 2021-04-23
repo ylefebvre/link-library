@@ -48,6 +48,10 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.0.8 =
+* Add support for taglistoverride parameter in link-library-cats shortcode
+* Add parameter to override tag list in Link Library Category block
+
 = 7.0.7 =
 * Fix to avoid masonry layout becoming a single column when first item is hidden
 * Added a new option to Categories tab in Library Configuration to hide empty categories from category list

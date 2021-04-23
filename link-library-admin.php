@@ -4131,6 +4131,10 @@ function general_custom_fields_meta_box( $data ) {
 								<td>[link-library-cats settings="<?php echo $settings; ?>" targetlibrary="1"]</td>
 								<td>Specifies the library to be updated when making category selections</td>
 							</tr>
+							<tr>
+								<td>[link-library-cats settings="<?php echo $settings; ?>" taglistoverride="42"]</td>
+								<td>Overrides the list of tags to be displayed in the category list, comma-separated list of tag IDs</td>
+							</tr>
 						</table>
 					</td>
 				</tr>

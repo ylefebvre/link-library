@@ -56,8 +56,20 @@ wp.apiFetch({path: "/wp/v2/link_library_category?per_page=100"}).then(posts => {
 }).catch( 
 
 )
+
+const tagOptions = [
+];
+
+wp.apiFetch({path: "/wp/v2/link_library_tags?per_page=100"}).then(posts => {
+    jQuery.each( posts, function( key, val ) {
+        tagOptions.push({label: val.name, value: val.id});
+    });
+}).catch( 
+
+)
+
 const edit = props => {
-    const {attributes: { settings, categorylistoverride, excludecategoryoverride, targetlibrary, categorylistoverrideCSV, excludecategoryoverrideCSV }, className, setAttributes } = props;
+    const {attributes: { settings, categorylistoverride, excludecategoryoverride, taglistoverride, targetlibrary, categorylistoverrideCSV, excludecategoryoverrideCSV, taglistoverrideCSV }, className, setAttributes } = props;
 
     const setSettingsID = settings => {
         props.setAttributes( { settings } );
@@ -71,6 +83,10 @@ const edit = props => {
         props.setAttributes( { excludecategoryoverride } );
     };
 
+    const setTagOverride = taglistoverride => {
+        props.setAttributes( { taglistoverride } );
+    };
+
     const setTargetLibrary = targetlibrary => {
         props.setAttributes( { targetlibrary } );
     };
@@ -81,6 +97,10 @@ const edit = props => {
 
     const setExcludeCategoryOverrideArrayCSV = excludecategoryoverrideCSV => {
         props.setAttributes( { excludecategoryoverrideCSV } );
+    }
+
+    const setTagOverrideArrayCSV = taglistoverrideCSV => {
+        props.setAttributes( { taglistoverrideCSV } );
     }
 
 
@@ -122,6 +142,18 @@ const edit = props => {
                     </span>
                 </PanelRow>
                 <PanelRow>
+                    <span className="link-library-tag-override">
+                    <SelectControl
+                        multiple
+                        label = "Override Tags to display"
+                        help = "Select one or more tags to override library tag list. Ctrl-Click to select multiple items or deselect an item."
+                        value = { taglistoverride }
+                        options = { tagOptions }
+                        onChange = { setTagOverride }
+                    />
+                    </span>
+                </PanelRow>
+                <PanelRow>
                     <SelectControl
                         label="Target Library"
                         value={ targetlibrary }
@@ -143,6 +175,13 @@ const edit = props => {
                         label = "Comma-separated list of category IDs to exclude"
                         value = { props.attributes.excludecategoryoverrideCSV }
                         onChange = { setExcludeCategoryOverrideArrayCSV }
+                    />
+                </PanelRow>
+                <PanelRow>
+                    <TextControl
+                        label = "Comma-separated list of tag IDs to display"
+                        value = { props.attributes.taglistoverrideCSV }
+                        onChange = { setTagOverrideArrayCSV }
                     />
                 </PanelRow>
             </PanelBody>

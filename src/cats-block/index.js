@@ -22,6 +22,10 @@ registerBlockType( 'link-library/cats-block', {
             type: 'array',
             default: [],
         },
+        taglistoverride:{
+            type: 'array',
+            default: [],
+        },
         targetlibrary: {
             type: 'string',
             default: '',
@@ -31,6 +35,10 @@ registerBlockType( 'link-library/cats-block', {
             default: '',
         },
         excludecategoryoverrideCSV:{
+            type: 'string',
+            default: '',
+        },
+        taglistoverrideCSV:{
             type: 'string',
             default: '',
         },
