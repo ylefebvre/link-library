@@ -278,6 +278,7 @@ class link_library_plugin {
 		add_shortcode( 'link-library-count', array( $this, 'link_library_count_func' ) );
 		add_shortcode( 'link-library-filters', array( $this, 'link_library_filters' ) );
 		add_shortcode( 'link-library-tagcloud', array( $this, 'link_library_tagcloud' ) );
+		add_shortcode( 'rss-library', array( $this, 'rss_library_func' ) );
 
 		// Function to determine if Link Library is used on a page before printing headers
 		// the_posts gets triggered before wp_head
@@ -1851,6 +1852,173 @@ class link_library_plugin {
 			return $linklibraryoutput . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
 		}
 	}
+
+	/********************************************** Function to Process [link-library] shortcode *********************************************/
+
+	function rss_library_func( $atts = '' ) {
+		$settings = '';
+		$categorylistoverride = '';
+		$excludecategoryoverride = '';
+		$taglistoverride = '';
+
+		if ( isset( $atts['categorylistoverride'] ) && !empty( $atts['categorylistoverride'] ) && is_array( $atts['categorylistoverride'] ) ) {
+			$atts['categorylistoverride'] = implode( ',', $atts['categorylistoverride'] );
+		}
+
+		if ( isset( $atts['categorylistoverrideCSV'] ) && !empty( $atts['categorylistoverrideCSV'] ) ) {
+			$atts['categorylistoverride'] = $atts['categorylistoverrideCSV'];
+		}
+
+		if ( isset( $atts['excludecategoryoverride'] ) && !empty( $atts['excludecategoryoverride'] ) && is_array( $atts['excludecategoryoverride'] ) ) {
+			$atts['excludecategoryoverride'] = implode( ',', $atts['excludecategoryoverride'] );
+		}
+
+		if ( isset( $atts['excludecategoryoverrideCSV'] ) && !empty( $atts['excludecategoryoverrideCSV'] ) ) {
+			$atts['excludecategoryoverride'] = $atts['excludecategoryoverrideCSV'];
+		}
+
+		if ( isset( $atts['taglistoverride'] ) && !empty( $atts['taglistoverride'] ) && is_array( $atts['taglistoverride'] ) ) {
+			$atts['taglistoverride'] = implode( ',', $atts['taglistoverride'] );
+		}
+		
+		if ( isset( $atts['taglistoverrideCSV'] ) && !empty( $atts['taglistoverrideCSV'] ) ) {
+			$atts['taglistoverride'] = $atts['taglistoverrideCSV'];
+		}	
+
+		extract( shortcode_atts( array(
+			'settings' => '',
+			'categorylistoverride' => '',
+			'excludecategoryoverride' => '',
+			'taglistoverride' => '',
+		), $atts ) );
+
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+		if ( floatval( $genoptions['schemaversion'] ) < '5.0' ) {
+			$this->ll_install();
+		}
+
+		if ( empty( $settings ) && !isset( $_POST['settings'] ) ) {
+			$settings = 1;
+		} else if ( isset( $_POST['settings'] ) ) {
+			$settings = intval( $_POST['settings'] );
+		}
+
+		if ( $settings > $genoptions['numberstylesets'] ) {
+			$settings = 1;
+		}
+
+		$settingsname = 'LinkLibraryPP' . $settings;
+		$options = get_option( $settingsname );
+		$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
+
+		if ( !empty( $categorylistoverride ) ) {
+			$options['categorylist_cpt'] = $categorylistoverride;
+
+			$update_list = false;
+			$category_list_array = explode( ',', $categorylistoverride );
+			foreach( $category_list_array as $index => $category_text ) {
+				if ( !is_numeric( $category_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $category_text, 'link_library_category' );
+
+					if ( $matched_term ) {
+						$category_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $category_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['categorylist_cpt'] = implode( ',', $category_list_array );
+			}
+		}
+
+		if ( !empty( $excludecategoryoverride ) ) {
+			$options['excludecategorylist_cpt'] = $excludecategoryoverride;
+
+			$update_list = false;
+			$exclude_category_list_array = explode( ',', $excludecategoryoverride );
+			foreach( $exclude_category_list_array as $index => $category_text ) {
+				if ( !is_numeric( $category_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $category_text, 'link_library_category' );
+
+					if ( $matched_term ) {
+						$exclude_category_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $exclude_category_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['excludecategorylist_cpt'] = implode( ',', $exclude_category_list_array );
+			}
+		}
+
+		if ( !empty( $taglistoverride ) ) {
+			$options['taglist_cpt'] = $taglistoverride;
+
+			$update_list = false;
+			$tag_list_array = explode( ',', $taglistoverride );
+			foreach( $tag_list_array as $index => $tag_text ) {
+				if ( !is_numeric( $tag_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $tag_text, 'link_library_tags' );
+
+					if ( $matched_term ) {
+						$tag_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $tag_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['taglist_cpt'] = implode( ',', $tag_list_array );
+			}
+		}
+
+		if ( !empty( $excludecategoryoverride ) ) {
+			$options['excludetaglist_cpt'] = $excludetagoverride;
+
+			$update_list = false;
+			$exclude_tag_list_array = explode( ',', $excludetagoverride );
+			foreach( $exclude_tag_list_array as $index => $tag_text ) {
+				if ( !is_numeric( $tag_text ) ) {
+					$update_list = true;
+					$matched_term = get_term_by( 'slug', $tag_text, 'link_library_tags' );
+
+					if ( $matched_term ) {
+						$exclude_tag_list_array[$index] = $matched_term->term_id;
+					} else {
+						unset( $exclude_tag_list_array[$index] );
+					}
+				}
+			}
+			if ( $update_list ) {
+				$options['excludetaglist_cpt'] = implode( ',', $exclude_category_list_array );
+			}
+		}
+
+		$linklibraryoutput = '';
+
+		if ( $genoptions['debugmode'] ) {
+			$linklibraryoutput .= "\n<!-- RSS Library Settings Info:" . print_r( $options, true ) . "-->\n";
+			$mainoutputstarttime = microtime( true );
+			$linklibraryoutput .= "\n<!-- Start Time: " . $mainoutputstarttime . "-->\n";
+		}
+
+		require_once plugin_dir_path( __FILE__ ) . 'render-rss-library-sc.php';
+		$linkcount = 1;
+		$rss_array_items = array();
+		$linklibraryoutput .= RenderRSSLibrary( $this, $genoptions, $options, $settings, 0, 0, false, $linkcount, $rss_array_items );
+
+		if ( $genoptions['debugmode'] ) {
+			$timeoutput = "\n<!-- [link-library] shortcode execution time: " . ( microtime( true ) - $mainoutputstarttime ) . "-->\n";
+		}
+		return $linklibraryoutput . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
+	}	
 
 	function link_library_tagcloud( $atts = '' ) {
 		$link_library_terms = get_terms( array( 'taxonomy' => 'link_library_category' ) );

@@ -560,7 +560,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                } /* else {
 		                $catitem .= '</span>';
 	                } */
-                }
+                } else {
+					$catitem .= '</span>';
+				}
 
                 $output .= ( $catfront . $cattext . $catitem );
 
