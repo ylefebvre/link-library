@@ -48,6 +48,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.1.0 =
+* Added new [rss-library] shortcode to display a combined RSS library feed from all links
+
 = 7.0.8 =
 * Add support for taglistoverride parameter in link-library-cats shortcode
 * Add parameter to override tag list in Link Library Category block

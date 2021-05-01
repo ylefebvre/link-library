@@ -24,23 +24,6 @@ function link_library_highlight_phrase( $str, $phrase, $tag_open = '<strong>', $
 	return $str;
 }
 
-function link_library_get_category_path( $slug ) {
-
-	$cat_path = '';
-
-	$term = get_term_by( 'slug', $slug, 'link_library_category' );
-
-	if ( !empty( $term ) && $term->parent != 0 ) {
-		$parent_term = get_term_by( 'id', $term->parent, 'link_library_category' );
-		if ( !empty( $parent_term ) ) {
-			$cat_path .= link_library_get_category_path( $parent_term->slug );
-		}
-	}
-
-	$cat_path .= '/' . $slug;
-	return $cat_path;
-}
-
 function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 	$cat_path = '';
 
@@ -53,7 +36,7 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 		}
 	}
 
-	$new_link = esc_url( home_url() . '/' . $rewritepage . link_library_get_category_path( $slug ) );
+	$new_link = esc_url( home_url() . '/' . $rewritepage . $slug );
 	if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 		$new_link = add_query_arg( 'link_tags', $_GET['link_tags'], $new_link );
 	}
@@ -62,9 +45,10 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 		$new_link = add_query_arg( 'link_price', $_GET['link_price'], $new_link );
 	}
 
-	$cat_path .= '<a href="' . $new_link . '">' . $term->name . '</a>';
-
-	if ( $level == 0 ) {
+	if ( $level != 0 ) {
+		$cat_path .= '<a href="' . $new_link . '">' . $term->name . '</a>';		
+	} elseif ( $level == 0 ) {
+		$cat_path .= $term->name;
 		$new_top_link = esc_url( home_url() . '/' . $rewritepage );
 
 		if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
@@ -1162,7 +1146,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 											$catlink .= '>';
 										} elseif ( $catlinkspermalinksmode && !empty( $rewritepage ) ) {
-											$cat_path = link_library_get_category_path( $link_category->slug );
+											$cat_path = $link_category->slug;
 
 											if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 												$cat_path = add_query_arg( 'link_tags', $_GET['link_tags'], $cat_path );
