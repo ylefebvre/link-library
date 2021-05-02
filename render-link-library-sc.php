@@ -36,7 +36,7 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 		}
 	}
 
-	$new_link = esc_url( home_url() . '/' . $rewritepage . $slug );
+	$new_link = esc_url( home_url() . '/' . $rewritepage . '/' . $slug );
 	if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 		$new_link = add_query_arg( 'link_tags', $_GET['link_tags'], $new_link );
 	}
