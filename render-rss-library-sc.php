@@ -3,6 +3,77 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
 
+function rss_library_display_pagination( $previouspagenumber, $nextpagenumber, $numberofpages, $pagenumber ) {
+
+	$dotbelow = false;
+	$dotabove = false;
+	$paginationoutput = '';
+
+	global $wp;
+
+	if ( $numberofpages > 1 ) {
+		$paginationoutput = '<div class="pageselector"><!-- Div Pagination -->';
+
+		if ( 1 != $pagenumber ) {
+			$paginationoutput .= '<span class="previousnextactive">';
+
+			$argumentarray = array( 'rsslibrarypage' => $previouspagenumber ); 
+			$targetaddress = esc_url( add_query_arg( $argumentarray ), '/' . $wp->request );
+
+			$paginationoutput .= '<a href="' . $targetaddress . '">' . __( 'Previous', 'link-library' ) . '</a>';
+
+			$paginationoutput .= '</span>';
+		} else {
+			$paginationoutput .= '<span class="previousnextinactive">' . __('Previous', 'link-library') . '</span>';
+		}
+
+		$dotabove = false;
+		$dotbelow = false;
+		for ( $counter = 1; $counter <= $numberofpages; $counter++ ) {
+			if ( $counter <= 2 || $counter >= $numberofpages - 1 || ( $counter <= $pagenumber + 2 && $counter >= $pagenumber - 2 ) ) {
+				if ( $counter != $pagenumber ) {
+					$paginationoutput .= '<span class="unselectedpage">';
+				} else {
+					$paginationoutput .= '<span class="selectedpage">';
+				}
+
+				$argumentarray = array( 'rsslibrarypage' => $counter ); 
+			$targetaddress = esc_url( add_query_arg( $argumentarray ), '/' . $wp->request );
+
+				$paginationoutput .= '<a href="' . $targetaddress . '">' . $counter . '</a>';
+
+				$paginationoutput .= '</a></span>';
+			}
+
+			if ( $counter >= 2 && $counter < $pagenumber - 2 && false == $dotbelow ) {
+				$dotbelow = true;
+				$paginationoutput .= '...';
+			} elseif ( $counter > $pagenumber + 2 && $counter < $numberofpages - 1 && false == $dotabove ) {
+				$dotabove = true;
+				$paginationoutput .= '...';
+			}
+		}
+
+		if ( $pagenumber != $numberofpages ) {
+			$paginationoutput .= '<span class="previousnextactive">';
+
+			$argumentarray = array( 'rsslibrarypage' => $nextpagenumber ); 
+			$targetaddress = esc_url( add_query_arg( $argumentarray ), '/' . $wp->request );
+
+			$paginationoutput .= '<a href="' . $targetaddress . '">' . __( 'Next', 'link-library' ) . '</a>';
+
+			$paginationoutput .= '</span>';
+		} else {
+			$paginationoutput .= '<span class="previousnextinactive">' . __('Next', 'link-library') . '</span>';
+		}
+
+		$paginationoutput .= '</div><!-- Div Pagination -->';
+	}
+
+	return $paginationoutput;
+}
+
+
 function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $parent_cat_id = 0, $level = 0, $display_children = true, &$rsscount, &$rss_array_items ) {
 
 	extract( $generaloptions );
@@ -80,83 +151,6 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 
 		$link_categories = get_terms( 'link_library_category', $link_categories_query_args );
 
-		/* if ( $pagination && 'search' != $mode ) {
-			if ( $linksperpage == 0 || empty( $linksperpage ) ) {
-				$linksperpage = 5;
-			}
-
-			$number_of_links = 0;
-
-			if ( !empty( $taglist_cpt ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
-
-				$tag_array = array();
-
-				if ( ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
-					$tag_array = explode( '.', $_GET['link_tags'] );
-				} elseif( !empty( $taglist_cpt ) ) {
-					$tag_array = explode( ',', $taglist_cpt );
-				}				
-			}
-
-			foreach ( $link_categories as $cat_array_index => $link_category ) {
-
-				$args = array(
-					'post_type' => 'link_library_links',
-					'tax_query' => array( 
-						array(
-							'taxonomy'  => 'link_library_category',
-							'field'     => 'term_id',
-							'terms'     => $link_category->term_id
-						)
-					),
-					'numberposts' => '-1'
-				);
-
-				if ( !empty( $tag_array ) ) {
-					$args['tax_query'][] = array( 
-						array(
-							'taxonomy'  => 'link_library_tags',
-							'field'     => 'slug',
-							'terms'     => $tag_array
-						)
-					);
-				}
-
-				if ( isset( $args['tax_query'] ) && is_array( $args['tax_query'] ) && sizeof( $args['tax_query'] ) > 1 ) {
-					$args['tax_query']['relation'] = 'AND';
-				}
-
-				$posts_array = get_posts( $args );				
-
-				$number_of_links += sizeof( $posts_array );
-				$link_categories[$cat_array_index]->count = sizeof( $posts_array );
-			}
-
-			if ( $number_of_links > $linksperpage ) {
-				$nextpage = true;
-			} else {
-				$nextpage = false;
-			}
-
-			if ( isset( $number_of_links ) ) {
-				$preroundpages = $number_of_links / $linksperpage;
-				$number_of_pages = ceil( $preroundpages * 1 ) / 1;
-			}
-
-			if ( isset( $_POST['linkresultpage'] ) || isset( $_GET['linkresultpage'] ) ) {
-
-				if ( isset( $_POST['linkresultpage'] ) ) {
-					$pagenumber = $_POST['linkresultpage'];
-				} elseif ( isset( $_GET['linkresultpage'] ) ) {
-					$pagenumber = $_GET['linkresultpage'];
-				}
-				$startingitem = ( $pagenumber - 1 ) * $linksperpage + 1;
-			} else {
-				$pagenumber = 1;
-				$startingitem = 1;
-			}
-		} */
-
 		if ( $level == 0 ) {
 			$output .= "<div id='rsslist" . $settings . "' class='rsslist'><!-- Div Rsslist -->\n";
 		}
@@ -168,13 +162,6 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 				if ( !empty( $maxrssfeeditems ) && is_numeric( $maxrssfeeditems ) && 0 < $maxrssfeeditems && $rsscount > $maxrssfeeditems ) {
 					break;
 				}
-
-				/* if ( $pagination ) {
-					if ( $linkcount + $link_category->count - 1 < $startingitem || $linkcount > $startingitem + $linksperpage - 1 ) {
-						$linkcount = $linkcount + $link_category->count;
-						continue;
-					}
-				} */
 
 				$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1 );
 
@@ -292,17 +279,23 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 								break;
 							}
 
-							/* if ( $pagination && 'search' != $mode ) {
-								if ( $linkcount > $pagenumber * $linksperpage || $linkcount < $startingitem ) {
-									$linkcount++;
-									continue;
-								}
-							} */
-
 							$linkitem = array();
 							$linkitem['term_id'] = $link_category->term_id;
 							$linkitem['link_name'] = get_the_title();
 							$link_meta = get_metadata( 'post', get_the_ID() );
+
+							$link_terms = wp_get_post_terms( get_the_ID(), 'link_library_category' );
+							if ( !empty( $link_terms ) ) {
+								$link_term_array = array();
+								foreach( $link_terms as $link_term ) {
+									$link_term_array[] = $link_term->name;
+								}
+
+								if ( !empty( $link_term_array ) ) {
+									$link_term_string = implode( ', ', $link_term_array );
+									$linkitem['category_name'] = $link_term_string;
+								}
+							}
 
 							if ( isset( $link_meta['link_rss'] ) ) {
 								$linkitem['link_rss'] = esc_url( $link_meta['link_rss'][0] );
@@ -321,7 +314,7 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 							if ( false === $current_link_array_items && !empty( $linkitem['link_rss'] ) ) {
 								$rss = fetch_feed( $linkitem['link_rss'] );
 								if ( !is_wp_error( $rss ) ) {
-									$maxitems = $rss->get_item_quantity( 10 );
+									$maxitems = $rss->get_item_quantity( $rsslibraryitemspersite );
 
 									$current_link_simplepie_objects = $rss->get_items( 0, $maxitems );
 
@@ -333,7 +326,8 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 											$new_rss_item['site_name'] = $linkitem['link_name'];
 											$new_rss_item['permalink'] = $item->get_permalink();
 											$new_rss_item['title'] = $item->get_title();
-											$new_rss_item['description'] = wp_trim_words( $item->get_description(), 30 );
+											$new_rss_item['description'] = wp_trim_words( $item->get_description(), $rsslibrarymaxwordsitem );
+											$new_rss_item['category_name'] = $linkitem['category_name'];
 
 											$current_link_array_items[] = $new_rss_item;														
 										}
@@ -382,14 +376,6 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 		$output .= '<span class="nolinksfoundallcats">' . __( 'No links found', 'link-library' ) . '</span>';
 	}
 
-	/* if ( $level == 0 && $pagination && 'search' != $mode && ( 'AFTER' == $paginationposition || empty( $pagination ) ) ) {
-		$previouspagenumber = $pagenumber - 1;
-		$nextpagenumber = $pagenumber + 1;
-		$pageID = get_queried_object_id();
-
-		$output .= link_library_display_pagination( $previouspagenumber, $nextpagenumber, $number_of_pages, $pagenumber, $showonecatonly, $showonecatmode, $AJAXcatid, $settings, $pageID, $currentcatletter );
-	} */
-
 	$currentcategory = $currentcategory + 1;
 
 	if ( $level == 0 ) {
@@ -398,16 +384,38 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 			$timestamp[$key] = $row['pub_timestamp'];
 		}
 		array_multisort( $timestamp, SORT_DESC, $rss_array_items );
+
+		if ( isset( $_GET['rsslibrarypage'] ) ) {
+			$current_page = intval( $_GET['rsslibrarypage'] );
+		} else {
+			$current_page = 1;
+		}	
 		
+		$item_number = 0;
 		foreach( $rss_array_items as $rss_array_item ) {
-			$template = '<div class="rss_library_item"><div class="rss-library-title">[rss_item_title]</div>
-			<div class="rss-library-source"><span class="rss-library-site">[link_title]</span><span class="rss-library-date">[rss_item_date]</span></div>
-			<div class="rss-library-content">[rss_item_content]</div></div>';
-			$template = str_replace( '[rss_item_title]', '<a href="' . $rss_array_item['permalink'] . '">'. $rss_array_item['title'] . '</a>', $template );
+			$item_number++;
+			if ( $rsslibrarypagination ) {
+				$first_item = ( $current_page - 1 ) * $rsslibrarypaginationnb;
+				$last_item =  $current_page * $rsslibrarypaginationnb;
+
+				if ( $item_number <= $first_item || $item_number > $last_item ) {
+					continue;
+				}				
+			}
+			$template = stripslashes( $rsslibrarytemplate );
+			$template = str_replace( '[link_category]', $rss_array_item['category_name'], $template );
+			$template = str_replace( '[rss_item_title]', '<a target="_blank" href="' . $rss_array_item['permalink'] . '">'. $rss_array_item['title'] . '</a>', $template );
 			$template = str_replace( '[link_title]', $rss_array_item['site_name'], $template );
 			$template = str_replace( '[rss_item_date]', date( get_option('date_format') . ' ' . get_option('time_format'), $rss_array_item['pub_timestamp'] ), $template );
 			$template = str_replace( '[rss_item_content]', $rss_array_item['description'], $template );
-			$output .= $template;
+			$output .= $template;			
+		}
+
+		if ( $rsslibrarypagination ) {
+			$number_of_rss_items = count( $rss_array_items );
+			$number_of_pages = ceil( $number_of_rss_items / $rsslibrarypaginationnb );					
+
+			$output .= rss_library_display_pagination( $current_page - 1, $current_page + 1, $number_of_pages, $current_page );
 		}
 
 		$output .= '</div><!-- Div Rsslist -->';

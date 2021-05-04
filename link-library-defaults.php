@@ -442,6 +442,15 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['stylesheet']						 = '';
 	$options['rss_item_date_source']			 = 'updated_date';
 	$options['hideemptycats']					 = false;
+	$options['rsslibraryitemspersite']			 = 10;
+	$options['rsslibrarymaxwordsitem']			 = 30;
+	$options['rsslibrarypagination']			 = true;
+	$options['rsslibrarypaginationnb']			 = 10;
+	$options['rsslibrarytemplate']				 = '<div class="rss_library_item">
+	<div class="rss-library-title">[rss_item_title]</div>
+	<div class="rss-library-source"><span class="rss-library-site">[link_title]</span><span class="rss-library-date">[rss_item_date]</span></div>
+	<div class="rss-library-content">[rss_item_content]</div>
+</div>';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

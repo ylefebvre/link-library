@@ -2606,7 +2606,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'catlistdescpos', 'rsspreviewwidth', 'rsspreviewheight', 'numberofrssitems',
 					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement', 'displaycustomurl1', 'displaycustomurl2', 'displaycustomurl3', 'displaycustomurl4', 'displaycustomurl5', 'displaycustomtext1', 'displaycustomtext2',
 					'displaycustomtext3', 'displaycustomtext4', 'displaycustomtext5', 'displaycustomlist1', 'displaycustomlist2',
-					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat'
+					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat', 'rsslibraryitemspersite', 'rsslibrarymaxwordsitem', 'rsslibrarypagination',
+					'rsslibrarypaginationnb', 'rsslibrarytemplate', 
 				)
 				as $option_name
 			) {
@@ -5937,6 +5938,68 @@ function general_custom_fields_meta_box( $data ) {
 				<td><input type="checkbox" id="rssfeedinlineskipempty" name="rssfeedinlineskipempty" <?php checked( $options['rssfeedinlineskipempty'] ); ?>/></td>
 			</tr>
 		</table>
+		
+		<h2>RSS Library Shortcode</h2>
+		<table>
+			<tr>			
+				<td>
+					<?php _e( 'Number of RSS items per site', 'link-library' ); ?>
+				</td>
+				<td>
+					<input type="text" id="rsslibraryitemspersite" name="rsslibraryitemspersite" size="2" value="<?php echo strval( $options['rsslibraryitemspersite'] ); ?>" />
+				</td>
+				<td></td>
+				<td>
+					<?php _e( 'Max number of words per item', 'link-library' ); ?>
+				</td>
+				<td>
+					<input type="text" id="rsslibrarymaxwordsitem" name="rsslibrarymaxwordsitem" size="2" value="<?php echo strval( $options['rsslibrarymaxwordsitem'] ); ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<?php _e( 'Paginate items', 'link-library' ); ?>
+				</td>
+				<td>
+					<input type="checkbox" id="rsslibrarypagination" name="rsslibrarypagination" <?php checked( $options['rsslibrarypagination'] ); ?>/>
+				</td>
+				<td></td>
+				<td>
+					<?php _e( 'Number of RSS items per page', 'link-library' ); ?>
+				</td>
+				<td>
+					<input type="text" id="rsslibrarypaginationnb" name="rsslibrarypaginationnb" size="2" value="<?php echo strval( $options['rsslibrarypaginationnb'] ); ?>" />
+				</td>
+			</tr>
+		</table>
+
+		<textarea name='rsslibrarytemplate' id='fancy-textarea' style='font-family:Courier' rows="10" cols="100"><?php echo stripslashes( $options['rsslibrarytemplate'] ); ?></textarea>
+		<table>
+				<tr>
+					<th>Tag Name</th>
+					<th>Description</th>
+				</tr>
+				<tr>
+					<td>[link_title]</td>
+					<td>The name of the link, text only</td>
+				</tr>
+				<tr>
+					<td>[link_category]</td>
+					<td>The category(ies) assigned to the link</td>
+				</tr>
+				<tr>
+					<td>[rss_item_title]</td>
+					<td>RSS item title</td>
+				</tr>
+				<tr>
+					<td>[rss_item_date]</td>
+					<td>RSS item date</td>
+				</tr>
+				<tr>
+					<td>[rss_item_content]</td>
+					<td>RSS item content</td>
+				</tr>
+			</table>
 		</div>
 	<?php
 	}

@@ -50,6 +50,7 @@ Further configuration is available under the Link Library Settings panel.
 
 = 7.1.0 =
 * Added new [rss-library] shortcode to display a combined RSS library feed from all links
+* Improved breadcrumb generation code so that the last part of the breakcrumb does not have a link. Also fixed links for sub-categories.
 
 = 7.0.8 =
 * Add support for taglistoverride parameter in link-library-cats shortcode
