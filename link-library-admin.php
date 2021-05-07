@@ -2606,7 +2606,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'catlistdescpos', 'rsspreviewwidth', 'rsspreviewheight', 'numberofrssitems',
 					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement', 'displaycustomurl1', 'displaycustomurl2', 'displaycustomurl3', 'displaycustomurl4', 'displaycustomurl5', 'displaycustomtext1', 'displaycustomtext2',
 					'displaycustomtext3', 'displaycustomtext4', 'displaycustomtext5', 'displaycustomlist1', 'displaycustomlist2',
-					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat', 'rsslibraryitemspersite', 'rsslibrarymaxwordsitem', 'rsslibrarypagination',
+					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat', 'rsslibraryitemspersite', 'rsslibrarymaxwordsitem', 
 					'rsslibrarypaginationnb', 'rsslibrarytemplate', 
 				)
 				as $option_name
@@ -2686,7 +2686,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'suppress_custom_url_2_if_empty', 'suppress_custom_url_3_if_empty', 'suppress_custom_url_4_if_empty', 'suppress_custom_url_5_if_empty',
 					'suppress_custom_text_1_if_empty', 'suppress_custom_text_2_if_empty', 'suppress_custom_text_3_if_empty',
 					'suppress_custom_text_4_if_empty', 'suppress_custom_text_5_if_empty', 'suppress_custom_list_1_if_empty', 'suppress_custom_list_2_if_empty',
-					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty', 'catnamelink', 'hideemptycats'
+					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty', 'catnamelink', 'hideemptycats',
+					'rsslibrarypagination',
 				)
 				as $option_name
 			) {
