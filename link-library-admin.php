@@ -76,6 +76,55 @@ class link_library_plugin_admin {
 		add_filter( 'wp_dropdown_cats', 'wp_dropdown_cats_multiple', 10, 2 );
 	}
 
+	function allowed_html_tags() {
+		return array(
+			'a' => array(
+				'href' => array(),
+				'title' => array(),
+				'class' => array(),
+				'data' => array(),
+				'rel'   => array(),
+		  	),
+		  	'br' => array(),
+		  	'em' => array(),
+		  	'ul' => array(
+				'class' => array(),
+		  	),
+		  	'ol' => array(
+				'class' => array(),
+		  	),
+		  	'li' => array(
+				'class' => array(),
+		  	),
+		  	'strong' => array(),
+		  	'div' => array(
+				'class' => array(),
+				'data' => array(),
+				'style' => array(),
+		  	),
+		  	'span' => array(
+				'class' => array(),
+				'style' => array(),
+		  	),
+		  	'img' => array(
+				'alt'    => array(),
+			  	'class'  => array(),
+			  	'height' => array(),
+			  	'src'    => array(),
+			  	'width'  => array(),
+		  	),
+		  	'select' => array(
+				'id'   => array(),
+			  	'class' => array(),
+			  	'name' => array(),
+		  	),
+		  	'option' => array(
+			  	'value' => array(),
+			  	'selected' => array(),
+		  	),
+		);
+	}
+
 	function is_edit_page( $new_edit = null ) {
 		global $pagenow;
 		//make sure we are on the backend
@@ -2572,6 +2621,23 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 
+			if ( $options['rsslibraryitemspersite'] != $_POST['rsslibraryitemspersite'] || $options['rsslibrarymaxwordsitem'] != $_POST['rsslibrarymaxwordsitem'] ) {
+				global $wpdb;
+
+				$sql = "SELECT `option_name` AS `name`, `option_value` AS `value`
+						FROM $wpdb->options
+						WHERE `option_name` LIKE '%_transient_RSSLibraryLink%'";
+
+				$transients = $wpdb->get_results( $sql );
+				
+				if ( !empty( $transients ) ) {
+					foreach ( $transients as $transient ) {
+						$transient_name = str_replace( '_transient_', '', $transient->name );
+						delete_transient( $transient_name );
+					}
+				}
+			}
+
 			if ( !$options['showuservotes'] && isset( $_POST['showuservotes'] ) ) {
 				$post_query_args = array(
 					'post_type' => 'link_library_links',
@@ -2607,12 +2673,23 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'displayweblink', 'sourceweblink', 'showtelephone', 'sourcetelephone', 'showemail', 'sourceimage', 'sourcename', 'popup_width', 'popup_height', 'rssfeedinlinedayspublished', 'tooltipname', 'catlistchildcatdepthlimit', 'childcatdepthlimit', 'showcurrencyplacement', 'tooltipname', 'showupdatedpos', 'datesource', 'taglinks', 'linkcurrencyplacement', 'displaycustomurl1', 'displaycustomurl2', 'displaycustomurl3', 'displaycustomurl4', 'displaycustomurl5', 'displaycustomtext1', 'displaycustomtext2',
 					'displaycustomtext3', 'displaycustomtext4', 'displaycustomtext5', 'displaycustomlist1', 'displaycustomlist2',
 					'displaycustomlist3', 'displaycustomlist4', 'displaycustomlist5', 'catnameformat', 'rsslibraryitemspersite', 'rsslibrarymaxwordsitem', 
-					'rsslibrarypaginationnb', 'rsslibrarytemplate', 
+					'rsslibrarypaginationnb',
 				)
 				as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
 					$options[$option_name] = str_replace( "\"", "'", strtolower( $_POST[$option_name] ) );
+				}
+			}
+
+			foreach (
+				array(
+					'rsslibrarytemplate', 
+				)
+				as $option_name
+			) {
+				if ( isset( $_POST[$option_name] ) ) {
+					$options[$option_name] = wp_kses( $_POST[$option_name], $this->allowed_html_tags() );
 				}
 			}
 
