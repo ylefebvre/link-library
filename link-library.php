@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.1.0
+Version: 7.1.5
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -532,154 +532,154 @@ class link_library_plugin {
 				$asset_file['version']
 			);
 		
-			register_block_type( 'link-library/link-block', [
+			register_block_type( 'link-library/link-block', array( 
 				'editor_script' => 'link-library-block',
 				'render_callback' => array( $this, 'link_library_func' ),
-				'attributes'  => [
-					'settings'    => [
+				'attributes'  => array(
+					'settings'    => array(
 						'type'  => 'string',
 						'default'   => '1',
-					],
-					'linkorderoverride'    => [
+					),
+					'linkorderoverride'    => array(
 						'type'  => 'string',
 						'default'   => '',
-					],
-					'linkdirectionoverride'    => [
+					),
+					'linkdirectionoverride'    => array(
 						'type'  => 'string',
 						'default'   => '',
-					],
-					'categorylistoverride'    => [
+					),
+					'categorylistoverride'    => array(
 						'type'  => 'array',
-						'default'   => [],
-						'items'   => [
+						'default'   => array(),
+						'items'   => array(
 							'type' => 'string',
-						],
-					],
-					'excludecategoryoverride'    => [
+						),
+					),
+					'excludecategoryoverride'    => array(
 						'type'  => 'array',
-						'default'   => [],
-						'items'   => [
+						'default'   => array(),
+						'items'   => array(
 							'type' => 'string',
-						],
-					],
-					'taglistoverride'    => [
+						),
+					),
+					'taglistoverride'    => array(
 						'type'  => 'array',
-						'default'   => [],
-						'items'   => [
+						'default'   => array(),
+						'items'   => array(
 							'type' => 'string',
-						],
-					],
-					'maxlinksoverride'    => [
+						),
+					),
+					'maxlinksoverride'    => array(
 						'type'  => 'string',
 						'default'   => '',
-					],
-					'notesoverride'    => [
+					),
+					'notesoverride'    => array(
 						'type'  => 'boolean',
 						'default'   => false,
-					],
-					'descoverride'    => [
+					),
+					'descoverride'    => array(
 						'type'  => 'boolean',
 						'default'   => false,
-					],
-					'rssoverride'    => [
+					),
+					'rssoverride'    => array(
 						'type'  => 'boolean',
 						'default'   => false,
-					],
-					'categorylistoverrideCSV' => [
+					),
+					'categorylistoverrideCSV' => array(
 						'type' => 'string',
 						'default' => '',
-					],
-					'excludecategoryoverrideCSV' => [
+					),
+					'excludecategoryoverrideCSV' => array(
 						'type' => 'string',
 						'default' => '',
-					],
-					'taglistoverrideCSV' => [
+					),
+					'taglistoverrideCSV' => array(
 						'type' => 'string',
 						'default' => '',
-					],
-				],
-			] );
+					),
+				),
+			 ) );
 
-			register_block_type( 'link-library/cats-block', [
+			register_block_type( 'link-library/cats-block', array(
 				'editor_script' => 'link-library-block',
 				'render_callback' => array( $this, 'link_library_cats_func' ),
-				'attributes'  => [
-					'settings'    => [
+				'attributes'  => array(
+					'settings'    => array(
 						'type'  => 'string',
 						'default'   => '1',
-					],
-					'categorylistoverride'    => [
+					),
+					'categorylistoverride'    => array(
 						'type'  => 'array',
-						'default'   => [],
-						'items'   => [
+						'default'   => array(),
+						'items'   => array(
 							'type' => 'string',
-						],
-					],
-					'excludecategoryoverride'    => [
+						),
+					),
+					'excludecategoryoverride'    => array(
 						'type'  => 'array',
-						'default'   => [],
-						'items'   => [
+						'default'   => array(),
+						'items'   => array(
 							'type' => 'string',
-						],
-					],
-					'taglistoverride'    => [
+						),
+					),
+					'taglistoverride'    => array(
 						'type'  => 'array',
-						'default'   => [],
-						'items'   => [
+						'default'   => array(),
+						'items'   => array(
 							'type' => 'string',
-						],
-					],
-					'targetlibrary'    => [
+						),
+					),
+					'targetlibrary'    => array(
 						'type'  => 'string',
 						'default'   => '',
-					],
-					'categorylistoverrideCSV' => [
+					),
+					'categorylistoverrideCSV' => array(
 						'type' => 'string',
 						'default' => '',
-					],
-					'excludecategoryoverrideCSV' => [
+					),
+					'excludecategoryoverrideCSV' => array(
 						'type' => 'string',
 						'default' => '',
-					],
-					'taglistoverrideCSV' => [
+					),
+					'taglistoverrideCSV' => array(
 						'type' => 'string',
 						'default' => '',
-					],
-				],
-			] );
+					),
+				),
+			 ) );
 			
-			register_block_type( 'link-library/addlink-block', [
+			register_block_type( 'link-library/addlink-block', array(
 				'editor_script' => 'link-library-block',
 				'render_callback' => array( $this, 'link_library_addlink_func' ),
-				'attributes'  => [
-					'settings'    => [
+				'attributes'  => array(
+					'settings'    => array(
 						'type'  => 'string',
 						'default'   => '1',
-					],
-				],
-			] );
+					),
+				),
+			 ) );
 
-			register_block_type( 'link-library/search-block', [
+			register_block_type( 'link-library/search-block', array(
 				'editor_script' => 'link-library-block',
 				'render_callback' => array( $this, 'link_library_search_func' ),
-				'attributes'  => [
-					'settings'    => [
+				'attributes'  => array(
+					'settings'    => array(
 						'type'  => 'string',
 						'default'   => '1',
-					],
-				],
-			] );
+					),
+				),
+			 ) );
 
-			register_block_type( 'link-library/count-block', [
+			register_block_type( 'link-library/count-block', array(
 				'editor_script' => 'link-library-block',
 				'render_callback' => array( $this, 'link_library_count_func' ),
-				'attributes'  => [
-					'settings'    => [
+				'attributes'  => array(
+					'settings'    => array(
 						'type'  => 'string',
 						'default'   => '1',
-					],
-				],
-			] );
+					),
+				),
+			 ) );
 		}	
 	}
 
@@ -1165,7 +1165,7 @@ class link_library_plugin {
 			$parse_original_url = parse_url( $external_link );
 			$parse_actual_url = parse_url( $response['http_response']->get_response_object()->url );
 
-			if ( 'broken' == $request_type && $parse_original_url['host'] != $parse_actual_url['host'] ) {
+			if ( ( 'broken' == $request_type || 'rss' == $request_type ) && $parse_original_url['host'] != $parse_actual_url['host'] ) {
 				$original_host_segments = explode( '.', $parse_original_url['host'] );
 				$actual_host_segments = explode( '.', $parse_actual_url['host'] );
 
@@ -1176,7 +1176,7 @@ class link_library_plugin {
 				}				
 			}
 
-			if ( 'broken' == $request_type && $parse_original_url['host'] == $parse_actual_url['host'] && $link_url_without_protocol != $response_url_without_protocol ) {
+			if ( ( 'broken' == $request_type || 'rss' == $request_type ) && $parse_original_url['host'] == $parse_actual_url['host'] && $link_url_without_protocol != $response_url_without_protocol ) {
 				$basename = basename( $parse_actual_url['path'] );
 				if ( false !== strpos( $basename, '.' ) ) {
 					return 'exists_redirected_fileurl';
@@ -1185,13 +1185,17 @@ class link_library_plugin {
 				}				
 			}
 			
-			if ( 'broken' == $request_type && $link_url_without_protocol != $response_url_without_protocol ) {
+			if ( ( 'broken' == $request_type || 'rss' == $request_type ) && $link_url_without_protocol != $response_url_without_protocol ) {
 				return 'exists_redirected';
-			} elseif ( 'broken' == $request_type && !empty( $original_protocol ) && !empty( $actual_protocol ) && $original_protocol != $actual_protocol ) {
+			} elseif ( ( 'broken' == $request_type || 'rss' == $request_type ) && !empty( $original_protocol ) && !empty( $actual_protocol ) && $original_protocol != $actual_protocol ) {
 				return 'exists_protocol_redirect';
-			} elseif ( 'broken' == $request_type && empty( $RecipCheckAddress ) ) {
+			} elseif ( ( 'broken' == $request_type || 'rss' == $request_type ) && empty( $RecipCheckAddress ) ) {
 				return 'exists_notfound';
-			} elseif ( 'reciprocal' == $request_type && strpos( $response['body'], $RecipCheckAddress ) === false ) {
+			} else {
+				return 'exists_found';
+			} 			
+			
+			if ( 'reciprocal' == $request_type && strpos( $response['body'], $RecipCheckAddress ) === false ) {
 				return 'exists_notfound';
 			} elseif ( 'reciprocal' == $request_type && strpos( $response['body'], $RecipCheckAddress ) !== false ) {
 				return 'exists_found';
@@ -2057,7 +2061,7 @@ class link_library_plugin {
 		} else {
 			foreach ( $posts as $post ) {
 				if ( 'link_library_links' != get_post_type( $post->ID ) ) {
-					$tag_array = array( 'link-library', 'link-library-cats', 'link-library-addlink', 'link-library-search', 'link-library-count' );
+					$tag_array = array( 'link-library', 'link-library-cats', 'link-library-addlink', 'link-library-search', 'link-library-count', 'rss-library' );
 					preg_match_all( '/' . get_shortcode_regex() . '/s', $post->post_content, $matches );
 					if( isset( $matches[2] ) ) {
 						foreach( ( array ) $matches[2] as $key => $value ) {

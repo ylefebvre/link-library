@@ -4,7 +4,7 @@ Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
 Tested up to: 5.7.1
-Stable tag: trunk
+Stable tag: 7.1.5
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -48,9 +48,28 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.1.5 =
+* Added new RSS Feed checking tool under Link Checking Tools
+
+= 7.1.4 =
+* Remove current page number link from pagination
+
+= 7.1.3 =
+* Additional fix for updated tag
+* Fix for pagination system
+
+= 7.1.2 =
+* Changed updated tag to use publication date to determine if it's displayed
+
+= 7.1.1 =
+* Fix in Link Library Broken Link Checker
+* Fix for pagination links in HTML GET + Permalink mode
+
 = 7.1.0 =
 * Added new [rss-library] shortcode to display a combined RSS library feed from all links
+* Enhanced bookmarket to grab selected text as new link description as well as get RSS feed link. If more than one link is found, asks the user which one to use.
 * Improved breadcrumb generation code so that the last part of the breakcrumb does not have a link. Also fixed links for sub-categories.
+* Fix for PHP installations that don't support short array syntax
 
 = 7.0.8 =
 * Add support for taglistoverride parameter in link-library-cats shortcode

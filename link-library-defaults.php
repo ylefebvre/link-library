@@ -448,7 +448,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['rsslibrarypaginationnb']			 = 10;
 	$options['rsslibrarytemplate']				 = '<div class="rss_library_item">
 	<div class="rss-library-title">[rss_item_title]</div>
-	<div class="rss-library-source"><span class="rss-library-site">[link_title]</span><span class="rss-library-date">[rss_item_date]</span></div>
+	<div class="rss-library-source"><span class="rss-library-site">[link_title]</span><span class="rss-library-date">[rss_item_date] - [rss_item_time]</span></div>
 	<div class="rss-library-content">[rss_item_content]</div>
 </div>';
 
@@ -561,6 +561,7 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['suppresssubdomainredirection']	  = false;
 	$genoptions['suppresssubfolderredirection']	  = false;
 	$genoptions['suppressbadconfigredirection']   = false;
+	$genoptions['rsscheckdays']					 = 90;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

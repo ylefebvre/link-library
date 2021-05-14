@@ -132,7 +132,8 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 				if ( $counter != $pagenumber ) {
 					$paginationoutput .= '<span class="unselectedpage">';
 				} else {
-					$paginationoutput .= '<span class="selectedpage">';
+					$paginationoutput .= '<span class="selectedpage">' . $counter . '</span>';
+					continue;
 				}
 
 				if ( !$showonecatonly ) {
@@ -203,7 +204,14 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
 				if ( 'AJAX' == $showonecatmode || empty( $showonecatmode ) ) {
 					$paginationoutput .= "<a href=\"#\" onClick=\"showLinkCat" . $settings . "('" . $AJAXcatid . "', '" . $settings . "', " . $nextpagenumber . ");return false;\" >" . __('Next', 'link-library') . '</a>';
 				} elseif ( 'HTMLGET' == $showonecatmode || 'HTMLGETSLUG' == $showonecatmode || 'HTMLGETCATNAME' == $showonecatmode || 'HTMLGETPERM' == $showonecatmode ) {
-					$argumentarray = array ( 'page_id' => $pageID, 'linkresultpage' => $nextpagenumber );
+					if ( 'HTMLGET' == $showonecatmode ) {
+						$argumentarray = array ( 'linkresultpage' => $nextpagenumber, 'cat_id' => $AJAXcatid );
+					} elseif ( 'HTMLGETCATNAME' == $showonecatmode ) {
+						$argumentarray = array ( 'linkresultpage' => $nextpagenumber, 'catname' => $AJAXcatid );
+					} else {
+						$argumentarray = array ( 'linkresultpage' => $nextpagenumber, 'cat' => $AJAXcatid );
+					}
+					
 					$argumentarray = array_merge( $argumentarray, $incomingget );
 					$targetaddress = esc_url( add_query_arg( $argumentarray ) );
 
@@ -1394,6 +1402,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								$linkitem['term_id'] = $link_category->term_id;
 								$linkitem['link_name'] = get_the_title();
 								$linkitem['link_permalink'] = get_the_permalink( get_the_ID() );
+								$linkitem['publication_date'] = get_the_time( 'U', get_the_ID() );
 								$link_meta = get_metadata( 'post', get_the_ID() );
 
 								$linkitem['category_description'] = $link_category->description;
@@ -1562,7 +1571,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 									}
 								}
 
-								$date_diff = time() - intval( $link_meta['link_updated'][0] );
+								$date_diff = time() - intval( $linkitem['publication_date'] );
 
 								if ( $date_diff < 604800 ) {
 									$linkitem['recently_updated'] = true;
@@ -1942,7 +1951,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 														if ( 'linkupdated' == $datesource ) {
 															$formatteddate = date_i18n( get_option( 'links_updated_date_format' ), intval( $linkitem['link_updated'] ) );
 														} else {
-															$formatteddate = date_i18n( get_option( 'links_updated_date_format' ), get_the_time( 'U', false, get_the_ID(), false ) );
+															$formatteddate = date_i18n( get_option( 'links_updated_date_format' ), get_the_time( 'U', get_the_ID() ) );
 														}
 
 														$current_cat_output .= $formatteddate;

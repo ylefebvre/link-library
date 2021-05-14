@@ -406,7 +406,8 @@ function RenderRSSLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $se
 			$template = str_replace( '[link_category]', $rss_array_item['category_name'], $template );
 			$template = str_replace( '[rss_item_title]', '<a target="_blank" href="' . $rss_array_item['permalink'] . '">'. $rss_array_item['title'] . '</a>', $template );
 			$template = str_replace( '[link_title]', $rss_array_item['site_name'], $template );
-			$template = str_replace( '[rss_item_date]', date( get_option('date_format') . ' ' . get_option('time_format'), $rss_array_item['pub_timestamp'] ), $template );
+			$template = str_replace( '[rss_item_date]', date( get_option('date_format'), $rss_array_item['pub_timestamp'] ), $template );
+			$template = str_replace( '[rss_item_time]', date( get_option('time_format'), $rss_array_item['pub_timestamp'] ), $template );
 			$template = str_replace( '[rss_item_content]', $rss_array_item['description'], $template );
 			$output .= $template;			
 		}
