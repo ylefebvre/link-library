@@ -655,10 +655,11 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
             $output .= '<div>' . __('No categories found', 'link-library') . '.</div>';
         }
 
-        if ( 0 == $level ) {
-	        $output .= "\n<div style='clear:both' /><!-- End of Link Library Categories Output -->\n\n";
+        if ( 0 == $level && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+	        $output .= "\n<div style='clear:both' />\n\n";
         }
 
+		$output .= '<!-- End of Link Library Categories Output -->';
     }
 
 	if ( 'toggles' == $flatlist ) {
