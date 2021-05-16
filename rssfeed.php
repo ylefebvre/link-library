@@ -124,7 +124,11 @@ function link_library_generate_rss_feed () {
 
     wp_reset_postdata();
 
-	header( 'Content-Type: '. feed_content_type('rss') . '; charset=' . get_option('blog_charset') );
-    print( $rss->getFeed() );
+	if ( $options['publishrssfeed'] ) {
+        header( 'Content-Type: '. feed_content_type('rss') . '; charset=' . get_option('blog_charset') );
+        print( $rss->getFeed() );    
+    } else {
+        header( 'Location: ' . home_url() );
+    }
     exit;
 }

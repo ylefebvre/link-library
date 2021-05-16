@@ -7243,7 +7243,7 @@ function general_custom_fields_meta_box( $data ) {
 				</td>
 			</tr>
 			<tr>
-				<td style='width: 250px'><?php _e( 'RSS Feed freshnesh threshold (days)', 'link-library' ); ?></td>
+				<td style='width: 250px'><?php _e( 'RSS Feed freshness threshold (days)', 'link-library' ); ?></td>
 				<td>
 					<input type="text" id="rsscheckdays" name="rsscheckdays" size="3" value="<?php echo $genoptions['rsscheckdays']; ?>" />
 				</td>
@@ -8302,9 +8302,10 @@ function link_library_reciprocal_link_checker() {
 	$genoptions = get_option( 'LinkLibraryGeneral' );
 	$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
-	$RecipCheckAddress = ( isset( $_POST['RecipCheckAddress'] ) && !empty( $_POST['RecipCheckAddress'] ) ? $_POST['RecipCheckAddress'] : '' );
+	$RecipCheckAddress = ( isset( $_POST['RecipCheckAddress'] ) && !empty( $_POST['RecipCheckAddress'] ) ? esc_url( $_POST['RecipCheckAddress'] ) : '' );
 	$recipcheckdelete403 = ( isset( $_POST['recipcheckdelete403'] ) && !empty( $_POST['recipcheckdelete403'] ) && 'true' == $_POST['recipcheckdelete403'] ? true : false );
-	$check_type = ( isset( $_POST['mode'] ) && !empty( $_POST['mode'] ) ? $_POST['mode'] : 'reciprocal' );
+	$check_type = ( isset( $_POST['mode'] ) && !empty( $_POST['mode'] ) ? sanitize_text_field( $_POST['mode'] ) : 'reciprocal' );
+	$rsscheckdays = ( ( isset( $_POST['rsscheckdays'] ) && !empty( $_POST['rsscheckdays'] ) ) ? intval( $_POST['rsscheckdays'] ) : $genoptions['rsscheckdays'] );
 
 	if ( ! empty( $RecipCheckAddress ) || ( empty( $RecipCheckAddress ) && ( 'reciprocal' != $check_type || 'emptycat' == $check_type ) )  ) {
 		$args = array(
@@ -8386,7 +8387,7 @@ function link_library_reciprocal_link_checker() {
 									$pub_timestamp = strtotime( $item->get_date( 'F j, Y, g:i a' ) );
 
 									$date_diff = time() - $pub_timestamp;
-									$time_limit = intval( $genoptions['rsscheckdays'] ) * 86400;
+									$time_limit = intval( $rsscheckdays ) * 86400;
 
 									if ( $date_diff > $time_limit ) {
 										$old_rss = true;
@@ -8401,7 +8402,7 @@ function link_library_reciprocal_link_checker() {
 					} 
 				}
 
-				echo '<a href="' . $link_url . '">' . get_the_title() . '</a>: ';
+				echo '<a href="' . esc_url( $link_url ) . '">' . esc_html( get_the_title() ) . '</a>: ';
 
 				if ( ( 'rss' == $check_type || 'broken' == $check_type ) && $reciprocal_result == 'exists_redirected' ) {
 					echo '<span style="color: #FF0000">' . __( 'Redirected to a different address', 'link-library' ) . '</span>';
