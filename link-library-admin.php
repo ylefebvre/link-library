@@ -2774,7 +2774,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'showcustomurl5', 'customurl1tooltip', 'customurl2tooltip', 'customurl3tooltip', 'customurl4tooltip', 'customurl5tooltip', 'showcustomtext1', 'showcustomtext2', 
 					'showcustomtext3', 'showcustomtext4', 'showcustomtext5', 'customtext1tooltip', 'customtext2tooltip', 'customtext3tooltip', 'customtext4tooltip',
 					'customtext5tooltip', 'showcustomlist1', 'showcustomlist2', 'showcustomlist3', 'showcustomlist4', 'showcustomlist5', 'customlist1tooltip', 'customlist2tooltip',
-					'customlist3tooltip', 'customlist4tooltip', 'customlist5tooltip', 'rss_item_date_source'
+					'customlist3tooltip', 'customlist4tooltip', 'customlist5tooltip', 'rss_item_date_source', 'updateddays'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2804,7 +2804,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'suppress_custom_text_1_if_empty', 'suppress_custom_text_2_if_empty', 'suppress_custom_text_3_if_empty',
 					'suppress_custom_text_4_if_empty', 'suppress_custom_text_5_if_empty', 'suppress_custom_list_1_if_empty', 'suppress_custom_list_2_if_empty',
 					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty', 'catnamelink', 'hideemptycats',
-					'rsslibrarypagination',
+					'rsslibrarypagination', 'showupdatedonly'
 				)
 				as $option_name
 			) {
@@ -5018,14 +5018,14 @@ function general_custom_fields_meta_box( $data ) {
 			</tr>
 			<tr>
 				<td style='width:150px'>
-					<?php _e( 'Show Link Updated Flag', 'link-library' ); ?>
+					<?php _e( 'Show Link Updated/New Flag', 'link-library' ); ?>
 				</td>
 				<td style='width:75px;'>
 					<input type="checkbox" id="showupdated" name="showupdated" <?php checked( $options['showupdated'] ); ?>/>
 				</td>
 				<td></td>
 				<td style='width:150px'>
-					<?php _e( 'Show Link Updated Date in Tooltip', 'link-library' ); ?>
+					<?php _e( 'Show Link Updated/New Date in Tooltip', 'link-library' ); ?>
 				</td>
 				<td style='width:75px;'>
 					<input type="checkbox" id="showupdatedtooltip" name="showupdatedtooltip" <?php checked( $options['showupdatedtooltip'] ); ?>/>
@@ -5033,7 +5033,7 @@ function general_custom_fields_meta_box( $data ) {
 			</tr>
 			<tr>
 				<td style='width:150px'>
-					<?php _e( 'Link Updated Flag Position', 'link-library' ); ?>
+					<?php _e( 'Link Updated/New Flag Position', 'link-library' ); ?>
 				</td>
 				<td style='width:75px;'>
 					<select id="showupdatedpos" name="showupdatedpos">
@@ -5049,10 +5049,25 @@ function general_custom_fields_meta_box( $data ) {
 				<td style='width:20px'>
 				</td>
 				<td class="lltooltip" title="<?php _e( 'Label to be displayed before new links', 'link-library' ); ?>">
-					<?php _e( 'Updated link label', 'link-library' ); ?>
+					<?php _e( 'Updated/New link label', 'link-library' ); ?>
 				</td>
 				<td class="lltooltip" title="<?php _e( 'Label to be displayed before new links', 'link-library' ); ?>">
 					<input type="text" id="updatedlabel" name="updatedlabel" size="40" value="<?php echo $options['updatedlabel']; ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td style='width:150px'>
+					<?php _e( 'Only show updated/new links', 'link-library' ); ?>
+				</td>
+				<td style='width:75px;'>
+					<input type="checkbox" id="showupdatedonly" name="showupdatedonly" <?php checked( $options['showupdatedonly'] ); ?>/>
+				</td>
+				<td></td>
+				<td style='width:150px'>
+					<?php _e( 'Number of days to be considered updated/new', 'link-library' ); ?>
+				</td>
+				<td style='width:75px;'>
+				<input type="text" id="updateddays" name="updateddays" size="4" value="<?php echo $options['updateddays']; ?>" />
 				</td>
 			</tr>
 			<tr>

@@ -942,6 +942,15 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 						);
 				}
 
+				if ( $showupdatedonly ) {
+					$link_query_args['date_query'] = array(
+						array(
+							'after' => '-' . $updateddays . ' days',
+							'column' => 'post_date',
+						),
+					);
+				}
+
 				if ( isset( $_GET['link_letter'] ) && !empty( $_GET['link_letter'] ) ) {
 					$link_query_args['link_starts_with'] = $_GET['link_letter'];
 				}
@@ -1573,7 +1582,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 								$date_diff = time() - intval( $linkitem['publication_date'] );
 
-								if ( $date_diff < 604800 ) {
+								if ( $date_diff < 86400 * $updateddays ) {
 									$linkitem['recently_updated'] = true;
 								} else {
 									$linkitem['recently_updated'] = false;

@@ -451,6 +451,8 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	<div class="rss-library-source"><span class="rss-library-site">[link_title]</span><span class="rss-library-date">[rss_item_date] - [rss_item_time]</span></div>
 	<div class="rss-library-content">[rss_item_content]</div>
 </div>';
+	$options['showupdatedonly']					 = false;
+	$options['updateddays']						 = 14;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
