@@ -452,7 +452,8 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	<div class="rss-library-content">[rss_item_content]</div>
 </div>';
 	$options['showupdatedonly']					 = false;
-	$options['updateddays']						 = 14;
+	$options['updateddays']						 = 7;
+	$options['searchfromallcats']				 = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
@@ -564,6 +565,9 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['suppresssubfolderredirection']	  = false;
 	$genoptions['suppressbadconfigredirection']   = false;
 	$genoptions['rsscheckdays']					 = 90;
+	$genoptions['cattaxonomy']					  = 'link_library_category';
+	$genoptions['tagtaxonomy']					  = 'link_library_tags';
+	$genoptions['ignoresortarticles']			  = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

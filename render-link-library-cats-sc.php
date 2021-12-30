@@ -47,8 +47,10 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
     if ( isset($_GET['cat_id'] ) ) {
         $categoryid = intval( $_GET['cat_id'] );
     } elseif ( isset( $_GET['catname'] ) ) {
-        $categoryterm = get_term_by( 'name', urldecode( $_GET['catname'] ), 'link_library_category' );
-	    $categoryid = $categoryterm->term_id;
+        $categoryterm = get_term_by( 'name', sanitize_text_field( urldecode( $_GET['catname'] ) ), $generaloptions['cattaxonomy'] );
+		if ( false !== $categoryterm ) {
+			$categoryid = $categoryterm->term_id;
+		}	    
     } elseif ( $showonecatonly ) {
 	    $categoryid = $defaultsinglecat_cpt;
     }
@@ -152,7 +154,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	        $link_categories_query_args['order'] = in_array( $direction, $validdirections ) ? $direction : 'ASC';
         }
 
-        $link_categories = get_terms( 'link_library_category', $link_categories_query_args );
+        $link_categories = get_terms( $generaloptions['cattaxonomy'], $link_categories_query_args );
 
 	    remove_filter( 'get_terms', 'link_library_get_terms_filter_only_publish' );
 	    remove_filter( 'get_terms', 'link_library_get_terms_filter_publish_pending' );
@@ -228,7 +230,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
             foreach ( $link_categories as $catname ) {
 	            $linkcount = 0;
 
-	            $childcatparams =  array( 'taxonomy' => 'link_library_category', 'child_of' => $catname->term_id );
+	            $childcatparams =  array( 'taxonomy' => $generaloptions['cattaxonomy'], 'child_of' => $catname->term_id );
 
 	            if ( $hide_if_empty ) {
 		            $childcatparams['hide_empty'] = true;
@@ -271,7 +273,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
 	            $link_query_args['tax_query'][] =
 		            array(
-			            'taxonomy' => 'link_library_category',
+			            'taxonomy' => $generaloptions['cattaxonomy'],
 			            'field'    => 'term_id',
 			            'terms'    => $catname->term_id,
 			            'include_children' => false
@@ -280,7 +282,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 				if ( !empty( $tag_array ) ) {
 					$link_query_args['tax_query'][] = array( 
 						array(
-							'taxonomy'  => 'link_library_tags',
+							'taxonomy'  => $generaloptions['tagtaxonomy'],
 							'field'     => $tag_type,
 							'terms'     => $tag_array
 						)
@@ -300,7 +302,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            }
 
 	            if ( isset( $_GET['searchll'] ) ) {
-		            $searchstring = $_GET['searchll'];
+		            $searchstring = sanitize_text_field( $_GET['searchll'] );
 		            if ( !empty( $searchstring ) ) {
 			            $link_query_args['s'] = $searchstring;
 		            }
@@ -390,7 +392,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
 			                $cattargetaddress = add_query_arg( 'cat_id', $catname->term_id, '');
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
-				                $cattargetaddress = add_query_arg( 'searchll', $_GET['searchll'], $cattargetaddress );
+				                $cattargetaddress = add_query_arg( 'searchll', sanitize_text_field( $_GET['searchll'] ), $cattargetaddress );
 			                }
 
 			                $cattext .= $cattargetaddress;
@@ -405,7 +407,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
 			                $cattargetaddress = add_query_arg( 'catslug', $catname->slug, '');
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
-				                $cattargetaddress = add_query_arg( 'searchll', $_GET['searchll'], $cattargetaddress );
+				                $cattargetaddress = add_query_arg( 'searchll', sanitize_text_field( $_GET['searchll'] ), $cattargetaddress );
 			                }
 
 			                $cattext .= $cattargetaddress;
@@ -439,7 +441,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
 			                $cattargetaddress = esc_url( site_url() . '/' . $rewritepage . '/' . $catname->slug );
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
-				                $cattargetaddress = add_query_arg( 'searchll', $_GET['searchll'], $cattargetaddress );
+				                $cattargetaddress = add_query_arg( 'searchll', sanitize_text_field( $_GET['searchll'] ), $cattargetaddress );
 			                }
 
 			                $cattext .= $cattargetaddress;
@@ -455,7 +457,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 			                }
 
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
-				                $cattext .= '?searchll=' . $_GET['searchll'] . '&cat_id=' . $catname->term_id;
+				                $cattext .= '?searchll=' . sanitize_text_field( $_GET['searchll'] ) . '&cat_id=' . $catname->term_id;
 			                } elseif ( 'toggles' != $flatlist ) {
 				                $cattext .= '#' . $catname->slug;
 			                }
