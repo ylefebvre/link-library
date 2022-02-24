@@ -24,6 +24,32 @@ function link_library_highlight_phrase( $str, $phrase, $tag_open = '<strong>', $
 	return $str;
 }
 
+function ll_create_temp_column( $fields ) {
+	global $wpdb;
+
+	$genoptions = get_option( 'LinkLibraryGeneral' );
+	$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+	$matches = $genoptions['ignoresortarticles'];;
+	$has_the = " CASE 
+		WHEN $wpdb->posts.post_title regexp( '^($matches)[[:space:]]' )
+		  THEN trim(substr($wpdb->posts.post_title from 4)) 
+		ELSE $wpdb->posts.post_title 
+		  END AS title2";
+	if ( $has_the ) {
+		$fields .= ( preg_match( '/^(\s+)?,/', $has_the ) ) ? $has_the : ", $has_the";
+	}
+	return $fields;
+  }
+  
+function ll_sort_by_temp_column ($orderby) {
+	$custom_orderby = " UPPER(title2) ASC";
+	if ($custom_orderby) {
+		$orderby = $custom_orderby;
+	}
+	return $orderby;
+}
+
 function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 	$genoptions = get_option( 'LinkLibraryGeneral' );
 	$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
@@ -886,7 +912,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 
 				if ( 'name' == $linkorder ) {
-					$link_query_args['orderby'] = '_llcustomtitlesort';
+					$link_query_args['orderby'] = 'title';
 					$link_query_args['order'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'id' == $linkorder ) {
 					$link_query_args['orderby']['ID'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
@@ -977,7 +1003,17 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['tax_query']['relation'] = 'AND';
 				}
 
+				if ( 'name' == $linkorder && !empty( $ignoresortarticles ) ) {
+					add_filter( 'posts_fields', 'll_create_temp_column' );
+					add_filter( 'posts_orderby', 'll_sort_by_temp_column' );
+				}
+
 				$the_link_query = new WP_Query( $link_query_args );
+
+				if ( 'name' == $linkorder && !empty( $ignoresortarticles ) ) {
+					remove_filter( 'posts_fields', 'll_create_temp_column' );
+					remove_filter( 'posts_orderby', 'll_sort_by_temp_column' );
+				}
 
 				if ( $debugmode ) {
 					$output .= "\n<!-- Link Query: " . print_r( $link_query_args, TRUE ) . "-->\n\n";

@@ -452,17 +452,17 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		                }
 	                } else if ( $catanchor ) {
 		                if ( !$pagination || ( !$pagination && $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) ) {
-			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
+			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist && 'togglesshowhideall' != $flatlist ) {
 				                $cattext = '<a href="';
 			                }
 
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
 				                $cattext .= '?searchll=' . sanitize_text_field( $_GET['searchll'] ) . '&cat_id=' . $catname->term_id;
-			                } elseif ( 'toggles' != $flatlist ) {
+			                } elseif ( 'toggles' != $flatlist && 'togglesshowhideall' != $flatlist ) {
 				                $cattext .= '#' . $catname->slug;
 			                }
 
-			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
+			                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist && 'togglesshowhideall' != $flatlist) {
 				                $cattext .= '">';
 			                }
 		                } elseif ( $pagination ) {
@@ -474,23 +474,23 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 			                $ceilpageposition = ceil( $pageposition );
 
 			                if ( 0 == $ceilpageposition && !isset( $_GET['linkresultpage'] ) ) {
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist && 'togglesshowhideall' != $flatlist ) {
 					                $cattext = '<a href="';
 				                }
 
 				                $cattext .= get_permalink() . '#' . $catname->slug;
 
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist && 'togglesshowhideall' != $flatlist ) {
 					                $cattext .= '">';
 				                }
 			                } else {
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist && 'togglesshowhideall' != $flatlist ) {
 					                $cattext = '<a href="';
 				                }
 
 				                $cattext .= '?linkresultpage=' . ( $ceilpageposition == 0 ? 1 : $ceilpageposition ) . '#' . $catname->slug;
 
-				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist ) {
+				                if ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'toggles' != $flatlist && 'togglesshowhideall' != $flatlist ) {
 					                $cattext .= '">';
 				                }
 			                }
@@ -507,7 +507,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
                 }
 
                 if ( !$showcategorydescheaders || ( $showcategorydescheaders && ( 'right' == $catlistdescpos || empty( $catlistdescpos ) ) ) ) {
-	                if ( 'toggles' == $flatlist ) {
+	                if ( 'toggles' == $flatlist || 'togglesshowhideall' == $flatlist ) {
 						$catitem .= '<div class="linkcatname cattoggle catactive" data-cat="' . $catname->term_id . '">';
 					} elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 		                $catitem .= '<span class="linkcatname">';
@@ -519,7 +519,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	                if ( $showcatlinkcount && ( $linkcount != 0 || ( $linkcount == 0 && !$cat_has_children ) ) ) {
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
-	                if ( 'toggles' == $flatlist ) {
+	                if ( 'toggles' == $flatlist || 'togglesshowhideall' == $flatlist ) {
 						$catitem .= '</div>';
 					} elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
 		                $catitem .= '</span>';
@@ -549,7 +549,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		                $catitem .= '<span class="linkcatcount"> (' . $linkcount . ')</span>';
 	                }
 					
-					if ( 'toggles' == $flatlist ) {
+					if ( 'toggles' == $flatlist || 'togglesshowhideall' == $flatlist ) {
 						$catitem .= '</div>';
 					} else {
 						$catitem .= '</span>';
@@ -619,6 +619,11 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		            $output .= '</form>';
 	            }
 
+				if ( 'togglesshowhideall' == $flatlist ) {
+					$output .= '<div class="linkcatname cattogglehideall">' . __( 'Hide all', 'link-library' ) . '</div>';
+					$output .= '<div class="linkcatname cattoggleshowall">' . __( 'Show all', 'link-library' ) . '</div>';
+				}
+
 	            $output .= "</div>\n";
             } elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && $link_categories ) {
             	$output .= '</ul>';
@@ -664,7 +669,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		$output .= '<!-- End of Link Library Categories Output -->';
     }
 
-	if ( 'toggles' == $flatlist ) {
+	if ( 'toggles' == $flatlist || 'togglesshowhideall' == $flatlist) {
 		$output .= '<script type="text/javascript">';
 		$output .= "jQuery(document).ready(function() {\n";
 		$output .= "\tjQuery( '.cattoggle' ).click( function() {\n";
@@ -681,11 +686,43 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		$output .= "\t\t\tjQuery( targetLibrary ).removeClass( 'masonry-brick' );\n";
 		$output .= "\t\t} else {\n";
 		$output .= "\t\t\tjQuery( targetLibrary ).addClass( 'grid-item' );\n";
+		$output .= "\t\t\tjQuery( targetLibrary ).addClass( 'masonry-brick' );\n";
 		$output .= "\t\t}\n";
 		$output .= "\t\tjQuery( targetLibrary ).toggle();\n";
 		$output .= "\t\tjQuery('.grid').masonry('reloadItems');";
 		$output .= "\t\tjQuery('.grid').masonry('layout');";
 		$output .= "\t});\n";
+
+		if ( 'togglesshowhideall' == $flatlist ) {
+			$output .= "\tjQuery( '.cattogglehideall' ).click( function() {\n";
+			$output .= "\t\tjQuery( '.catactive' ).each( function() {\n";
+			$output .= "\t\t\tjQuery(this).removeClass( 'catactive' );";
+			$output .= "\t\t\tjQuery(this).addClass( 'catinactive' );";
+			$output .= "\t\t\tvar targetLibrary = '.LinkLibraryCat' + jQuery( this ).data( 'cat' );\n";
+			$output .= "\t\t\tif ( jQuery( targetLibrary ).hasClass( 'grid-item' ) ) {\n";
+			$output .= "\t\t\t\tjQuery( targetLibrary ).removeClass( 'grid-item' );\n";
+			$output .= "\t\t\t\tjQuery( targetLibrary ).removeClass( 'masonry-brick' );\n";
+			$output .= "\t\t\t}\n";		
+			$output .= "\t\t\t\tjQuery( targetLibrary ).toggle();\n";
+			$output .= "\t\t\tjQuery('.grid').masonry('reloadItems');";
+			$output .= "\t\t\tjQuery('.grid').masonry('layout');";
+			$output .= "\t\t});\n";
+			$output .= "\t});\n";
+
+			$output .= "\tjQuery( '.cattoggleshowall' ).click( function() {\n";
+			$output .= "\t\tjQuery( '.catinactive' ).each( function() {\n";
+			$output .= "\t\t\tjQuery(this).removeClass( 'catinactive' );";
+			$output .= "\t\t\tjQuery(this).addClass( 'catactive' );";
+			$output .= "\t\t\tvar targetLibrary = '.LinkLibraryCat' + jQuery( this ).data( 'cat' );\n";
+			$output .= "\t\t\tjQuery( targetLibrary ).addClass( 'grid-item' );\n";
+			$output .= "\t\t\tjQuery( targetLibrary ).addClass( 'masonry-brick' );\n";
+			$output .= "\t\t\tjQuery( targetLibrary ).toggle();\n";
+			$output .= "\t\t\tjQuery('.grid').masonry('reloadItems');";
+			$output .= "\t\t\tjQuery('.grid').masonry('layout');";
+			$output .= "\t\t});\n";
+			$output .= "\t});\n";
+		}
+
 		$output .= "});\n";
 		$output .= '</script>';
 	}

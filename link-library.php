@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.3
+Version: 7.3.2
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -317,8 +317,6 @@ class link_library_plugin {
 
 		add_filter( 'posts_where', array( $this, 'll_posts_where' ), 10, 2 );
 
-		add_filter( 'posts_orderby', array( $this, 'll_posts_orderby' ), 10, 2 );
-
 		// Load text domain for translation of admin pages and text strings
 		load_plugin_textdomain( 'link-library', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
@@ -392,32 +390,6 @@ class link_library_plugin {
 		}
 
 		return $where;
-	}
-
-	function ll_posts_orderby( $orderby, $wp_query ) {		
-		if ( '_llcustomtitlesort' !== $wp_query->get( 'orderby' ) ) {
-			return $orderby;
-		}		
-
-		$genoptions = get_option( 'LinkLibraryGeneral' );
-		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
-
-		global $wpdb;
-
-		$matches = $genoptions['ignoresortarticles'];   // REGEXP is not case sensitive here
-
-		// Custom ordering (SQL)
-		return sprintf( 
-		" 
-		CASE 
-			WHEN {$wpdb->posts}.post_title REGEXP( '^($matches)[[:space:]]+' )
-				THEN TRIM( SUBSTR( {$wpdb->posts}.post_title FROM %d )) 
-			ELSE {$wpdb->posts}.post_title 
-		END %s
-		",
-		strlen( $matches ) + 1,
-		'ASC' === strtoupper( $wp_query->get( 'order' ) ) ? 'ASC' : 'DESC'     
-		);
 	}
 
 	function link_library_rss_feed_request( $qv ) {
@@ -2449,6 +2421,7 @@ class Link_Library_Widget extends WP_Widget {
 
 		$selected_library = ( !empty( $instance['selected_library'] ) ? $instance['selected_library'] : 1 );
 		$widget_title = ( !empty( $instance['widget_title'] ) ? esc_attr( $instance['widget_title'] ) : 'Links' );
+		$category_list_override = ( !empty( $instance['cat_list_override'] ) ? esc_attr( $instance['cat_list_override'] ) : '' );
 		?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'widget_title' ); ?>">
@@ -2460,7 +2433,7 @@ class Link_Library_Widget extends WP_Widget {
 			</label>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'nb_book_reviews' ); ?>">
+			<label for="<?php echo $this->get_field_id( 'selected_library' ); ?>">
 				<?php echo 'Select library configuration to display:'; ?>
 				<select id="<?php echo $this->get_field_id( 'selected_library' ); ?>"
 						name="<?php echo $this->get_field_name( 'selected_library' ); ?>">
@@ -2481,6 +2454,15 @@ class Link_Library_Widget extends WP_Widget {
 				</select>
 			</label>
 		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'cat_list_override' ); ?>">
+				<?php echo 'Comma-separated list of categories to display:'; ?>
+				<input type="text"
+					   id="<?php echo $this->get_field_id( 'cat_list_override' );?>"
+					   name="<?php echo $this->get_field_name( 'cat_list_override' ); ?>"
+					   value="<?php echo $category_list_override; ?>" />
+			</label>
+		</p>
 	<?php }
 
 	function widget( $args, $instance ) {
@@ -2489,13 +2471,22 @@ class Link_Library_Widget extends WP_Widget {
 		// Retrieve widget configuration options
 		$selected_library = ( !empty( $instance['selected_library'] ) ? $instance['selected_library'] : 1 );
 		$widget_title = ( !empty( $instance['widget_title'] ) ? esc_attr( $instance['widget_title'] ) : 'Links' );
+		$category_list_override = ( !empty( $instance['cat_list_override'] ) ? esc_attr( $instance['cat_list_override'] ) : '' );
 
 		// Display widget title
 		echo $before_widget . $before_title;
 		echo apply_filters( 'widget_title', $widget_title );
 		echo $after_title;
 
-		echo do_shortcode( '[link-library settings="' . $selected_library . '"]');
+		$shortcode_string = '[link-library settings="' . $selected_library . '"';
+
+		if ( !empty( $category_list_override ) ) {
+			$shortcode_string .= ' categorylistoverride="' . $category_list_override . '"';
+		}
+		
+		$shortcode_string .= ']';
+
+		echo do_shortcode( $shortcode_string );
 
 		echo $after_widget;
 	}

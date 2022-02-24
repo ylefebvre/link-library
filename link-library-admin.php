@@ -4852,6 +4852,7 @@ function general_custom_fields_meta_box( $data ) {
 							<option value="dropdown" <?php selected( $options['flatlist'] == 'dropdown' ); ?>><?php _e( 'Drop-Down List', 'link-library' ); ?></option>
 							<option value="dropdowndirect" <?php selected( $options['flatlist'] == 'dropdowndirect' ); ?>><?php _e( 'Drop-Down List Direct Access', 'link-library' ); ?></option>
 							<option value="toggles" <?php selected( $options['flatlist'] == 'toggles' ); ?>><?php _e( 'Visibility Toggles', 'link-library' ); ?></option>
+							<option value="togglesshowhideall" <?php selected( $options['flatlist'] == 'togglesshowhideall' ); ?>><?php _e( 'Visibility Toggles with Show/Hide All buttons', 'link-library' ); ?></option>
 						</select>
 					</td>
 				</tr>

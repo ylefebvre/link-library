@@ -3,8 +3,8 @@ Contributors: jackdewey
 Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
-Tested up to: 5.8
-Stable tag: 7.2.9
+Tested up to: 5.9
+Stable tag: 7.3.2
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -47,6 +47,21 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 7.3.2 =
+* Fixed problems with new option to ignore specific articles introduced in version 7.3 beta 2
+
+= 7.3.1 =
+* Added extra field to Link Library widget to allow users to select category(ies) to be displayed
+
+= 7.3 =
+* Official 7.3 version containing all features from beta 1 to 4
+
+= 7.3 Beta 4 =
+* Added CSS rules for new visibility toggle buttons
+
+= 7.3 Beta 3 =
+* Added new option when displaying categories as visibility toggles to add show all and hide all buttons
 
 = 7.3 Beta 2 =
 * Added new global option to specify articles to be ignored when sorting links by title
