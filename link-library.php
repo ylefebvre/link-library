@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.3.3
+Version: 7.3.4
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -1009,16 +1009,20 @@ class link_library_plugin {
 		}
 
 		if ( !empty( $settingssetsids ) ) {
+			$processedsettings = array();
 			foreach ( $settingssetsids as $setting ) {
-				$settingsname = 'LinkLibraryPP' . $setting;
-				$options = get_option( $settingsname );
-				$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
+				if ( !in_array( $setting, $processedsettings ) ) {
+					$processedsettings[] = $setting;
+					$settingsname = 'LinkLibraryPP' . $setting;
+					$options = get_option( $settingsname );
+					$options = wp_parse_args( $options, ll_reset_options( 1, 'list', 'return' ) );
 
-				if ( !empty( $options['stylesheet'] ) ) {
-					echo "<style id='LinkLibrarySettings" . $setting . "Style' type='text/css'>\n";
-					echo stripslashes( $options['stylesheet'] ) . "\n";
-					echo "</style>\n";
-				}
+					if ( !empty( $options['stylesheet'] ) ) {
+						echo "<style id='LinkLibrarySettings" . $setting . "Style' type='text/css'>\n";
+						echo stripslashes( $options['stylesheet'] ) . "\n";
+						echo "</style>\n";
+					}
+				}				
 			}
 		}
 	}

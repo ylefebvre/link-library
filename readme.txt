@@ -4,7 +4,7 @@ Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
 Tested up to: 5.9
-Stable tag: 7.3.3
+Stable tag: 7.3.4
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -47,6 +47,9 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 7.3.4 =
+* Fixed problem with quotes getting escaped in library-specific stylesheet editor
 
 = 7.3.3 =
 * Fixed problem with featured links not longer appearing ahead of other link when ordering by title and having specified articles to be ignored
