@@ -3,6 +3,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
 
+$globallibraryoptions = array();
+
 /* Support functions to render output of link-library shortcode */
 
 function link_library_add_http( $url ) {
@@ -42,9 +44,17 @@ function ll_create_temp_column( $fields ) {
 	return $fields;
   }
   
-function ll_sort_by_temp_column ($orderby) {
-	$custom_orderby = " UPPER(title2) ASC";
-	if ($custom_orderby) {
+function ll_sort_by_temp_column ( $orderby ) {
+	$custom_orderby = '';
+	
+	global $globallibraryoptions;
+	
+	if ( $globallibraryoptions['featuredfirst'] && 'random' != $globallibraryoptions['linkorder'] ) {
+		$custom_orderby = 'wp_postmeta.meta_value+0 DESC, ';
+	}
+	
+	$custom_orderby .= " UPPER(title2) ASC";
+	if ( $custom_orderby ) {
 		$orderby = $custom_orderby;
 	}
 	return $orderby;
@@ -312,6 +322,9 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 	$libraryoptions = wp_parse_args( $libraryoptions, ll_reset_options( 1, 'list', 'return' ) );
 	extract( $libraryoptions );
+
+	global $globallibraryoptions;
+	$globallibraryoptions = $libraryoptions;
 
 	remove_filter('posts_request', 'relevanssi_prevent_default_request');
 	remove_filter('the_posts', 'relevanssi_query', 99);
