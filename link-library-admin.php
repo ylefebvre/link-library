@@ -411,6 +411,10 @@ class link_library_plugin_admin {
 			}
 		}
 
+		if ( $pagenow == 'post-new.php' && $_GET['post_type'] == 'link_library_links' ) {
+			wp_enqueue_style( 'LibraryLibraryAdminStyle', plugins_url( 'link-library-admin.css', __FILE__ ) );
+		}
+
 		if ( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'link-library-general-options' ) || $_GET['page'] == 'link-library-settingssets' || $_GET['page'] == 'link-library-moderate' || $_GET['page'] == 'link-library-stylesheet' || $_GET['page'] == 'link-library-reciprocal' ) ) {
 			wp_enqueue_style( 'LibraryLibraryAdminStyle', plugins_url( 'link-library-admin.css', __FILE__ ) );
 		}
@@ -7432,24 +7436,25 @@ function general_custom_fields_meta_box( $data ) {
 			</tr>
 			<tr>
 				<td style="width:20%"><?php _e( 'Description', 'link-library' ); ?></td>
-				<td><input type="text" style="width:100%" id="link_description" type="link_description" name="link_description" value="<?php echo $link_description; ?>" tabindex="2"></td>
+				<td><input type="text" id="link_description" type="link_description" name="link_description" value="<?php echo $link_description; ?>" tabindex="2"></td>
 			</tr>
 			<tr>
 				<td><?php _e( 'Notes', 'link-library' ); ?></td>
 				<td><textarea style="width:100%" name="link_notes" id="link_notes" rows="5"><?php echo $link_notes; ?></textarea></td>
 			</tr>
 			<tr>
-				<td><?php _e( 'Large Description', 'link-library' ); ?></td>
-				<td>
-					<?php
-					$editorsettings = array( 'media_buttons' => false,
-											 'textarea_rows' => 5,
-											 'textarea_name' => 'link_textfield',
-											 'wpautop' => false );
-
-					wp_editor( isset( $link_textfield ) ? stripslashes( $link_textfield ) : '', 'link_textfield', $editorsettings ); ?>
-				</td>
+				<td colspan="2"><?php _e( 'Large Description', 'link-library' ); ?></td>
 			</tr>
+			</table>
+		<?php
+		$editorsettings = array( 'media_buttons' => false,
+									'textarea_rows' => 5,
+									'textarea_name' => 'link_textfield',
+									'wpautop' => false );
+
+		wp_editor( isset( $link_textfield ) ? stripslashes( $link_textfield ) : '', 'link_textfield', $editorsettings ); ?>
+
+		<table style="width:100%">
 			<tr>
 				<td><?php _e( 'RSS Address', 'link-library' ); ?></td>
 				<td><input type="text" style="width:100%" id="link_rss" type="link_rss" name="link_rss" value="<?php echo $link_rss; ?>"></td>
@@ -7457,7 +7462,7 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td><?php _e( 'Target', 'link-library' ); ?></td>
 				<td><?php
-					$target_array = array( '_blank' => '_blank (new window or tab)', '' => '_none (same window or tab)', '_top' => '_top (current window or tab, with no frames)' );
+					$target_array = array( '_blank' => '_blank (new window or tab)', '' => '_none (same window or tab)', '_top' => '_top (current window or tab)' );
 					echo '<select name="link_target" id="link_target">';
 					echo '<option value="' . $defaultlinktarget . '" ' . selected( $defaultlinktarget, $link_target ) . '>' . $target_array[$defaultlinktarget] . '</option>';
 					unset( $target_array[$defaultlinktarget] );
@@ -7883,7 +7888,7 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td><?php _e( 'Rel Tags', 'link-library' ); ?></td>
 				<td>
-					<input type="text" id="link_rel" name="link_rel" size="80" value="<?php echo $link_rel; ?>" />
+					<input type="text" style="width: 100%" id="link_rel" name="link_rel" value="<?php echo $link_rel; ?>" />
 				</td>
 			</tr>
 			<tr>

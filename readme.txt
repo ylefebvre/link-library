@@ -3,8 +3,8 @@ Contributors: jackdewey
 Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
-Tested up to: 5.9
-Stable tag: 7.3.5
+Tested up to: 6.0.1
+Stable tag: 7.3.9
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -12,7 +12,7 @@ The purpose of this plugin is to add the ability to output a list of link catego
 
 This plugin is used to be able to create a page on your web site that will contain a list of all of the link categories that you have defined inside of the Links section of the Wordpress administration, along with all links defined in these categories. The user can select a sub-set of categories to be displayed or not displayed. Link Library also offers a mode where only one category is shown at a time, using AJAX or HTML Get queries to load other categories based on user input. It can display a search box and find results based on queries. It can also display a form to accept user submissions and allow the site administrator to moderate them before listing the new entries. Finally, it can generate an RSS feed for your link collection so that people can be aware of additions to your link library.
 
-You can try it out in a temporary copy of WordPress [here](https://demo.tastewp.com/link-library)
+You can try it out in a temporary copy of WordPress [here](https://demo.tastewp.com/link-library).
 
 For links that carry RSS feed information, Link Library can display a preview of the latest feed items inline with the all links or in a separate preview window.
 
@@ -49,6 +49,18 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 7.3.9 =
+* Additional improvements to link creation page display on mobile devices
+
+= 7.3.8 =
+* Brought back mechanism to help with large imports from pre-6.0 versions to current revisions.
+
+= 7.3.7 =
+* Improved display of link creation page on mobile devices
+
+= 7.3.6 =
+* Fix for item sorting with publication date
 
 = 7.3.5 =
 * Additional fixes for featured item sorting

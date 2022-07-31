@@ -932,7 +932,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$link_query_args['meta_query']['link_updated_clause'] = array( 'key' => 'link_updated' );
 					$link_query_args['orderby']['link_updated_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'pubdate' == $linkorder ) {
-					$link_query_args['orderby']['publish_date'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
+					$link_query_args['orderby']['date'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
 				} elseif ( 'price' == $linkorder ) {
 					$link_query_args['meta_query']['link_price_clause'] = array( 'key' => 'link_price' );
 					$link_query_args['orderby']['link_price_clause'] = in_array( $linkdirection, $validdirections ) ? $linkdirection : 'ASC';
