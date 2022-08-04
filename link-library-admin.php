@@ -3549,13 +3549,13 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				<?php if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) { ?>
 				<td style='padding: 8px; border: 1px solid #cccccc;vertical-align:top !important;'>
 
-						<div style="width: 400px"><h3>Support the author - Second Edition</h3><br />
+						<div style="width: 400px"><h3>Support the author - Third Edition just released!</h3><br />
 							<table>
 								<tr>
 									<td>
-										<a href="http://www.packtpub.com/wordpress-plugin-development-cookbook/book"><img src='<?php echo plugins_url( 'icons/7683os_cover_small.jpg', __FILE__ ); ?>'>
+										<a href="https://www.packtpub.com/product/wordpress-plugin-development-cookbook-third-edition/9781801810777"><img src='<?php echo plugins_url( 'icons/7683os_cover_small.jpg', __FILE__ ); ?>'>
 									</td>
-									<td></a>The second edition of my plugin development cookbook is now available. Learn how to create your own plugins with my book.<br /><br />Order now!<br /><br /><a href="https://www.packtpub.com/web-development/wordpress-plugin-development-cookbook-second-edition">Packt Publishing</a><br /><a href="https://amzn.to/2s1U7GP">Amazon.com</a><br /><a href="https://www.amazon.ca/WordPress-Plugin-Development-Cookbook-powerful-ebook/dp/B073V39F6X/ref=sr_1_2?ie=UTF8&qid=1526738915&sr=8-2&keywords=wordpress+plugin+development+cookbook">Amazon.ca</a>
+									<td></a>The third edition of my plugin development cookbook is now available. Learn how to create your own plugins with my book, including some brand new chapters on creating blocks for the Block Editor and working with external data sources.<br /><br />Order now!<br /><br /><a href="https://www.packtpub.com/product/wordpress-plugin-development-cookbook-third-edition/9781801810777">Packt Publishing</a><br /><a href="https://www.amazon.com/WordPress-Plugin-Development-Cookbook-complete/dp/180181077X/">Amazon.com</a><br /><a href="https://www.amazon.ca/WordPress-Plugin-Development-Cookbook-complete/dp/180181077X/">Amazon.ca</a>
 									</td>
 								</tr>
 							</table>
@@ -4032,8 +4032,9 @@ function general_custom_fields_meta_box( $data ) {
 	<?php
 	}
 
-	function general_importexport_meta_box() {
+	function general_importexport_meta_box( $data ) {
 		require_once plugin_dir_path( __FILE__ ) . 'wp_dropdown_posts.php';
+		$genoptions = $data['genoptions'];
 		?>
 		<div style='padding-top:15px' id="ll-importexport" class="content-section">
 			<table>
