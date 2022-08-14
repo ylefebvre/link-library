@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.3.10
+Version: 7.3.14
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -484,6 +484,10 @@ class link_library_plugin {
 			unset( $post_type_args['exclude_from_search'] );
 			unset( $post_type_args['publicly_queryable'] );
 			$post_type_args['public'] = true;
+		}
+
+		if ( $genoptions['showexcerpt'] ) {
+			$post_type_args['supports'][] = 'excerpt';
 		}
 
 		register_post_type( 'link_library_links', $post_type_args );
@@ -1148,13 +1152,18 @@ class link_library_plugin {
 	}
 
 	function CheckReciprocalLink( $RecipCheckAddress = '', $external_link = '', $request_type = 'reciprocal' ) {
-		$response = wp_remote_get( $external_link, array( 'user-agent' => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36', 'timeout' => 10 ) );
+		$response = wp_remote_get( $external_link, array( 'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36', 'timeout' => 10 ) );
 
 		if( is_wp_error( $response ) ) {
-			$response_code = $response->get_error_code();
-			if ( 'http_request_failed' == $response_code ) {
-				return 'error_403';
-			}
+			$data = file_get_contents( $external_link );
+			if ( false !== $data ) {
+				return 'exists_found';
+			} else {
+				$response_code = $response->get_error_code();
+				if ( 'http_request_failed' == $response_code ) {
+					return 'error_403';
+				}
+			}			
 		} elseif ( $response['response']['code'] == '200' ) {
 
 			$original_protocol = '';
@@ -1183,7 +1192,7 @@ class link_library_plugin {
 			$parse_original_url = parse_url( $external_link );
 			$parse_actual_url = parse_url( $response['http_response']->get_response_object()->url );
 
-			if ( ( 'broken' == $request_type || 'rss' == $request_type ) && $parse_original_url['host'] != $parse_actual_url['host'] ) {
+			if ( ( 'broken' == $request_type || 'rss' == $request_type || 'secondary' == $request_type || 'image' == $request_type ) && $parse_original_url['host'] != $parse_actual_url['host'] ) {
 				$original_host_segments = explode( '.', $parse_original_url['host'] );
 				$actual_host_segments = explode( '.', $parse_actual_url['host'] );
 
@@ -1194,7 +1203,7 @@ class link_library_plugin {
 				}				
 			}
 
-			if ( ( 'broken' == $request_type || 'rss' == $request_type ) && $parse_original_url['host'] == $parse_actual_url['host'] && $link_url_without_protocol != $response_url_without_protocol ) {
+			if ( ( 'broken' == $request_type || 'rss' == $request_type || 'secondary' == $request_type || 'image' == $request_type ) && $parse_original_url['host'] == $parse_actual_url['host'] && $link_url_without_protocol != $response_url_without_protocol ) {
 				$basename = basename( $parse_actual_url['path'] );
 				if ( false !== strpos( $basename, '.' ) ) {
 					return 'exists_redirected_fileurl';
@@ -1203,11 +1212,11 @@ class link_library_plugin {
 				}				
 			}
 			
-			if ( ( 'broken' == $request_type || 'rss' == $request_type ) && $link_url_without_protocol != $response_url_without_protocol ) {
+			if ( ( 'broken' == $request_type || 'rss' == $request_type || 'secondary' == $request_type || 'image' == $request_type ) && $link_url_without_protocol != $response_url_without_protocol ) {
 				return 'exists_redirected';
-			} elseif ( ( 'broken' == $request_type || 'rss' == $request_type ) && !empty( $original_protocol ) && !empty( $actual_protocol ) && $original_protocol != $actual_protocol ) {
+			} elseif ( ( 'broken' == $request_type || 'rss' == $request_type || 'secondary' == $request_type || 'image' == $request_type ) && !empty( $original_protocol ) && !empty( $actual_protocol ) && $original_protocol != $actual_protocol ) {
 				return 'exists_protocol_redirect';
-			} elseif ( ( 'broken' == $request_type || 'rss' == $request_type ) && empty( $RecipCheckAddress ) ) {
+			} elseif ( ( 'broken' == $request_type || 'rss' == $request_type || 'secondary' == $request_type || 'image' == $request_type ) && empty( $RecipCheckAddress ) ) {
 				return 'exists_notfound';
 			} else {
 				return 'exists_found';

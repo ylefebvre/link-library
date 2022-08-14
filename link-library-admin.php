@@ -1215,7 +1215,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 			if ( isset( $_GET['message'] ) && $_GET['message'] == '1' ) {
 				echo "<div id='message' class='updated fade'><p><strong>" . __( 'Settings updated', 'link-library' ) . ".</strong></p></div>";
-			} elseif ( isset( $_GET['message'] ) && ( $_GET['message'] == '2' || $_GET['message'] == '3' || $_GET['message'] == 6 ) ) { ?>
+			} elseif ( isset( $_GET['message'] ) && ( $_GET['message'] == '2' || $_GET['message'] == '3' || $_GET['message'] == 6 || $_GET['message'] == 7 || $_GET['message'] == 8 ) ) { ?>
 				<div id='message' class='updated fade'><p>
 				<strong>
 				<?php
@@ -1229,9 +1229,14 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					} elseif ( intval( $_GET['message'] ) == 6 ) {
 						_e( 'RSS Link Checker Report', 'link-library' );
 						$mode = 'rss';
+					} elseif ( intval( $_GET['message'] ) == 7 ) {
+						_e( 'Secondary URLs Link Checker Report', 'link-library' );
+						$mode = 'secondary';
+					} elseif ( intval( $_GET['message'] ) == 8 ) {
+						_e( 'Image Link Checker Report', 'link-library' );
+						$mode = 'image';
 					}
 				?></strong><br />
-				<span class="loadingicon"><img src="<?php echo plugins_url( 'icons/Ajax-loader.gif', __FILE__ ); ?> " /></span><span class="processinglinks">Processing Link <span class="currentlinknumber">0</span> / <span class="totallinknumber">
 				<?php
 				$args = array(
 					'post_type' => 'link_library_links',
@@ -1265,14 +1270,33 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							if ( !empty( $link_rss ) ) {
 								$total_post_count++;
 							}
-						}						
-					}
-				}
+						} elseif( 'secondary' == $mode )  {
+							$link_secondary = get_post_meta( get_the_ID(), 'link_second_url', true );
 
-				echo $total_post_count;
-				?>
+							if ( !empty( $link_secondary ) ) {
+								$total_post_count++;
+							}
+						} elseif( 'image' == $mode )  {
+							$link_image = get_post_meta( get_the_ID(), 'link_image', true );
+
+							if ( !empty( $link_image ) ) {
+								$total_post_count++;
+							}
+						} 	
+					}
+				} 
+				
+				if ( $total_post_count > 0 ) { ?>
+
+				<span class="loadingicon"><img src="<?php echo plugins_url( 'icons/Ajax-loader.gif', __FILE__ ); ?> " /></span><span class="processinglinks">Processing Link <span class="currentlinknumber">0</span> / <span class="totallinknumber">
+				
+				<?php echo $total_post_count; } else { ?>
+					No links to check
+				<?php } ?>
+
 				</span></span>
 				<br />
+				<?php if ( $total_post_count > 0 ) { ?>
 				<div class="nextcheckitem"></div>
 				<script type="text/javascript">
 					var currentlinkindex = 1;
@@ -1319,6 +1343,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 						}
 					}
 				</script>
+				<?php } ?>
 				</p></div>
 			<?php } elseif ( isset( $_GET['message'] ) && $_GET['message'] == '4' ) {
 				echo "<div id='message' class='updated fade'><p>";
@@ -2367,6 +2392,45 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			} else {
 				$message = '3';
 			}
+		}  elseif ( isset( $_POST['exportallcategories'] ) ) {
+			$upload_dir = wp_upload_dir();
+
+			if ( is_writable( $upload_dir['path'] ) ) {
+				$myFile = $upload_dir['path'] . "/CategoriesExport.csv";
+				$fh = fopen( $myFile, 'w' ) or die( "can't open file" );
+
+				$link_library_categories = get_terms( 'link_library_category', array( 'hide_empty' => false, ) );
+
+				if ( !empty( $link_library_categories ) ) {
+					$headerrow = array( 'Category Name', 'Category ID' );
+					
+					$headerdata = join( ',', $headerrow ) . "\n";
+					fwrite( $fh, $headerdata );
+
+					foreach( $link_library_categories as $link_library_cat ) {
+						$datarow = array();
+						$datarow[] = $link_library_cat->name;
+						$datarow[] = $link_library_cat->term_id;
+						fputcsv( $fh, $datarow, ',', '"' );
+					}
+				}
+
+				fclose( $fh );				
+
+				if ( file_exists( $myFile ) ) {
+					header( 'Content-Description: File Transfer' );
+					header( 'Content-Type: application/octet-stream' );
+					header( 'Content-Disposition: attachment; filename=' . basename( $myFile ) );
+					header( 'Expires: 0' );
+					header( 'Cache-Control: must-revalidate' );
+					header( 'Pragma: public' );
+					header( 'Content-Length: ' . filesize( $myFile ) );
+					readfile( $myFile );
+					exit;
+				}
+			} else {
+				$message = '3';
+			}
 		} elseif ( isset( $_POST['ll60catmapping'] ) ) {
 			$upload_dir = wp_upload_dir();
 
@@ -2556,7 +2620,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			foreach ( array( 'debugmode', 'emaillinksubmitter', 'suppressemailfooter', 'usefirstpartsubmittername', 'hidedonation', 'publicly_queryable', 'exclude_from_search', 'bp_log_activity', 'deletelocalfile', 'customurl1active',
 				'customurl2active', 'customurl3active', 'customurl4active', 'customurl5active', 'customtext1active', 'customtext2active',
 				'customtext3active', 'customtext4active', 'customtext5active', 'customlist1active', 'customlist2active',
-				'customlist3active', 'customlist4active', 'customlist5active', 'globalsearchresultslinkurl', 'add_to_main_rss' ) as $option_name ) {
+				'customlist3active', 'customlist4active', 'customlist5active', 'globalsearchresultslinkurl', 'add_to_main_rss', 'showexcerpt' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					$genoptions[$option_name] = true;
 				} else {
@@ -3146,7 +3210,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 		update_option( 'LinkLibraryGeneral', $genoptions );
 
-		if ( !isset( $_POST['recipcheck'] ) && !isset( $_POST['brokencheck'] ) && !isset( $_POST['duplicatecheck'] ) && !isset( $_POST['emptycatcheck'] ) && !isset( $_POST['rsscheck'] ) ) {
+		if ( !isset( $_POST['recipcheck'] ) && !isset( $_POST['brokencheck'] ) && !isset( $_POST['duplicatecheck'] ) && !isset( $_POST['emptycatcheck'] ) && !isset( $_POST['rsscheck'] ) && !isset( $_POST['secondaryurlcheck'] ) && !isset( $_POST['imagelinkcheck'] ) ) {
 			$message = 1;
 		} elseif ( isset( $_POST['recipcheck'] ) ) {
 			$message = 2;
@@ -3158,7 +3222,11 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			$message = 5;
 		} elseif ( isset( $_POST['rsscheck'] ) ) {
 			$message = 6;
-		}
+		} elseif ( isset( $_POST['secondaryurlcheck'] ) ) {
+			$message = 7;
+		} elseif ( isset( $_POST['imagelinkcheck'] ) ) {
+			$message = 8;
+		} 
 
 		//lets redirect the post request into get request (you may add additional params at the url, if you need to show save results
 		$redirect_url = remove_query_arg( array( 'message' ), $_POST['_wp_http_referer'] );
@@ -3305,6 +3373,10 @@ wp_editor( $post->post_content, 'content', $editor_config );
 									}
 									echo '</select>';
 								?></td>
+						</tr>
+						<tr>
+							<td><?php _e( 'Display excerpt section in editor', 'link-library' ); ?></td>
+							<td><input type="checkbox" id="showexcerpt" name="showexcerpt" <?php checked( $genoptions['showexcerpt'] ); ?>/></td>
 						</tr>
 						<tr>
 							<td><?php _e( 'Default protocol for new links in admin when not specified', 'link-library' ); ?></td>
@@ -4042,6 +4114,12 @@ function general_custom_fields_meta_box( $data ) {
 					<td><?php _e( 'Export all links to a CSV file', 'link-library' ); ?></td>
 					<td>
 						<input class="button" type="submit" id="exportalllinks" name="exportalllinks" value="<?php _e( 'Export All Links', 'link-library' ); ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Export all categories to a CSV file', 'link-library' ); ?></td>
+					<td>
+						<input class="button" type="submit" id="exportallcategories" name="exportallcategories" value="<?php _e( 'Export All Categories', 'link-library' ); ?>" />
 					</td>
 				</tr>
 			</table>
@@ -6461,7 +6539,7 @@ function general_custom_fields_meta_box( $data ) {
 						$options['searchnoresultstext'] = __( 'No links found matching your search criteria', 'link-library' );
 					} ?>
 					<td style='padding-right:20px'>
-						<input type="text" id="searchnoresultstext" name="searchnoresultstext" size="80" value="<?php echo $options['searchnoresultstext']; ?>" />
+						<input type="text" id="searchnoresultstext" name="searchnoresultstext" size="80" value="<?php echo stripslashes( $options['searchnoresultstext'] );?>" />
 					</td>
 				</tr>
 				<tr>
@@ -7371,6 +7449,16 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td>
 					<input class="button" type='submit' id="duplicatecheck" name="duplicatecheck" value="<?php _e( 'Check Duplicate Links', 'link-library' ); ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="button" type='submit' id="secondaryurlcheck" name="secondaryurlcheck" value="<?php _e( 'Check Secondary URL Links', 'link-library' ); ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input class="button" type='submit' id="imagelinkcheck" name="imagelinkcheck" value="<?php _e( 'Check Image Links', 'link-library' ); ?>" />
 				</td>
 			</tr>
 			<tr>
@@ -8476,6 +8564,10 @@ function link_library_reciprocal_link_checker() {
 			$args['meta_key'] = 'link_url';
 		} elseif( 'rss' == $check_type )  {
 			$args['meta_key'] = 'link_rss';
+		} elseif ( 'secondary' == $check_type ) {
+			$args['meta_key'] = 'link_second_url';
+		} elseif ( 'image' == $check_type ) {
+			$args['meta_key'] = 'link_image';
 		}
 
 		$the_link_query = new WP_Query( $args );
@@ -8487,6 +8579,8 @@ function link_library_reciprocal_link_checker() {
 				global $my_link_library_plugin;
 				$link_url = get_post_meta( get_the_ID(), 'link_url', true );
 				$link_rss = get_post_meta( get_the_ID(), 'link_rss', true );
+				$link_secondary_url = get_post_meta( get_the_ID(), 'link_second_url', true );
+				$link_image = get_post_meta( get_the_ID(), 'link_image', true );
 
 				if ( 'reciprocal' == $check_type ) {
 					$link_reciprocal = get_post_meta( get_the_ID(), 'link_reciprocal', true );
@@ -8495,7 +8589,11 @@ function link_library_reciprocal_link_checker() {
 					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_url, 'broken' );
 				} elseif ( 'rss' == $check_type ) {
 					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_rss, 'rss' );
-				} 
+				} elseif ( 'secondary' == $check_type ) {
+					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_secondary_url, 'secondary' );
+				} elseif ( 'image' == $check_type ) {
+					$reciprocal_result = $my_link_library_plugin->CheckReciprocalLink( $RecipCheckAddress, $link_image, 'image' );
+				}
 
 				$broken_responses = array( 'exists_redirected', 'exists_protocol_redirect', 'exists_subdomain_redirect', 'exists_redirected_subfolder', 'exists_redirected_fileurl' );
 
@@ -8517,7 +8615,7 @@ function link_library_reciprocal_link_checker() {
 					}
 				}
 
-				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || 'broken' == $check_type && !in_array( $reciprocal_result, $broken_responses ) && strpos( $reciprocal_result, 'exists' ) !== false ) {
+				if ( ( 'reciprocal' == $check_type && $reciprocal_result == 'exists_found' ) || in_array( $check_type, array( 'broken', 'secondary', 'image' ) ) && !in_array( $reciprocal_result, $broken_responses ) && strpos( $reciprocal_result, 'exists' ) !== false ) {
 					echo '<div class="nextcheckitem"></div>';
 					wp_reset_postdata();
 					die();

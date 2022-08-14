@@ -568,6 +568,7 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['cattaxonomy']					  = 'link_library_category';
 	$genoptions['tagtaxonomy']					  = 'link_library_tags';
 	$genoptions['ignoresortarticles']			  = '';
+	$genoptions['showexcerpt']					  = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

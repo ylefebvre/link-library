@@ -2854,7 +2854,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 	}
 
 	if ( !empty( $searchstring ) && $linkcount == 1 && $level == 0 ) {
-		$output .= '<span class="nolinksfoundallcats">' . $searchnoresultstext . "</span>\n";
+		$output .= '<span class="nolinksfoundallcats">' . stripslashes( $searchnoresultstext ) . "</span>\n";
 	}
 
 	if ( $usethumbshotsforimages && $level == 0 ) {
