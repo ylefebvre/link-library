@@ -105,7 +105,11 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		    }
 	    }
 
-        $link_categories_query_args = array( 'parent' => $parent_cat_id );
+		$link_categories_query_args = array( );
+
+		if ( !empty( $parent_cat_id ) ) {
+			$link_categories_query_args['parent'] = $parent_cat_id;
+		}
 
         if ( $hide_if_empty ) {
             $link_categories_query_args['hide_empty'] = true;
@@ -185,8 +189,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
         }
 
         if ( $debugmode ) {
-            $output .= "\n<!-- Category Query: " . print_r( $link_categories_query_args, TRUE ) . "-->\n\n";
-            $output .= "\n<!-- Category Results: " . print_r( $link_categories, TRUE ) . "-->\n\n";
+			$output .= "\n<!-- Category taxonomy: " . print_r( $generaloptions['cattaxonomy'], TRUE ) . " -->\n\n";
+            $output .= "\n<!-- Category Query: " . print_r( $link_categories_query_args, TRUE ) . " -->\n\n";
+            $output .= "\n<!-- Category Results: " . print_r( $link_categories, TRUE ) . " -->\n\n";
         }
 
         // Display each category
