@@ -129,11 +129,11 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
             add_filter( 'get_terms', 'link_library_get_terms_filter_publish_draft_pending', 10, 3 );
         }
 
-        if ( !empty( $categorylist_cpt ) && empty( $singlelinkid ) && $level == 0 ) {
+        if ( !empty( $categorylist_cpt ) && empty( $singlelinkid ) /* && $level == 0 */ ) {
             $link_categories_query_args['include'] = explode( ',', $categorylist_cpt );
         }
 
-        if ( !empty( $excludecategorylist_cpt ) && empty( $singlelinkid ) && $level == 0 ) {
+        if ( !empty( $excludecategorylist_cpt ) && empty( $singlelinkid ) /* && $level == 0 */ ) {
             $link_categories_query_args['exclude'] = explode( ',', $excludecategorylist_cpt );
         }
 

@@ -4,7 +4,7 @@ Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
 Tested up to: 6.0.1
-Stable tag: 7.3.16
+Stable tag: 7.3.18
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -49,6 +49,12 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 7.3.18 =
+* Fixed issue introduced in 7.3.16
+
+= 7.3.17 =
+* Modified to allow excludecategoryoverride to work with sub-categories in [link-library-cat] shortcode
 
 = 7.3.16 =
 * Added parameter to [link-library-cats] shortcode called parent_cat_id. Should be set to empty "" if using categorylistoverride and only specifying sub-categories
