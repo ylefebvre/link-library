@@ -786,7 +786,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			$output .= link_library_display_pagination( $previouspagenumber, $nextpagenumber, $number_of_pages, $pagenumber, $showonecatonly, $showonecatmode, $AJAXcatid, $settings, $pageID, $currentcatletter );
 		}
 
-		if ( $level == 0 && 'search' == $mode ) {
+		if ( $level == 0 && 'search' == $mode && !$suppressonemptysearch ) {
 			$output .= '<div class="resulttitle">' . __('Search Results for', 'link-library') . ' "' . esc_html( stripslashes( $searchstring ) ) . '"</div><!-- Div search results title -->';
 		}
 
@@ -1055,6 +1055,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 				// Display links
 				if ( ( $the_link_query->found_posts && $showonecatonly && ( ( 'AJAX' == $showonecatmode && $AJAXnocatset ) || ( 'AJAX' != $showonecatmode && $GETnocatset ) ) && $nocatonstartup && empty( $searchstring ) ) || ( 0 == $the_link_query->found_posts && $nocatonstartup && empty( $searchstring ) ) ) {
+					if ( $level == 0 && 'search' == $mode && !$suppressonemptysearch ) {
+						$output .= '<div class="resulttitle">' . __( 'Search Results for', 'link-library' ) . ' "' . esc_html( stripslashes( $searchstring ) ) . '"</div><!-- Div search results title -->';
+					}
+
 					$output .= "<div id='linklist" . $settings . "' class='linklist'>\n";
 					$output .= '</div><!-- Div empty list -->';
 				} elseif ( ( $the_link_query->found_posts || !$hide_if_empty || $cat_has_children ) ) {
@@ -2853,7 +2857,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 		$output .= '<span class="nolinksfoundallcats">' . __( 'No links found', 'link-library' ) . '</span>';
 	}
 
-	if ( !empty( $searchstring ) && $linkcount == 1 && $level == 0 ) {
+	if ( !empty( $searchstring ) && $linkcount == 1 && $level == 0 && !$suppressonemptysearch ) {
 		$output .= '<span class="nolinksfoundallcats">' . stripslashes( $searchnoresultstext ) . "</span>\n";
 	}
 

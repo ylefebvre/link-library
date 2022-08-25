@@ -454,6 +454,7 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['showupdatedonly']					 = false;
 	$options['updateddays']						 = 7;
 	$options['searchfromallcats']				 = false;
+	$options['suppressonemptysearch']			 = false;
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;

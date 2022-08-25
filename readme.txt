@@ -4,7 +4,7 @@ Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
 Tested up to: 6.0.1
-Stable tag: 7.3.18
+Stable tag: 7.3.21
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -49,6 +49,18 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 7.3.21 =
+* Fix for AJAX category switching when using New editor on some themes
+* Additional fixes for [link-library-cats] shortcode for sites with hierarchical categories
+
+= 7.3.20 =
+* Fixes for [link-library-cats] shortcode for sites with hierarchical categories
+
+= 7.3.19 =
+* Fixed additional french translations
+* Changed colors of Submit and Reset buttons in stylesheet editor
+* Added new option under search tab configuration to suppress output if no results are found
 
 = 7.3.18 =
 * Fixed issue introduced in 7.3.16

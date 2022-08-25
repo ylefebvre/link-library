@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.3.18
+Version: 7.3.21
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -1403,7 +1403,9 @@ class link_library_plugin {
 			$timeoutput = "\n<!-- [link-library-cats] shortcode execution time: " . ( microtime( true ) - $mainoutputstarttime ) . "-->\n";
 		}
 
-		return ( true == $genoptions['debugmode'] ? $timeoutputstart : '' ) . RenderLinkLibraryCategories( $this, $genoptions, $options, $settings, $targetlibrary, $parent_cat_id )  . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
+
+		$parent_id_array = array();
+		return ( true == $genoptions['debugmode'] ? $timeoutputstart : '' ) . RenderLinkLibraryCategories( $this, $genoptions, $options, $settings, $targetlibrary, $parent_cat_id, 0, $parent_id_array )  . ( true == $genoptions['debugmode'] ? $timeoutput : '' );
 	}
 
 	/********************************************** Function to Process [link-library-search] shortcode *********************************************/

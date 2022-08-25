@@ -326,7 +326,7 @@ msgstr ""
 
 #: link-library-admin.php:1086
 msgid "Global Options successfully imported."
-msgstr "Configuration générale importée avec succès"
+msgstr "Configuration générale importée avec succès."
 
 #: link-library-admin.php:1088
 msgid "Failed to import Global Options"
@@ -706,7 +706,7 @@ msgstr ""
 "Spécifier une liste de pages, séparées par des virgules, dans lesquelles les "
 "feuilles de styles et les scripts de Link Library doivent être chargés. "
 "Cette option est principalement utilisée si vous affichez Link Library en "
-"utilisant son API."
+"utilisant son API"
 
 #: link-library-admin.php:3392
 msgid "Additional pages to load styles and scripts"
@@ -764,7 +764,7 @@ msgstr "Générateur de vignettes"
 
 #: link-library-admin.php:3446 link-library-admin.php:3447
 msgid "API Key for Thumbshots.com thumbnail generation accounts"
-msgstr "CID pour le service de vignette de Thumbshots.com "
+msgstr "CID pour le service de vignette de Thumbshots.com"
 
 #: link-library-admin.php:3446
 msgid "Thumbshots API Key"
@@ -1057,7 +1057,7 @@ msgstr ""
 "Contenu du courriel d&rsquo;approbation du lien. Utilisez %linkname% comme "
 "variable qui sera remplacée par le nom de lien, %submittername% pour le nom "
 "de la personne ayant soumise le lien et %linkurl% pour l&rsquo;adresse du "
-"lien."
+"lien"
 
 #: link-library-admin.php:4069
 msgid "Approval e-mail body"
@@ -1083,7 +1083,7 @@ msgid ""
 msgstr ""
 "Contenu du courriel de rejet du lien. Utilisez %linkname% comme variable qui "
 "sera remplacée par le nom de lien, %submittername% pour le nom de la "
-"personne ayant soumise le lien et %linkurl% pour l&rsquo;adresse du lien."
+"personne ayant soumise le lien et %linkurl% pour l&rsquo;adresse du lien"
 
 #: link-library-admin.php:4081
 msgid "Rejection e-mail body"
@@ -1193,7 +1193,7 @@ msgstr "Article spécifique"
 
 #: link-library-admin.php:4179
 msgid "Specific "
-msgstr "Spécifique"
+msgstr "Spécifique "
 
 #: link-library-admin.php:4200
 msgid "Import Links from Site"
@@ -1343,10 +1343,8 @@ msgid "Display link submission form"
 msgstr "Afficher le formulaire de soumission de liens"
 
 #: link-library-admin.php:4534
-#, fuzzy
-#| msgid "Display basic link library"
 msgid "Display count of links in a library"
-msgstr "Afficher la liste de liens"
+msgstr "Affiche le nombre de liens dans une librairie"
 
 #: link-library-admin.php:4542
 #, php-format
@@ -1377,13 +1375,10 @@ msgstr "Réinitialiser la configuration de librairie courante"
 
 #: link-library-admin.php:4561
 msgid "Layout"
-msgstr ""
+msgstr "Mise en page"
 
 #: link-library-admin.php:4563
-#, fuzzy, php-format
-#| msgid ""
-#| "You are about to reset Library '%s'\n"
-#| "  'Cancel' to stop, 'OK' to reset."
+#, php-format
 msgid ""
 "You are about to change the layout of Library '%s' and reset all its "
 "options\n"
@@ -1395,7 +1390,7 @@ msgstr ""
 
 #: link-library-admin.php:4563
 msgid "Apply Layout"
-msgstr ""
+msgstr "Appliquer la mise en page"
 
 #: link-library-admin.php:4597 render-link-library-addlink-sc.php:64
 msgid "No link categories! Create some!"
@@ -1423,6 +1418,8 @@ msgstr "identifiants de catégories numériques"
 #: link-library-admin.php:4621 link-library-admin.php:4665
 msgid "To find the IDs, go to the Link Categories admin page. For example"
 msgstr ""
+"Pour trouver les IDs, aller sur la page de destion des Catégories des Liens. "
+"Par exemple"
 
 #: link-library-admin.php:4623
 msgid "Categories to be displayed (Empty=All)"
@@ -1557,7 +1554,7 @@ msgstr "Paginer les résultats"
 
 #: link-library-admin.php:4761 link-library-admin.php:4764
 msgid "Number of Links to be Displayed per Page in Pagination Mode"
-msgstr "Nombre de liens devant être affichés en &ldquo;Mode Pagination&rdquo;"
+msgstr "Nombre de liens devant être affichés en Mode Pagination"
 
 #: link-library-admin.php:4762
 msgid "Links per Page"
@@ -1649,10 +1646,8 @@ msgid "Order by ID"
 msgstr "Trier par identifiant"
 
 #: link-library-admin.php:4921
-#, fuzzy
-#| msgid "Order by Name"
 msgid "Order by Category Slug"
-msgstr "Trier par nom"
+msgstr "Trier par Slugs de catégories"
 
 #: link-library-admin.php:4923
 msgid "Order of categories based on included category list"
@@ -1676,7 +1671,7 @@ msgstr "Liste déroulante"
 
 #: link-library-admin.php:4936
 msgid "Drop-Down List Direct Access"
-msgstr "Liste déroulante"
+msgstr "Liste déroulante avec accès direct"
 
 #: link-library-admin.php:4937
 msgid "Visibility Toggles"
@@ -1699,20 +1694,16 @@ msgid "Display link counts"
 msgstr "Afficher la quantité de liens"
 
 #: link-library-admin.php:4958
-#, fuzzy
-#| msgid "Order of categories based on included category list"
 msgid "Hide empty categories from category list"
-msgstr "Trier les catégories selon l&rsquo;ordre des catégories incluses"
+msgstr "Ne pas afficher les catégories vides dans la liste de catégories"
 
 #: link-library-admin.php:4965
 msgid "Display categories with search results"
 msgstr "Afficher les catégories avec les résultats de recherche"
 
 #: link-library-admin.php:4969
-#, fuzzy
-#| msgid "Display categories with search results"
 msgid "Use categories to filter search results"
-msgstr "Afficher les catégories avec les résultats de recherche"
+msgstr "Utiliser les catégories pour filtrer les résultats de recherche"
 
 #: link-library-admin.php:4975 link-library-admin.php:5162
 msgid "Direction"
@@ -1753,7 +1744,7 @@ msgstr "Gauche"
 
 #: link-library-admin.php:4998 link-library-admin.php:5343
 msgid "Child category depth limit"
-msgstr ""
+msgstr "Limite de profondeur de sous-catégories"
 
 #: link-library-admin.php:5006
 msgid "Width of Categories Table in Percents"
@@ -1847,20 +1838,16 @@ msgid "Order by updated date"
 msgstr "Trier par date de mise à jour"
 
 #: link-library-admin.php:5104
-#, fuzzy
-#| msgid "Order by updated date"
 msgid "Order by publication date"
-msgstr "Trier par date de mise à jour"
+msgstr "Trier par date de publication"
 
 #: link-library-admin.php:5105
 msgid "Order by number of link visits"
 msgstr "Trier par le nombre de visites du lien"
 
 #: link-library-admin.php:5106
-#, fuzzy
-#| msgid "Order by number of link visits"
 msgid "Order by number of user votes"
-msgstr "Trier par le nombre de visites du lien"
+msgstr "Trier par le nombre de votes des usagers"
 
 #: link-library-admin.php:5107
 msgid "Order specified using Simple Custom Post Order plugin"
@@ -1967,7 +1954,7 @@ msgid ""
 "links"
 msgstr ""
 "Configure la fenêtre cible pour les liens. Cette valeur n&rsquo;est pas "
-"prioritaire par rapport aux cibles spécifiques des liens."
+"prioritaire par rapport aux cibles spécifiques des liens"
 
 #: link-library-admin.php:5249
 msgid "Link Target"
@@ -2164,7 +2151,7 @@ msgstr "Source du lien"
 
 #: link-library-admin.php:5565
 msgid "Suppress all output if empty"
-msgstr ""
+msgstr "Supprimer l'affichage si vide"
 
 #: link-library-admin.php:5568
 msgid ""
@@ -2243,16 +2230,12 @@ msgid "Secondary"
 msgstr "Secondaire"
 
 #: link-library-admin.php:5636 link-library-admin.php:5666
-#, fuzzy
-#| msgid "Duplicate Names"
 msgid "Dedicated page"
-msgstr "Nom en double"
+msgstr "Page dédiée"
 
 #: link-library-admin.php:5637
-#, fuzzy
-#| msgid "Image"
 msgid "Image only"
-msgstr "Image"
+msgstr "Image seulement"
 
 #: link-library-admin.php:5646
 msgid ""
@@ -2280,10 +2263,8 @@ msgid "Description"
 msgstr "Description"
 
 #: link-library-admin.php:5667
-#, fuzzy
-#| msgid "Link name"
 msgid "Link name only"
-msgstr "Nom du lien"
+msgstr "Nom du lien seulement"
 
 #: link-library-admin.php:5676
 msgid ""
@@ -3603,10 +3584,8 @@ msgid "Visit"
 msgstr "Visiter"
 
 #: link-library-admin.php:7904 render-link-library-addlink-sc.php:1141
-#, fuzzy
-#| msgid "Select a category"
 msgid "Select an option"
-msgstr "Choisir une catégorie"
+msgstr "Choisir une option"
 
 #: link-library-admin.php:7933
 msgid "Number of views"
@@ -3650,24 +3629,26 @@ msgstr "Rapport du vérificateur de liens en double"
 
 #: link-library-admin.php:8657
 msgid "Redirected to a different address"
-msgstr ""
+msgstr "Redirigé à une adresse différente"
 
 #: link-library-admin.php:8659
 msgid "Redirection to a different protocol"
-msgstr ""
+msgstr "Redirigé vers un protocol différent"
 
 #: link-library-admin.php:8661
 msgid "Redirected to a sub-domain on same server"
-msgstr ""
+msgstr "Redirigé vers un sous-domaine sur le même serveur"
 
 #: link-library-admin.php:8663
 msgid "Redirected to a different subfolder on same server"
-msgstr ""
+msgstr "Redirigé vers un sous-répertoire sur le même serveur"
 
 #: link-library-admin.php:8665
 msgid ""
 "Redirected to a different subfolder on same server with bad configuration"
 msgstr ""
+"Redirigé vers un différent sous-répertoire sur le même serveur avec une "
+"mauvaise configuration"
 
 #: link-library-admin.php:8667
 msgid "Not Found"
@@ -3698,14 +3679,12 @@ msgid "There are no links to check"
 msgstr "Il n'y a pas de liens à vérifier"
 
 #: link-library-admin.php:8696
-#, fuzzy
-#| msgid "There are no links with reciprocal links associated with them"
 msgid "There are no links with RSS feeds associated with them or no errors"
-msgstr "Il n&rsquo;y a pas de liens avec des liens réciproques associés"
+msgstr "Il n'y a pas de liens avec des flux RSS associés ou sans erreurs"
 
 #: link-library-admin.php:8699
 msgid "End of report"
-msgstr ""
+msgstr "Fin du rapport"
 
 # Plugin name; please avoid translating if possible
 #: link-library-admin.php:8709
@@ -3785,16 +3764,14 @@ msgid "Link Image (jpg, jpeg, png)"
 msgstr "Image du lien (jpg, jpeg, png)"
 
 #: link-library.php:376
-#, fuzzy
-#| msgid "Library"
 msgid "Link Library"
-msgstr "Librairie"
+msgstr "Link Library"
 
 #: link-library.php:467
 #, php-format
 msgctxt "Link Library"
 msgid "Link Library %%PENDING_COUNT%%"
-msgstr ""
+msgstr "Link Library %%PENDING_COUNT%%"
 
 #: link-library.php:999
 msgid "Link Library Generated Feed"
@@ -3849,7 +3826,7 @@ msgstr "Le code du captcha n&rsquo;est valide que durant 5 minutes"
 msgid "No captcha cookie given. Make sure cookies are enabled"
 msgstr ""
 "Le cookie pour le code du captcha est absent. Veuillez vous assurer que les "
-"cookies sont activés."
+"cookies sont activés"
 
 #: render-link-library-addlink-sc.php:201
 msgid "Captcha answer was not provided."
@@ -4152,23 +4129,19 @@ msgstr "Entrer le code de l&rsquo;image ci-dessus"
 
 #: render-link-library-alpha-filter.php:109
 msgid "ALL"
-msgstr ""
+msgstr "TOUS"
 
 #: render-link-library-cats-sc.php:622
 msgid "Go!"
 msgstr "Allez-y&nbsp;!"
 
 #: render-link-library-cats-sc.php:628
-#, fuzzy
-#| msgid "Hide"
 msgid "Hide all"
-msgstr "Masquer"
+msgstr "Cacher tous"
 
 #: render-link-library-cats-sc.php:629
-#, fuzzy
-#| msgid "Show all categories"
 msgid "Show all"
-msgstr "Montrer toutes les catégories"
+msgstr "Afficher tous"
 
 #: render-link-library-cats-sc.php:667
 msgid "No categories found"
@@ -4207,10 +4180,8 @@ msgid "Preview of RSS feed for"
 msgstr "Aperçu du flux d&rsquo;informations RSS de"
 
 #: render-link-library-sc.php:2140
-#, fuzzy
-#| msgid "Publish RSS Feed"
 msgid "Invalid RSS feed"
-msgstr "Publier un flux d&rsquo;informations RSS"
+msgstr "Flux RSS invalide"
 
 #: render-link-library-sc.php:2850 render-rss-library-sc.php:373
 msgid ""
@@ -4228,16 +4199,12 @@ msgid "Thumbnail Screenshots by Thumbshots"
 msgstr "Captures d'écrans générées par Thumbshots"
 
 #: render-link-library-sc.php:2866
-#, fuzzy
-#| msgid "Thumbnail Screenshots by Thumbshots"
 msgid "Thumbnail Screenshots by Shrink the Web"
-msgstr "Captures d'écrans générées par Thumbshots"
+msgstr "Captures d'écrans générées par Shrink The Web"
 
 #: render-link-library-sc.php:2868
-#, fuzzy
-#| msgid "Thumbnail Screenshots by Thumbshots"
 msgid "Thumbnail Screenshots by Page Peeker"
-msgstr "Captures d'écrans générées par Thumbshots"
+msgstr "Captures d'écrans générées par Page Peeker"
 
 #: render-link-library-search-sc.php:57
 msgid "Reset search"

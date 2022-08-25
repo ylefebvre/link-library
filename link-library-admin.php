@@ -2907,7 +2907,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'suppress_custom_text_1_if_empty', 'suppress_custom_text_2_if_empty', 'suppress_custom_text_3_if_empty',
 					'suppress_custom_text_4_if_empty', 'suppress_custom_text_5_if_empty', 'suppress_custom_list_1_if_empty', 'suppress_custom_list_2_if_empty',
 					'suppress_custom_list_3_if_empty', 'suppress_custom_list_4_if_empty', 'suppress_custom_list_5_if_empty', 'catnamelink', 'hideemptycats',
-					'rsslibrarypagination', 'showupdatedonly', 'searchfromallcats'
+					'rsslibrarypagination', 'showupdatedonly', 'searchfromallcats', 'suppressonemptysearch'
 				)
 				as $option_name
 			) {
@@ -4358,7 +4358,7 @@ function general_custom_fields_meta_box( $data ) {
 
 		<textarea name='fullstylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( $genoptions['fullstylesheet'] ); ?></textarea>
 		<div>
-			<input type="submit" name="submitstyle" value="<?php _e( 'Submit', 'link-library' ); ?>" /><span style='padding-left: 650px'><input type="submit" name="resetstyle" value="<?php _e( 'Reset to default', 'link-library' ); ?>" /></span>
+			<input type="submit" class="button button-primary submitstyle" name="submitstyle" value="<?php _e( 'Submit', 'link-library' ); ?>" /><span style='padding-left: 650px'><input type="submit" class="button button-primary resetstyle" name="resetstyle" value="<?php _e( 'Reset to default', 'link-library' ); ?>" /></span>
 		</div>
 
 		<script>
@@ -4560,7 +4560,7 @@ function general_custom_fields_meta_box( $data ) {
 			<div class="ll_preset" id="#preset<?php echo $layout->ID; ?>">
 				<strong><?php _e( 'Layout', 'link-library' ); echo ' ' . $layout->ID . ": " . $layout->Desc; ?></strong><br /><br />
 				<img style="max-width: 400px; border: 2px solid black;" src="<?php echo plugins_url( "presets/" . $layout->Image, __FILE__ ); ?>"<br /><br /><br />
-				<button class="button" type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "You are about to change the layout of Library '%s' and reset all its options\n  'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&_wpnonce=" . wp_create_nonce( 'llnewlayout' ). "&newlayout=" . $layout->ID . "'\""; ?>><?php _e( 'Apply Layout', 'link-library' ); ?> <?php echo $layout->ID; ?></button>
+				<button class="button" type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( sprintf( __( "WARNING: You are about to change the layout of Library '%s' and reset all its options to their defaults. You should export your settings if you want to be able to roll back. 'Cancel' to stop, 'OK' to modify.", "link-library" ), $settings ) ) . "') ) window.location.href='admin.php?page=link-library-settingssets&amp;settings=" . $settings . "&_wpnonce=" . wp_create_nonce( 'llnewlayout' ). "&newlayout=" . $layout->ID . "'\""; ?>><?php _e( 'Apply Layout', 'link-library' ); ?> <?php echo $layout->ID; ?></button>
 			</div>
 			<?php } ?>
 		</div>
@@ -6570,6 +6570,14 @@ function general_custom_fields_meta_box( $data ) {
 					</td>
 					<td style='width:75px;padding-right:20px'>
 						<input type="checkbox" id="searchfromallcats" name="searchfromallcats" <?php checked( $options['searchfromallcats'] ); ?>/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<?php _e( 'Suppress all output if search results are empty', 'link-library' ); ?>
+					</td>
+					<td style='width:75px;padding-right:20px'>
+						<input type="checkbox" id="suppressonemptysearch" name="suppressonemptysearch" <?php checked( $options['suppressonemptysearch'] ); ?>/>
 					</td>
 				</tr>
 			</table>
