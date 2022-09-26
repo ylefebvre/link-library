@@ -412,8 +412,8 @@ function RenderLinkLibraryAddLinkForm( $LLPluginClass, $generaloptions, $library
 						}
 
 						if ( $debugmode ) {
-							$output .= "\n<!-- Category query for add link form:" . print_r($linkcatquery, TRUE) . "-->\n\n";
-							$output .= "\n<!-- Results of Category query for add link form:" . print_r($linkcats, TRUE) . "-->\n";
+							$output .= "\n<!-- Category query for add link form:" . print_r( $link_categories_query_args, TRUE) . "-->\n\n";
+							$output .= "\n<!-- Results of Category query for add link form:" . print_r( $linkcats, TRUE) . "-->\n";
 						}
 
 						if ( $linkcats ) {

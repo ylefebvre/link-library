@@ -3264,7 +3264,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							<td><input class="button" type="submit" id="deletell59links" name="deletell59links" value="<?php _e( 'Delete old links', 'link-library' ); ?>" /></td>
 						</tr>
 						<tr>
-							<td colspan="2"><h4>General Options</h4></td>
+							<td colspan="2"><h4><?php _e( 'General Options', 'link-library' ); ?></h4></td>
 						</tr>
 						<?php if ( !is_multisite() ) { ?>
 						<tr>
@@ -3571,7 +3571,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							<td colspan="2"><hr /></td>
 						</tr>
 						<tr class="captchagenerator">
-							<td><?php _e( 'Captcha generator' ); ?>
+							<td><?php _e( 'Captcha generator', 'link-library' ); ?>
 							</td>
 							<td>
 								<select id="captchagenerator" name="captchagenerator">
@@ -3584,14 +3584,14 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							</td>
 						</tr>
 						<tr>
-							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Site Key' ); ?>
+							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Site Key', 'link-library' ); ?>
 							</td>
 							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>">
 								<input type="text" id="recaptchasitekey" name="recaptchasitekey" size="60" value="<?php echo $genoptions['recaptchasitekey']; ?>" />
 							</td>
 						</tr>
 						<tr>
-							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Secret Key' ); ?>
+							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Secret Key', 'link-library' ); ?>
 							</td>
 							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>">
 								<input type="text" id="recaptchasecretkey" name="recaptchasecretkey" size="60" value="<?php echo $genoptions['recaptchasecretkey']; ?>" />
