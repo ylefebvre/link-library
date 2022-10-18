@@ -468,7 +468,7 @@ class link_library_plugin {
 				‘show_in_graphql’ => true,
                 		‘hierarchical’ => true,
                 		‘graphql_single_name’ => ‘linklibrary’,
-                		‘graphql_plural_name’ => ‘linklibrary’,
+                		‘graphql_plural_name’ => ‘linklibraries’,
 			),
 			'show_in_nav_menu' => true,
 			'show_ui' => true,
