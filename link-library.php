@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.4
+Version: 7.4.10
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -479,6 +479,13 @@ class link_library_plugin {
 			'has_archive' => false,
 			'rewrite' => array( 'slug' => $genoptions['cptslug'] . '/%' . $genoptions['cattaxonomy'] . '%' )
 		);
+
+		if ( class_exists( 'WPGraphQL' ) ) {
+			$post_type_args['show_in_graphql'] = true;
+            $post_type_args['hierarchical'] = true;
+            $post_type_args['graphql_single_name'] = 'linklibrary';
+            $post_type_args['graphql_plural_name'] = 'linklibrary';
+		}		
 
 		if ( $genoptions['exclude_from_search'] && $genoptions['publicly_queryable'] ) {
 			unset( $post_type_args['exclude_from_search'] );
@@ -1593,6 +1600,7 @@ class link_library_plugin {
 			'pricelabel' => __( 'Price', 'link-library' ),
 			'alphabeticlabel' => __( 'Link Name', 'link-library' ),
 			'showalphabeticfilters' => true,
+			'showapplybutton' => false,
 			'settings' => ''
 		), $atts ) );
 
@@ -1620,7 +1628,7 @@ class link_library_plugin {
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-tag-filter-sc.php';
-		return RenderLinkLibraryFilterBox( $this, $genoptions, $options, $settings, $includetagsids, $excludetagsids, $showtagfilters, $taglabel, $showpricefilters, $pricelabel, $showalphabeticfilters, $alphabeticlabel );
+		return RenderLinkLibraryFilterBox( $this, $genoptions, $options, $settings, $includetagsids, $excludetagsids, $showtagfilters, $taglabel, $showpricefilters, $pricelabel, $showalphabeticfilters, $alphabeticlabel, $showapplybutton );
 	}
 
 	/********************************************** Function to Process [link-library] shortcode *********************************************/

@@ -3,8 +3,8 @@ Contributors: jackdewey
 Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library, AJAX, RSS, feeds, inline, search, paging, add, submit, import, batch, pop-up
 Requires at least: 4.4
-Tested up to: 6.0.1
-Stable tag: 7.4
+Tested up to: 6.1.1
+Stable tag: 7.4.10
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -49,6 +49,38 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 7.4.10 =
+* Fix to allow non-admin users to be able to see edit links on Link Library visitor-facing pages
+
+= 7.4.9 =
+* Added new display mode for category list ([link-library-cats]) called Simple Divs
+
+= 7.4.8 =
+* Added option to [link-library-filters] shortcode to display apply button (showapplybutton)
+
+= 7.4.7 =
+* Fix for display of hierarchical categories in [link-library-cats] shortcode
+
+= 7.4.6 =
+* Relaxed HTMl tags parsing for custom field before and after content
+
+= 7.4.5 =
+* Further refinement of accepted HTML tags for advanced configuration table
+
+= 7.4.4 =
+* Fixes for warnings in usersubmission.php
+
+= 7.4.3 =
+* Further refinement of accepted HTML tags for advanced configuration table
+
+= 7.4.2 =
+* Implemented some accessibility functions in tag filter
+* Fixed advanced table to accept HTML values once again
+
+= 7.4.1 =
+* Security fixes
+* Added support for WPGraphQL
 
 = 7.4 =
 * Corrected PHP warning in render-link-library-addlink-sc.php

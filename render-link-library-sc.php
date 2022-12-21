@@ -393,7 +393,10 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 	$validdirections = array( 'ASC', 'DESC' );
 
-	$linkeditoruser = current_user_can( 'manage_options' );
+	$linkeditoruser = false;
+	if ( current_user_can( 'manage_options' ) ) {
+		$linkeditoruser = true;
+	}
 
 	if ( $level == 0 ) {
 		$output = "<!-- Beginning of Link Library Output -->";
@@ -1978,7 +1981,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 															$current_cat_output .= '</a>';
 														}
 
-														if ( $showadmineditlinks && $linkeditoruser ) {
+														if ( $showadmineditlinks && is_user_logged_in() && ( $linkeditoruser || current_user_can( 'edit_posts', get_the_ID() ) ) ) {
 															$current_cat_output .= $between . '<span class="editlink"><a href="' . esc_url( add_query_arg( array(
 																	'action' => 'edit', 'post' => $linkitem['proper_link_id'] ),
 																	admin_url( 'post.php' ) ) ) . '">(' . __('Edit', 'link-library') . ')</a></span>';

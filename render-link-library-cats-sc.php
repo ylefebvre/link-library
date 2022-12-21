@@ -107,7 +107,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
 		$link_categories_query_args = array( );
 
-		if ( !empty( $parent_cat_id ) ) {
+		if ( isset( $parent_cat_id ) ) {
 			$link_categories_query_args['parent'] = $parent_cat_id;
 		}
 
@@ -239,7 +239,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		            if ( $dropdownselectionprompt && !empty( $dropdownselectionprompttext ) ) {
 		            	$output .= '<option value="">' . $dropdownselectionprompttext . '</option>';
 		            }
-	            }
+	            } 
             } else {
 	            if ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) {
 
@@ -366,7 +366,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		                $catfront = "\t<td>";
 	                } elseif ( 'unordered' == $flatlist ) {
 		                $catfront = "\t<li>";
-	                } elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && ( $linkcount > 0 || !$hide_if_empty )) {
+	                } elseif ( 'simpledivs' == $flatlist ) {
+						$output .= "<div class='catlistdiv'>\n";
+					} elseif ( ( 'dropdown' == $flatlist || 'dropdowndirect' == $flatlist ) && ( $linkcount > 0 || !$hide_if_empty )) {
 		                $catfront = "\t<option ";
 		                if ( !empty( $categoryid ) && $categoryid == $catname->term_id ) {
 			                $catfront .= 'selected="selected" ';
@@ -607,8 +609,10 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 		                $catterminator = "</td>\n";
 	                } elseif ( 'unordered' == $flatlist ) {
 		                $catterminator = "</li>\n";
-	                }
-                } elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist ) {
+	                } elseif ( 'simpledivs' == $flatlist ) {
+		                $catterminator = "</div>\n";
+	                } 
+                } elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'simpledivs' != $flatlist ) {
 	                $catterminator = "</li>\n";
                 }
 
@@ -650,7 +654,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 				}
 
 	            $output .= "</div>\n";
-            } elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && $link_categories ) {
+            } elseif ( 'dropdown' != $flatlist && 'dropdowndirect' != $flatlist && 'simpledivs' != $flatlist && $link_categories ) {
             	$output .= '</ul>';
             }
 

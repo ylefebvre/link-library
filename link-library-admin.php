@@ -44,7 +44,7 @@ class link_library_plugin_admin {
 		add_action( 'save_post', array( $this, 'll_save_link_fields' ), 10, 2 );
 		add_action( 'before_delete_post', array( $this, 'll_delete_link_fields' ), 10 );
 		add_filter( 'manage_edit-link_library_links_columns', array( $this, 'll_add_columns' ) );
-		add_action( 'manage_posts_custom_column', array( $this, 'll_populate_columns' ) );
+		add_action( 'manage_link_library_links_posts_custom_column', array( $this, 'll_populate_columns' ) );
 		add_filter( 'manage_edit-link_library_links_sortable_columns', array( $this, 'll_column_sortable' ) );
 		add_filter( 'request', array( $this, 'll_column_ordering' ) );
 		add_action( 'pre_get_posts', array( $this, 'll_custom_post_order' ) );
@@ -88,46 +88,111 @@ class link_library_plugin_admin {
 				'title' => array(),
 				'class' => array(),
 				'data' => array(),
-				'rel'   => array(),
+				'rel' => array(),
 		  	),
+			'abbr' => array(
+				'title' => array(),
+			),
+			'acronym' => array(
+				'title' => true,
+			),
+			'b' => array(),
+			'blockquote' => array(
+				'cite' => array(),
+			),
 		  	'br' => array(),
-		  	'em' => array(),
-		  	'ul' => array(
-				'class' => array(),
-		  	),
-		  	'ol' => array(
-				'class' => array(),
-		  	),
-		  	'li' => array(
-				'class' => array(),
-		  	),
-		  	'strong' => array(),
-		  	'div' => array(
+			'cite' => array(
+				'title' => array(),
+			),
+			'code' => array(),
+			'del' => array(
+				'datetime' => array(),
+				'title' => array(),
+			),
+			'dd' => array(),
+			'div' => array(
 				'class' => array(),
 				'data' => array(),
 				'style' => array(),
 		  	),
-		  	'span' => array(
-				'class' => array(),
-				'style' => array(),
-		  	),
-		  	'img' => array(
+		  	'em' => array(),
+			'dl' => array(),
+			'dt' => array(),
+			'em' => array(),
+			'h1' => array(),
+			'h2' => array(),
+			'h3' => array(),
+			'h4' => array(),
+			'h5' => array(),
+			'h6' => array(),
+			'hr' => array(),
+			'i' => array(),
+			'img' => array(
 				'alt'    => array(),
 			  	'class'  => array(),
 			  	'height' => array(),
 			  	'src'    => array(),
 			  	'width'  => array(),
+				'style'  => array(),
 		  	),
-		  	'select' => array(
+			'li' => array(
+				'class' => array(),
+		  	),
+			'ol' => array(
+				'class' => array(),
+		  	),
+			'option' => array(
+				'value' => array(),
+				'selected' => array(),
+			),
+			'p' => array(
+				'class' => array(),
+			),
+			'q' => array(
+				'cite' => array(),
+				'title' => array(),
+			),
+		  	'ul' => array(
+				'class' => array(),
+		  	),
+			'select' => array(
 				'id'   => array(),
 			  	'class' => array(),
 			  	'name' => array(),
 		  	),
-		  	'option' => array(
-			  	'value' => array(),
-			  	'selected' => array(),
-		  	),
+		  	'span' => array(
+				'class' => array(),
+				'title' => array(),
+				'style' => array(),
+			),
+			'strike' => array(),	  	
+		  	'strong' => array(),
+			'tr' => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'td' => array(
+				'style' => array(),
+				'class' => array(),
+			),
 		);
+	}
+
+	function script_tag_remover( $data_to_parse ) {
+		return preg_replace( '#<script(.*?)>(.*?)</script>#is', '', $data_to_parse );
+	}
+
+	function validate_css( $css ) {
+		require_once plugin_dir_path( __FILE__ ) . '/csstidy/class.csstidy.php';
+
+		$csstidy = new csstidy();
+		$csstidy->set_cfg( 'optimise_shorthands', 2 );
+		$csstidy->set_cfg( 'template', 'low' );
+		$csstidy->set_cfg( 'discard_invalid_properties', true );
+		$csstidy->set_cfg( 'remove_last_;', false );
+		$csstidy->parse( $css );
+
+		return $csstidy->print->plain();
 	}
 
 	function is_edit_page( $new_edit = null ) {
@@ -485,8 +550,6 @@ class link_library_plugin_admin {
 			} elseif ( $mode == 'favicon' || $mode == 'favicononly' ) {
 				$genthumburl = $protocol . "www.google.com/s2/favicons?domain=" . $url;
 			}
-
-			linklibrary_write_log( $genthumburl );
 
 			$uploads = wp_upload_dir();
 
@@ -2567,7 +2630,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 						$row ++;
 					} else if ( $row == 2 ) {
 						for ( $counter = 0; $counter <= count( $data ) - 1; $counter ++ ) {
-							$options[$optionnames[$counter]] = $data[$counter];
+							$options[$optionnames[$counter]] = sanitize_text_field( $data[$counter] );
 						}
 						$row ++;
 					}
@@ -2598,7 +2661,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
-					$genoptions[$option_name] = $_POST[$option_name];
+					$genoptions[$option_name] = sanitize_text_field( $_POST[$option_name] );
 				}
 			}
 
@@ -2632,7 +2695,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 			update_option( 'LinkLibraryGeneral', $genoptions );
 
-			update_option( 'links_updated_date_format', $_POST['links_updated_date_format'] );
+			update_option( 'links_updated_date_format', sanitize_text_field( $_POST['links_updated_date_format'] ) );
 		}
 
 		global $wp_rewrite;
@@ -2803,7 +2866,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 			foreach ( array ( 'stylesheet' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
-					$options[$option_name] = $_POST[$option_name];
+					$options[$option_name] = $this->validate_css( $_POST[$option_name] );
 				}
 			}
 
@@ -2821,7 +2884,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
-					$options[$option_name] = str_replace( "\"", "'", strtolower( $_POST[$option_name] ) );
+					$options[$option_name] = sanitize_text_field( str_replace( "\"", "'", strtolower( $_POST[$option_name] ) ) );
 				}
 			}
 
@@ -2839,9 +2902,9 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			foreach ( array( 'categorylist_cpt', 'excludecategorylist_cpt', 'taglist_cpt', 'excludetaglist_cpt' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					if ( $genoptions['catselectmethod'] == 'commalist' || empty( $genoptions['catselectmethod'] ) ) {
-						$options[$option_name] = str_replace( "\"", "'", strtolower( $_POST[$option_name] ) );
+						$options[$option_name] = sanitize_text_field( str_replace( "\"", "'", strtolower( $_POST[$option_name] ) ) );
 					} else if ( $genoptions['catselectmethod'] == 'multiselectlist' ) {
-						$options[$option_name] = implode( ',', $_POST[$option_name] );
+						$options[$option_name] = sanitize_text_field( implode( ',', $_POST[$option_name] ) );
 					}
 				} else {
 					$options[$option_name] = '';
@@ -2872,7 +2935,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'beforecatname', 'aftercatname', 'linkimagelabel', 'showaddlinkimage', 'linknametooltip', 'linkaddrtooltip', 'linkrsstooltip',
 					'linkcattooltip', 'linkusercattooltip', 'linkusertagtooltip', 'linkdesctooltip', 'linknotestooltip', 'linkimagetooltip', 'linkreciptooltip',
 					'linksecondtooltip', 'linktelephonetooltip', 'linkemailtooltip', 'submitternametooltip', 'submitteremailtooltip',
-					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes', 'uservotelikelabel', 'beforecustomtext1', 'beforecustomtext2', 'beforecustomtext3', 'beforecustomtext4', 'beforecustomtext5', 'aftercustomtext1', 'aftercustomtext2', 'aftercustomtext3', 'aftercustomtext4', 'aftercustomtext5', 'beforecustomlist1', 'beforecustomlist2', 'beforecustomlist3', 'beforecustomlist4', 'beforecustomlist5', 'aftercustomlist1', 'aftercustomlist2', 'aftercustomlist3', 'aftercustomlist4', 'aftercustomlist5', 'categoryseparator', 'customqueryarg', 'customqueryargvalue', 'usersubmissiondragndroporder',
+					'submittercommenttooltip', 'largedesctooltip', 'linktagtooltip', 'linkfilelabel', 'linkfiletooltip', 'showaddlinkfile', 'linkfileallowedtypes', 'labelcustomurl1',  'labelcustomurl2', 'labelcustomurl3', 'labelcustomurl4', 'labelcustomurl5', 'customurl1target', 'customurl2target', 'customurl3target', 'customurl4target', 'customurl5target', 'beforeuservotes', 'afteruservotes', 'uservotelikelabel', 'categoryseparator', 'customqueryarg', 'customqueryargvalue', 'usersubmissiondragndroporder',
 					'showlinkreferencelist', 'linkreferencelabel', 'linkreferencetooltip', 'showcustomurl1', 'showcustomurl2', 'showcustomurl3', 'showcustomurl4',
 					'showcustomurl5', 'customurl1tooltip', 'customurl2tooltip', 'customurl3tooltip', 'customurl4tooltip', 'customurl5tooltip', 'showcustomtext1', 'showcustomtext2', 
 					'showcustomtext3', 'showcustomtext4', 'showcustomtext5', 'customtext1tooltip', 'customtext2tooltip', 'customtext3tooltip', 'customtext4tooltip',
@@ -2881,7 +2944,17 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
-					$options[$option_name] = str_replace( "\"", "'", $_POST[$option_name] );
+					$options[$option_name] = str_replace( "\"", "'", wp_kses( stripslashes( $_POST[$option_name] ), $this->allowed_html_tags() ) );
+				}
+			}
+
+			foreach (
+				array(
+					'beforecustomtext1', 'beforecustomtext2', 'beforecustomtext3', 'beforecustomtext4', 'beforecustomtext5', 'aftercustomtext1', 'aftercustomtext2', 'aftercustomtext3', 'aftercustomtext4', 'aftercustomtext5', 'beforecustomlist1', 'beforecustomlist2', 'beforecustomlist3', 'beforecustomlist4', 'beforecustomlist5', 'aftercustomlist1', 'aftercustomlist2', 'aftercustomlist3', 'aftercustomlist4', 'aftercustomlist5', 'beforecustomurl1', 'beforecustomurl2', 'beforecustomurl3', 'beforecustomurl4', 'beforecustomurl5', 'aftercustomurl1', 'aftercustomurl2', 'aftercustomurl3', 'aftercustomurl4', 'aftercustomurl5'
+				) as $option_name
+			) {
+				if ( isset( $_POST[$option_name] ) ) {
+					$options[$option_name] = str_replace( "\"", "'", $this->script_tag_remover( stripslashes( $_POST[$option_name] ), array( 'img' ) ) );
 				}
 			}
 
@@ -3152,7 +3225,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
-			$genoptions['fullstylesheet'] = $_POST['fullstylesheet'];
+			$genoptions['fullstylesheet'] = $this->validate_css( $_POST['fullstylesheet'] );
 
 			update_option( 'LinkLibraryGeneral', $genoptions );
 			$message = 1;
@@ -3163,7 +3236,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			$stylesheetlocation = plugin_dir_path( __FILE__ ) . 'stylesheettemplate.css';
 
 			if ( file_exists( $stylesheetlocation ) ) {
-				$genoptions['fullstylesheet'] = file_get_contents( $stylesheetlocation );
+				$genoptions['fullstylesheet'] = $this->validate_css( file_get_contents( $stylesheetlocation ) );
 			}
 
 			update_option( 'LinkLibraryGeneral', $genoptions );
@@ -4934,6 +5007,7 @@ function general_custom_fields_meta_box( $data ) {
 							<option value="unordered" <?php selected( $options['flatlist'] == 'unordered' ); ?>><?php _e( 'Unordered List', 'link-library' ); ?></option>
 							<option value="dropdown" <?php selected( $options['flatlist'] == 'dropdown' ); ?>><?php _e( 'Drop-Down List', 'link-library' ); ?></option>
 							<option value="dropdowndirect" <?php selected( $options['flatlist'] == 'dropdowndirect' ); ?>><?php _e( 'Drop-Down List Direct Access', 'link-library' ); ?></option>
+							<option value="simpledivs" <?php selected( $options['flatlist'] == 'simpledivs' ); ?>><?php _e( 'Simple Divs', 'link-library' ); ?></option>
 							<option value="toggles" <?php selected( $options['flatlist'] == 'toggles' ); ?>><?php _e( 'Visibility Toggles', 'link-library' ); ?></option>
 							<option value="togglesshowhideall" <?php selected( $options['flatlist'] == 'togglesshowhideall' ); ?>><?php _e( 'Visibility Toggles with Show/Hide All buttons', 'link-library' ); ?></option>
 						</select>
@@ -8194,8 +8268,11 @@ function general_custom_fields_meta_box( $data ) {
 
 		$columns['link_library_updated'] = 'Updated';
 		$columns['link_library_url'] = 'URL';
-		
+
+		linklibrary_write_log( "In add columns function" );
+
 		if ( $genoptions['cattaxonomy'] == 'link_library_category' ) {
+			linklibrary_write_log( "Adding category column" );
 			$columns['link_library_categories'] = 'Categories';
 		}
 		
@@ -8213,6 +8290,8 @@ function general_custom_fields_meta_box( $data ) {
 	function ll_populate_columns( $column ) {
 		$genoptions = get_option( 'LinkLibraryGeneral' );
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+		linklibrary_write_log( $column );
 
 		if ( 'link_library_updated' == $column ) {
 			$link_updated = get_post_meta( get_the_ID(), 'link_updated', true );
