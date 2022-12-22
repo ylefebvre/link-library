@@ -413,7 +413,7 @@ class link_library_plugin_admin {
 			echo '<td>';
 		} ?>
 		<input type="text" id="ll_category_url" name="ll_category_url" size="60" value="<?php echo $caturl; ?>" />
-		<p class="description">Link that will be associated with category when displayed by Link Library</p>
+		<p class="description"><?php _e( 'Link that will be associated with category when displayed by Link Library', 'link-library' ); ?></p>
 		<?php if ( $mode == 'edit' ) {
 			echo '</td>';
 		} ?>
@@ -442,7 +442,7 @@ class link_library_plugin_admin {
 			echo '<td>';
 		} ?>
 		<input type="text" id="cat_extra_query_string" name="cat_extra_query_string" size="60" value="<?php echo $cat_extra_query_string; ?>" />
-		<p class="description">Query string arguments that will be added to all links in this category</p>
+		<p class="description"><?php _e( 'Query string arguments that will be added to all links in this category', 'link-library' ); ?></p>
 		<?php if ( $mode == 'edit' ) {
 			echo '</td>';
 		} ?>
@@ -1351,10 +1351,10 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				
 				if ( $total_post_count > 0 ) { ?>
 
-				<span class="loadingicon"><img src="<?php echo plugins_url( 'icons/Ajax-loader.gif', __FILE__ ); ?> " /></span><span class="processinglinks">Processing Link <span class="currentlinknumber">0</span> / <span class="totallinknumber">
+				<span class="loadingicon"><img src="<?php echo plugins_url( 'icons/Ajax-loader.gif', __FILE__ ); ?> " /></span><span class="processinglinks"><?php _e( 'Processing Link', 'link-library' ); ?> <span class="currentlinknumber">0</span> / <span class="totallinknumber">
 				
 				<?php echo $total_post_count; } else { ?>
-					No links to check
+					<?php _e( 'No links to check', 'link-library' ); ?>
 				<?php } ?>
 
 				</span></span>
@@ -1640,7 +1640,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 	function display_menu( $menu_name = 'settingsset', $genoptions = '' ) {
 		if ( $menu_name == 'general' ) {
 			$tabitems = array ( 'll-general' => __( 'General', 'link-library' ),
-								'll-customfields' => __( 'Custom Fields', 'link-library ' ),
+								'll-customfields' => __( 'Custom Fields', 'link-library' ),
 								'll-singleitem' => __( 'Single Item Layout', 'link-library' ),
 								'll-globalsearchresultslayout' => __( 'Global Search Results / Main Site RSS Feed Item Layout', 'link-library' ),
 			                    'll-images' => __( 'Images', 'link-library' ),
@@ -2919,7 +2919,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'imageclass', 'rssfeedtitle', 'rssfeeddescription', 'showonecatmode', 'linkcustomcatlabel', 'linkcustomcatlistentry',
 					'searchlabel', 'dragndroporder', 'cattargetaddress', 'beforeweblink', 'afterweblink', 'weblinklabel', 'beforetelephone',
 					'aftertelephone', 'telephonelabel', 'beforeemail', 'afteremail', 'emaillabel', 'beforelinkhits', 'afterlinkhits',
-					'linkreciprocallabel', 'linksecondurllabel', 'linktelephonelabel', 'linkemaillabel', 'emailcommand', 'rewritepage',
+					'linkreciprocallabel', 'linksecondurllabel', 'linktelephonelabel', 'linkemaillabel', 'emailcommand', 'rewritepage', 'rewritecategoriespage',
 					'maxlinks', 'beforedate', 'afterdate', 'beforeimage', 'afterimage', 'beforerss', 'afterrss', 'beforenote', 'afternote',
 					'beforelink', 'afterlink', 'beforeitem', 'afteritem', 'beforedesc', 'afterdesc', 'addbeforelink', 'addafterlink',
 					'beforelinkrating', 'afterlinkrating', 'linksubmitternamelabel', 'linksubmitteremaillabel', 'linksubmittercommentlabel',
@@ -3399,7 +3399,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							<td><input type="checkbox" id="add_to_main_rss" name="add_to_main_rss" <?php checked( $genoptions['add_to_main_rss'] ); ?>/></td>
 						</tr>
 						<tr>
-							<td>Minimum role for Link Library configuration</td>
+							<td><?php _e( 'Minimum role for Link Library configuration', 'link-library' ); ?></td>
 							<td>
 								<?php global $wp_roles;
 								if ( $wp_roles ):?>
@@ -3415,7 +3415,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							</td>
 						</tr>
 						<tr>
-							<td>Minimum role for Link editing</td>
+							<td><?php _e( 'Minimum role for Link editing', 'link-library' ); ?></td>
 							<td>
 								<?php global $wp_roles;
 								if ( $wp_roles ):?>
@@ -3439,7 +3439,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 						</tr>
 						<tr>
 							<td><?php _e( 'Default link target in editor', 'link-library' ); ?></td>
-							<td><?php $target_array = array( '_blank' => '_blank (new window or tab)', '' => '_none (same window or tab)', '_top' => '_top (current window or tab, with no frames)' );
+							<td><?php $target_array = array( '_blank' => __( '_blank (new window or tab)', 'link-library' ), '' => __( '_none (same window or tab)', 'link-library' ), '_top' => __( '_top (current window or tab, with no frames)', 'link-library' ) );
 								echo '<select name="defaultlinktarget" id="defaultlinktarget">';
 									foreach ( $target_array as $target_value => $target_item ) {
 									echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultlinktarget'] ) . '>' . $target_item . '</option>';
@@ -3572,7 +3572,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 						<tr class="robothumbsize" <?php if ( $genoptions['thumbnailgenerator'] != 'robothumb' ) {
 							echo 'style="display:none;"';
 						} ?>>
-							<td><?php _e( 'Robothumb Thumbnail size' ); ?>
+							<td><?php _e( 'Robothumb Thumbnail size', 'link-library' ); ?>
 							</td>
 							<td>
 								<select id="thumbnailsize" name="thumbnailsize">
@@ -3624,7 +3624,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							<td><?php _e( 'Library Configuration used for Links page', 'link-library' ); ?></td>
 							<td>
 								<SELECT id="bp_link_settings" name="bp_link_settings" style='width: 300px'>
-									<option>Select a library configuration</option>
+									<option><?php _e( 'Select a library configuration', 'link-library' ); ?></option>
 									<?php if ( empty( $genoptions['numberstylesets'] ) ) {
 										$numberofsets = 1;
 									} else {
@@ -3807,7 +3807,7 @@ function general_custom_fields_meta_box( $data ) {
 					<tr>
 						<td></td>
 						<td></td>
-						<td>Custom HTML for <?php echo $value; ?></td>
+						<td><?php _e( 'Custom HTML for', 'link-library' ); echo ' ' . $value; ?></td>
 						<td><input type="text" size="60" name="customlist<?php echo $customlistfieldnumber; ?>html[]" value="<?php if ( isset( $genoptions['customlist' . $customlistfieldnumber . 'html'][$index] ) ) { echo stripslashes( $genoptions['customlist' . $customlistfieldnumber . 'html'][$index] ); } ?>"></td>
 					</tr>
 				<?php } } ?>
@@ -3821,7 +3821,7 @@ function general_custom_fields_meta_box( $data ) {
 		$genoptions  = $data['genoptions'];
 		?>
 		<div style='padding-top:15px' id="ll-singleitem" class="content-section">
-			<p>This section allows you to specify a template for individual link pages. These individual pages will be shown to visitors if you set the Link Source to Dedicated Page under the Advanced settings of Library Configurations and allow users to create a more complete internal page describing an external link, before visitors go to this external page.</p>
+			<p><?php _e( 'This section allows you to specify a template for individual link pages. These individual pages will be shown to visitors if you set the Link Source to Dedicated Page under the Advanced settings of Library Configurations and allow users to create a more complete internal page describing an external link, before visitors go to this external page.', 'link-library' ); ?></p>
 			<?php
 			$editorsettings = array( 'media_buttons' => false,
 			                         'textarea_rows' => 15,
@@ -3829,55 +3829,55 @@ function general_custom_fields_meta_box( $data ) {
 			                         'wpautop' => false );
 
 			wp_editor( isset( $genoptions['single_link_layout'] ) ? stripslashes( $genoptions['single_link_layout'] ) : '', 'single_link_layout', $editorsettings ); ?>
-			<p>The codes that are available to put in this layout template are:</p>
+			<p><?php _e( 'The codes that are available to put in this layout template are', 'link-library' ); ?>:</p>
 			<table>
 				<tr>
-					<th>Tag Name</th>
-					<th>Description</th>
+					<th><?php _e( 'Tag Name', 'link-library' ); ?></th>
+					<th><?php _e( 'Description', 'link-library' ); ?></th>
 				</tr>
 				<tr>
 					<td>[link_content]</td>
-					<td>Text added in the new full-page content field of the link editor</td>
+					<td><?php _e( 'Text added in the new full-page content field of the link editor', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_title]</td>
-					<td>The name of the link, text only</td>
+					<td><?php _e( 'The name of the link, text only', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link]</td>
-					<td>Link title, with link tag and link url</td>
+					<td><?php _e( 'Link title, with link tag and link url', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_address]</td>
-					<td>Link URL only, without link tag</td>
+					<td><?php _e( 'Link URL only, without link tag', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_description]</td>
-					<td>The link description</td>
+					<td><?php _e( 'The link description', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_large_description]</td>
-					<td>The link large description</td>
+					<td><?php _e( 'The link large description', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_category]</td>
-					<td>Category or categories that are assigned to link, listed in alphabetical order and separated with commas</td>
+					<td><?php _e( 'Category or categories that are assigned to link, listed in alphabetical order and separated with commas', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_image]</td>
-					<td>Link image URL. You need to add img src tag or other code to display image.</td>
+					<td><?php _e( 'Link image URL. You need to add img src tag or other code to display image.', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_email]</td>
-					<td>Link e-mail</td>
+					<td><?php _e( 'Link e-mail', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_telephone]</td>
-					<td>Link telephone number</td>
+					<td><?php _e( 'Link telephone number', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_price_or_free]</td>
-					<td>Display link price, or the word Free if the price is 0</td>
+					<td><?php _e( 'Display link price, or the word Free if the price is 0', 'link-library' ); ?></td>
 				</tr>
 			</table>
 		</div>
@@ -3888,16 +3888,16 @@ function general_custom_fields_meta_box( $data ) {
 		$genoptions  = $data['genoptions'];
 		?>
 		<div style='padding-top:15px' id="ll-globalsearchresultslayout" class="content-section">
-			<p>This section allows you to specify a template for links when they appear in global site search results. For this to happen, you need to activate the <strong>Individual link pages can be seen by visitors</strong> and <strong>Links appear in search results</strong> options under the General section of Global Settings.</p>
+			<p><?php _e( 'This section allows you to specify a template for links when they appear in global site search results. For this to happen, you need to activate the <strong>Individual link pages can be seen by visitors</strong> and <strong>Links appear in search results</strong> options under the General section of Global Settings.', 'link-library' ); ?></p>
 
-			<h3>Options</h3>
+			<h3><?php _e( 'Options', 'link-library' ); ?></h3>
 
 			<table>
 				<tr>
-					<td>Use Link URL for item link</td>
+					<td><?php _e( 'Use Link URL for item link', 'link-library' ); ?></td>
 					<td><input type="checkbox" id="globalsearchresultslinkurl" name="globalsearchresultslinkurl" <?php checked( $genoptions['globalsearchresultslinkurl'] ); ?>/></td></td>
 					<td></td>
-					<td>Add prefix to item title</td>
+					<td><?php _e( 'Add prefix to item title', 'link-library' ); ?></td>
 					<td><input type="text" id="globalsearchresultstitleprefix" name="globalsearchresultstitleprefix" size="60" value="<?php echo $genoptions['globalsearchresultstitleprefix']; ?>" /></td></td>
 				</td>
 
@@ -3909,55 +3909,55 @@ function general_custom_fields_meta_box( $data ) {
 			                         'wpautop' => false );
 
 			wp_editor( isset( $genoptions['global_search_results_layout'] ) ? stripslashes( $genoptions['global_search_results_layout'] ) : '', 'global_search_results_layout', $editorsettings ); ?>
-			<p>The codes that are available to put in this layout template are:</p>
+			<p><?php _e( 'The codes that are available to put in this layout template are:', 'link-library' ); ?></p>
 			<table>
 				<tr>
-					<th>Tag Name</th>
-					<th>Description</th>
+					<th><?php _e( 'Tag Name', 'link-library' ); ?></th>
+					<th><?php _e( 'Description', 'link-library' ); ?></th>
 				</tr>
 				<tr>
 					<td>[link_content]</td>
-					<td>Text added in the new full-page content field of the link editor</td>
+					<td><?php _e( 'Text added in the new full-page content field of the link editor', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_title]</td>
-					<td>The name of the link, text only</td>
+					<td><?php _e( 'The name of the link, text only', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link]</td>
-					<td>Link title, with link tag and link url</td>
+					<td><?php _e( 'Link title, with link tag and link url', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_address]</td>
-					<td>Link URL only, without link tag</td>
+					<td><?php _e( 'Link URL only, without link tag', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_description]</td>
-					<td>The link description</td>
+					<td><?php _e( 'The link description', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_large_description]</td>
-					<td>The link large description</td>
+					<td><?php _e( 'The link large description', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_category]</td>
-					<td>Category or categories that are assigned to link, listed in alphabetical order and separated with commas</td>
+					<td><?php _e( 'Category or categories that are assigned to link, listed in alphabetical order and separated with commas', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_image]</td>
-					<td>Link image URL. You need to add img src tag or other code to display image.</td>
+					<td><?php _e( 'Link image URL. You need to add img src tag or other code to display image.', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_email]</td>
-					<td>Link e-mail</td>
+					<td><?php _e( 'Link e-mail', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_telephone]</td>
-					<td>Link telephone number</td>
+					<td><?php _e( 'Link telephone number', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_price_or_free]</td>
-					<td>Display link price, or the word Free if the price is 0</td>
+					<td><?php _e( 'Display link price, or the word Free if the price is 0', 'link-library' ); ?></td>
 				</tr>
 			</table>
 		</div>
@@ -4249,7 +4249,7 @@ function general_custom_fields_meta_box( $data ) {
 											if ( !empty( $any_posts ) ) {
 												$post_type_data = get_post_type_object( $site_post_type ); ?>
 
-												<input type="radio" name="siteimportlinksscope" value="specific<?php echo $site_post_type; ?>"> <?php _e( 'Specific ' . $post_type_data->labels->singular_name, 'link-library' ); ?>
+												<input type="radio" name="siteimportlinksscope" value="specific<?php echo $site_post_type; ?>"> <?php echo __( 'Specific', 'link-library' ) . ' ' . $post_type_data->labels->singular_name; ?>
 												<?php wp_dropdown_posts( array( 'post_type' => $site_post_type, 'select_name' => $site_post_type . '_id' ) ); ?><br /><br />
 											<?php } }
 									}
@@ -4263,7 +4263,7 @@ function general_custom_fields_meta_box( $data ) {
 						$linkcats = get_terms( $genoptions['cattaxonomy'], array( 'hide_empty' => false ) );
 
 						if ( $linkcats ) { ?>
-							Category for new links <select name="siteimportcat" id="siteimportcat">
+							<?php _e( 'Category for new links', 'link-library' ); ?> <select name="siteimportcat" id="siteimportcat">
 								<?php foreach ( $linkcats as $linkcat ) { ?>
 									<option value="<?php echo $linkcat->term_id; ?>"><?php echo $linkcat->name; ?></option>
 								<?php } ?>
@@ -4504,7 +4504,7 @@ function general_custom_fields_meta_box( $data ) {
 					<th class="lltooltip" title='<?php _e( 'Link Library Supports the Creation of an unlimited number of configurations to display link lists on your site', 'link-library' ); ?>'>
 						<?php _e( 'Code to insert on a Wordpress page', 'link-library' ); ?>
 					</th>
-					<th>Optional Parameters</th>
+					<th><?php _e( 'Optional Parameters', 'link-library' ); ?></th>
 				</tr>
 				</thead>
 				<tr>
@@ -4514,47 +4514,47 @@ function general_custom_fields_meta_box( $data ) {
 					<td><?php echo "[link-library settings=" . $settings . "]"; ?></td>
 					<td><table style="padding-left:16px;">
 							<tr>
-								<td><strong>Parameter</strong></td><td><strong>Description</strong></td>
+								<td><strong><?php _e( 'Parameter', 'link-library' ); ?></strong></td><td><strong><?php _e( 'Description', 'link-library' ); ?></strong></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" categorylistoverride="28"]</td>
-								<td>Overrides the list of categories to be displayed in the link list, comma-separated list of category IDs</td>
+								<td><?php _e( 'Overrides the list of categories to be displayed in the link list, comma-separated list of category IDs', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" excludecategoryoverride="28"]</td>
-								<td>Overrides the list of categories to be excluded in the link list, comma-separated list of category IDs</td>
+								<td><?php _e( 'Overrides the list of categories to be excluded in the link list, comma-separated list of category IDs', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" taglistoverride="28"]</td>
-								<td>Overrides the list of tags to be displayed in the link list, comma-separated list of tag IDs</td>
+								<td><?php _e( 'Overrides the list of tags to be displayed in the link list, comma-separated list of tag IDs', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" notesoverride=0]</td>
-								<td>Set to 0 or 1 to display or not display link notes</td>
+								<td><?php _e( 'Set to 0 or 1 to display or not display link notes', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" descoverride=0]</td>
-								<td>Set to 0 or 1 to display or not display link descriptions</td>
+								<td><?php _e( 'Set to 0 or 1 to display or not display link descriptions', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" rssoverride=0]</td>
-								<td>Set to 0 or 1 to display or not display rss information</td>
+								<td><?php _e( 'Set to 0 or 1 to display or not display rss information', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" tableoverride=0]</td>
-								<td>Set to 0 or 1 to display links in an unordered list or a table</td>
+								<td><?php _e( 'Set to 0 or 1 to display links in an unordered list or a table', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" maxlinksoverride=5]</td>
-								<td>Overrides the max number of links to be displayed</td>
+								<td><?php _e( 'Overrides the max number of links to be displayed', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" linkorderoverride="date"]</td>
-								<td>Changes the link display order. Valid values are 'name', 'id', 'random', 'date', 'pubdate', 'hits', 'uservotes', 'scpo'</td>
+								<td><?php _e( 'Changes the link display order. Valid values are', 'link-library' ); ?> 'name', 'id', 'random', 'date', 'pubdate', 'hits', 'uservotes', 'scpo'</td>
 							</tr>
 							<tr>
 								<td>[link-library settings="<?php echo $settings; ?>" linkdirectionoverride="ASC"]</td>
-								<td>Changes the order in which links are displayed. Valid values are 'ASC', 'DESC'</td>
+								<td><?php _e( 'Changes the order in which links are displayed. Valid values are', 'link-library' ); ?> 'ASC', 'DESC'</td>
 							</tr>
 						</table></td>
 				</tr>
@@ -4566,23 +4566,23 @@ function general_custom_fields_meta_box( $data ) {
 					<td>
 						<table style="padding-left:16px;">
 							<tr>
-								<td><strong>Parameter</strong></td><td><strong>Description</strong></td>
+								<td><strong><?php _e( 'Parameter', 'link-library' ); ?></strong></td><td><strong><?php _e( 'Description', 'link-library' ); ?></strong></td>
 							</tr>
 							<tr>
 								<td>[link-library-cats settings="<?php echo $settings; ?>" categorylistoverride="28"]</td>
-								<td>Overrides the list of categories to be displayed in the category list, comma-separated list of category IDs</td>
+								<td><?php _e( 'Overrides the list of categories to be displayed in the category list, comma-separated list of category IDs', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library-cats settings="<?php echo $settings; ?>" excludecategoryoverride="28"]</td>
-								<td>Overrides the list of categories to be excluded in the category list, comma-separated list of category IDs</td>
+								<td><?php _e( 'Overrides the list of categories to be excluded in the category list, comma-separated list of category IDs', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library-cats settings="<?php echo $settings; ?>" targetlibrary="1"]</td>
-								<td>Specifies the library to be updated when making category selections</td>
+								<td><?php _e( 'Specifies the library to be updated when making category selections', 'link-library' ); ?></td>
 							</tr>
 							<tr>
 								<td>[link-library-cats settings="<?php echo $settings; ?>" taglistoverride="42"]</td>
-								<td>Overrides the list of tags to be displayed in the category list, comma-separated list of tag IDs</td>
+								<td><?php _e( 'Overrides the list of tags to be displayed in the category list, comma-separated list of tag IDs', 'link-library' ); ?></td>
 							</tr>
 						</table>
 					</td>
@@ -4788,15 +4788,15 @@ function general_custom_fields_meta_box( $data ) {
 					<td style='width: 200px' class="lltooltip" title="<?php _e( 'Select if AJAX should be used to only reload the list of links without reloading the whole page or HTML GET to reload entire page with a new link. The Permalinks option must be enabled for HTML GET + Permalink to work correctly.', 'link-library' ); ?>"><?php _e( 'Switching Method', 'link-library' ); ?></td>
 					<td>
 						<select name="showonecatmode" id="showonecatmode" style="width:200px;">
-							<option value="AJAX"<?php selected( $options['showonecatmode'] == 'AJAX' || empty( $options['showonecatmode'] ) ); ?>>AJAX
+							<option value="AJAX"<?php selected( $options['showonecatmode'] == 'AJAX' || empty( $options['showonecatmode'] ) ); ?>><?php _e( 'AJAX', 'link-library' ); ?>
 							</option>
-							<option value="HTMLGET"<?php selected( $options['showonecatmode'] == 'HTMLGET' ); ?>>HTML GET
+							<option value="HTMLGET"<?php selected( $options['showonecatmode'] == 'HTMLGET' ); ?>><?php _e( 'HTML GET', 'link-library' ); ?>
 							</option>
-							<option value="HTMLGETSLUG"<?php selected( $options['showonecatmode'] == 'HTMLGETSLUG' ); ?>>HTML GET Using Slugs
+							<option value="HTMLGETSLUG"<?php selected( $options['showonecatmode'] == 'HTMLGETSLUG' ); ?>><?php _e( 'HTML GET Using Slugs', 'link-library' ); ?>
 							</option>
-							<option value="HTMLGETCATNAME"<?php selected( $options['showonecatmode'] == 'HTMLGETCATNAME' ); ?>>HTML GET Using Category Name
+							<option value="HTMLGETCATNAME"<?php selected( $options['showonecatmode'] == 'HTMLGETCATNAME' ); ?>><?php _e( 'HTML GET Using Category Name', 'link-library' ); ?>
 							</option>
-							<option value="HTMLGETPERM"<?php selected( $options['showonecatmode'] == 'HTMLGETPERM' ); ?>>HTML GET + Permalink
+							<option value="HTMLGETPERM"<?php selected( $options['showonecatmode'] == 'HTMLGETPERM' ); ?>><?php _e( 'HTML GET + Permalink', 'link-library' ); ?>
 							</option>
 						</select>
 					</td>
@@ -4870,6 +4870,16 @@ function general_custom_fields_meta_box( $data ) {
 					</td>
 					<td>
 						<input type="text" id="rewritepage" name="rewritepage" size="40" value="<?php echo $options['rewritepage']; ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td>
+						<?php _e( 'Library Categories Page', 'link-library' ); ?>
+					</td>
+					<td>
+						<input type="text" id="rewritecategoriespage" name="rewritecategoriespage" size="40" value="<?php echo $options['rewritecategoriespage']; ?>" />
 					</td>
 				</tr>
 				<tr>
@@ -5286,7 +5296,7 @@ function general_custom_fields_meta_box( $data ) {
 				<td style='width:75px;'>
 					<select id="showupdatedpos" name="showupdatedpos">
 						<?php
-						$show_updated_pos_options = array( 'before' => 'Before Link Fields', 'after' => 'After Link Fields' );
+						$show_updated_pos_options = array( 'before' => __( 'Before Link Fields', 'link-library' ), 'after' => __( 'After Link Fields', 'link-library' ) );
 
 						foreach( $show_updated_pos_options as $show_updated_pos_option_key => $show_updated_pos_option ) { ?>
 							<option value="<?php echo $show_updated_pos_option_key; ?>" <?php selected( $options['showupdatedpos'], $show_updated_pos_option_key ); ?>><?php echo $show_updated_pos_option; ?></option>
@@ -6040,7 +6050,7 @@ function general_custom_fields_meta_box( $data ) {
 							</td>
 							<td>
 								<input type="text" id="linkcurrency" name="linkcurrency" size="3" value="<?php echo stripslashes( $options['linkcurrency'] ); ?>"  class="lltooltip" title='<?php _e( 'Currency symbol to be displayed next to price', 'link-library' ); ?>' />
-								Show 0.00 as free <input type="checkbox" id="show0asfree" name="show0asfree" <?php checked( $options['show0asfree'] ); ?>/>
+								<?php _e( 'Show 0.00 as free', 'link-library' ); ?> <input type="checkbox" id="show0asfree" name="show0asfree" <?php checked( $options['show0asfree'] ); ?>/>
 							</td>
 							<td>
 								<select name="linkcurrencyplacement" id="linkcurrencyplacement" style="width:200px;">
@@ -6353,7 +6363,7 @@ function general_custom_fields_meta_box( $data ) {
 			</tr>
 		</table>
 
-		<h2>Inline RSS Preview</h2>
+		<h2><?php _e( 'Inline RSS Preview', 'link-library' ); ?></h2>
 		<table>	
 			<tr>
 				<td>
@@ -6406,7 +6416,7 @@ function general_custom_fields_meta_box( $data ) {
 			</tr>
 		</table>
 		
-		<h2>RSS Library Shortcode</h2>
+		<h2><?php _e( 'RSS Library Shortcode', 'link-library' ); ?></h2>
 		<table>
 			<tr>			
 				<td>
@@ -6443,32 +6453,32 @@ function general_custom_fields_meta_box( $data ) {
 		<textarea name='rsslibrarytemplate' id='fancy-textarea' style='font-family:Courier' rows="10" cols="100"><?php echo stripslashes( $options['rsslibrarytemplate'] ); ?></textarea>
 		<table>
 				<tr>
-					<th>Tag Name</th>
-					<th>Description</th>
+					<th><?php _e( 'Tag Name', 'link-library' ); ?></th>
+					<th><?php _e( 'Description', 'link-library' ); ?></th>
 				</tr>
 				<tr>
 					<td>[link_title]</td>
-					<td>The name of the link, text only</td>
+					<td><?php _e( 'The name of the link, text only', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[link_category]</td>
-					<td>The category(ies) assigned to the link</td>
+					<td><?php _e( 'The category(ies) assigned to the link', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[rss_item_title]</td>
-					<td>RSS item title</td>
+					<td><?php _e( 'RSS item title', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[rss_item_date]</td>
-					<td>RSS item date</td>
+					<td><?php _e( 'RSS item date', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[rss_item_time]</td>
-					<td>RSS item time</td>
+					<td><?php _e( 'RSS item time', 'link-library' ); ?></td>
 				</tr>
 				<tr>
 					<td>[rss_item_content]</td>
-					<td>RSS item content</td>
+					<td><?php _e( 'RSS item content', 'link-library' ); ?></td>
 				</tr>
 			</table>
 		</div>
@@ -6930,14 +6940,14 @@ function general_custom_fields_meta_box( $data ) {
 
 		<table class='widefat striped' style='width:100%;margin:15px 5px 10px 0px;clear:none;'>
 		<thead>
-		<th style='width: 60px'>Field Name</th>
+		<th style='width: 60px'><?php _e( 'Field Name', 'link-library' ); ?></th>
 		<th style='width: 120px'><?php _e( 'Display', 'link-library' ); ?></th>
 		<th style='width: 80px'><?php _e( 'Label', 'link-library' ); ?></th>
 		<th style='width: 80px'><?php _e( 'Tooltip', 'link-library' ); ?></th>
 		<th style='width: 80px'><?php _e( 'Additional Details', 'link-library' ); ?></th>
 		</thead>
 		<tr>
-			<td style='width: 60px'>Form Title</td>
+			<td style='width: 60px'><?php _e( 'Form Title', 'link-library' ); ?></td>
 			<td></td>
 			<td><input type="text" id="addnewlinkmsg" name="addnewlinkmsg" size="30" value="<?php echo $options['addnewlinkmsg']; ?>" /></td>
 			<td></td>
@@ -7036,7 +7046,7 @@ function general_custom_fields_meta_box( $data ) {
 
 								if ( $linkcats ) { ?>
 									<select name="addlinkdefaultcat" id="addlinkdefaultcat" value="<?php echo $options['addlinkdefaultcat']; ?>">
-										<option value="nodefaultcat">No default category</option>
+										<option value="nodefaultcat"><?php _e( 'No default category', 'link-library' ); ?></option>
 										<?php foreach ( $linkcats as $linkcat ) { ?>
 											<option value="<?php echo $linkcat->term_id; ?>" <?php selected( $linkcat->term_id, $options['addlinkdefaultcat'] ); ?>><?php echo $linkcat->name; ?></option>
 										<?php } ?>
@@ -7633,7 +7643,7 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td><?php _e( 'Target', 'link-library' ); ?></td>
 				<td><?php
-					$target_array = array( '_blank' => '_blank (new window or tab)', '' => '_none (same window or tab)', '_top' => '_top (current window or tab)' );
+					$target_array = array( '_blank' => __( '_blank (new window or tab)', 'link-library' ), '' => __( '_none (same window or tab)', 'link-library' ), '_top' => __( '_top (current window or tab)', 'link-library' ) );
 					echo '<select name="link_target" id="link_target">';
 					echo '<option value="' . $defaultlinktarget . '" ' . selected( $defaultlinktarget, $link_target ) . '>' . $target_array[$defaultlinktarget] . '</option>';
 					unset( $target_array[$defaultlinktarget] );
@@ -7943,7 +7953,7 @@ function general_custom_fields_meta_box( $data ) {
 			</tr>
 			<tr>
 				<td style='width: 200px'><?php _e( 'Updated Date', 'link-library' ); ?></td>
-				<td><span style="float:left;padding-top:6px">Set Manually
+				<td><span style="float:left;padding-top:6px"><?php _e( 'Set Manually', 'link-library' ); ?>
 					<input type="checkbox" id="link_updated_manual" name="link_updated_manual" <?php checked( $link_updated_manual ); ?>/></span>
 					<input type="text" <?php if ( !$link_updated_manual || empty( $link_updated_manual ) ) {
 						echo 'disabled="disabled"';
@@ -8600,7 +8610,7 @@ function general_custom_fields_meta_box( $data ) {
 				echo $link->ID . ' - ' . $link->post_title . ': ' . $link->meta_value . ' <a href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => $link->ID ), admin_url( 'post.php' ) ) ) . '">Edit</a><br /><br />';
 			}
 		} else {
-			echo 'No links found with an empty category';
+			_e( 'No links found with an empty category', 'link-library' );
 		}
 
 		echo '<br />';

@@ -60,7 +60,7 @@ function ll_sort_by_temp_column ( $orderby ) {
 	return $orderby;
 }
 
-function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
+function link_library_get_breadcrumb_path( $slug, $rewritepage, $rewritecategoriespage, $level = 0 ) {
 	$genoptions = get_option( 'LinkLibraryGeneral' );
 	$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
@@ -71,7 +71,7 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 	if ( !empty( $term ) ) {
 		$parent_term = get_term_by( 'id', $term->parent, $genoptions['cattaxonomy'] );
 		if ( !empty( $parent_term ) ) {
-			$cat_path .= link_library_get_breadcrumb_path( $parent_term->slug, $rewritepage, $level + 1 ) . ' - ';
+			$cat_path .= link_library_get_breadcrumb_path( $parent_term->slug, $rewritepage, $rewritecategoriespage, $level + 1 ) . ' - ';
 		}
 	}
 
@@ -88,7 +88,7 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $level = 0 ) {
 		$cat_path .= '<a href="' . $new_link . '">' . $term->name . '</a>';		
 	} elseif ( $level == 0 ) {
 		$cat_path .= $term->name;
-		$new_top_link = esc_url( home_url() . '/' . $rewritepage );
+		$new_top_link = esc_url( home_url() . '/' . $rewritecategoriespage );
 
 		if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 			$new_top_link = add_query_arg( 'link_tags', sanitize_text_field( $_GET['link_tags'] ), $new_top_link );
@@ -806,7 +806,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 
 				if ( $enablerewrite && $showbreadcrumbspermalinks && $parent_cat_id != 0 && $level == 0) {
-					$breadcrumb = '<div class="breadcrumb">' . link_library_get_breadcrumb_path( $link_category->slug, $rewritepage ) . '</div>';
+					$breadcrumb = '<div class="breadcrumb">' . link_library_get_breadcrumb_path( $link_category->slug, $rewritepage, $rewritecategoriespage ) . '</div>';
 					$output .= $breadcrumb;
 				}
 
