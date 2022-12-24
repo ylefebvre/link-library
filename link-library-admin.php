@@ -2764,6 +2764,13 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							<option value="commalist" <?php selected( $genoptions['catselectmethod'], 'commalist' ); ?>><?php _e( 'Comma-separated ID list', 'link-library' ); ?>
 							<option value="multiselectlist" <?php selected( $genoptions['catselectmethod'], 'multiselectlist' ); ?>><?php _e( 'Multi-select List', 'link-library' ); ?>
 						</select></td>
+					<td colspan="2" rowspan="12">
+					<?php if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) { ?>
+					<h3>Support the author - Third Edition just released!</h3><br />
+					<a href="https://www.packtpub.com/product/wordpress-plugin-development-cookbook-third-edition/9781801810777"><img style="height:150px;float:left;margin: 10px;" src='<?php echo plugins_url( 'icons/7683os_cover_small.jpg', __FILE__ ); ?>'></a>
+					<p>The third edition of my plugin development cookbook is now available. Learn how to create your own plugins with my book, including some brand new chapters on creating blocks for the Block Editor and working with external data sources.<br /><br />Order now!<br /><br /><a href="https://www.packtpub.com/product/wordpress-plugin-development-cookbook-third-edition/9781801810777">Packt Publishing</a><br /><a href="https://www.amazon.com/WordPress-Plugin-Development-Cookbook-complete/dp/180181077X/">Amazon.com</a><br /><a href="https://www.amazon.ca/WordPress-Plugin-Development-Cookbook-complete/dp/180181077X/">Amazon.ca</a></p>
+					<?php } ?>
+					</td>
 				</tr>
 				<tr>
 					<td><?php _e( 'Default link target in editor', 'link-library' ); ?></td>
@@ -2815,6 +2822,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>">
 						<input type="text" id="pagetitleprefix" name="pagetitleprefix" size="10" value="<?php echo $genoptions['pagetitleprefix']; ?>" />
 					</td>
+				</tr>
+				<tr>
 					<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>"><?php _e( 'Page Title Suffix', 'link-library' ); ?></td>
 					<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>">
 						<input type="text" id="pagetitlesuffix" name="pagetitlesuffix" size="10" value="<?php echo $genoptions['pagetitlesuffix']; ?>" />
