@@ -575,6 +575,8 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['enableautolinksimport']		  = false;
 	$genoptions['importlinksschedule']			  = 'weekly';
 	$genoptions['importlinksurl']				  = '';
+	$genoptions['autothumbgen']					  = false;
+	$genoptions['autothumbgenschedule']			  = 'hourly';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );

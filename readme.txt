@@ -50,6 +50,9 @@ Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
 
+= 7.4.17 =
+* Added option to schedule automatic generation of missing thumbnails
+
 = 7.4.16 =
 * Added new configuration section under Global Options > Import/Export Links to be able to schedule automated import of links
 * Added missing files for pop-dialog functionality introduced in 7.4.15

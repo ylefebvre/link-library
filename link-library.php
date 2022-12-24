@@ -43,14 +43,9 @@ require_once(ABSPATH . '/wp-admin/includes/bookmark.php');
 require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
 require_once plugin_dir_path( __FILE__ ) . 'rssfeed.php';
 require_once plugin_dir_path( __FILE__ ) . '/upvote-downvote/thumbs-rating.php';
-//require_once plugin_dir_path( __FILE__ ) . 'blocks/link-library-main.php';
 
 global $my_link_library_plugin;
 global $my_link_library_plugin_admin;
-
-/* if ( !get_option( 'link_manager_enabled' ) ) {
-    add_filter( 'pre_option_link_manager_enabled', '__return_true' );
-} */
 
 function link_library_tweak_plugins_http_filter( $response, $r, $url ) {
 	if ( stristr( $url, 'api.wordpress.org/plugins/update-check/1.1' ) ) {
@@ -335,6 +330,7 @@ class link_library_plugin {
 		}
 
 		add_action( 'link_library_import_links', array( $this, 'll_import_links' ), 10, 0 );
+		add_action( 'link_library_gen_thumbs', array( $this, 'll_gen_thumbs' ), 10, 0 );
 	}
 
 	function ll_import_links() {
@@ -347,7 +343,17 @@ class link_library_plugin {
 		$successfulimport = 0;
 		$successfulupdate = 0;
 
-		$message = link_library_import_links( $genoptions, $row, $successfulimport, $successfulupdate );
+		link_library_import_links( $genoptions, $row, $successfulimport, $successfulupdate );
+	}
+
+	function ll_gen_thumbs() {
+		require_once plugin_dir_path( __FILE__ ) . 'link-library-image-generator.php';
+
+		$options = array();
+		$options['categorylist_cpt'] = '';
+		$options['uselocalimagesoverthumbshots'] = true;
+
+		link_library_image_generator( $this, $options, true );
 	}
 
 	function ll_rest_api_init() {

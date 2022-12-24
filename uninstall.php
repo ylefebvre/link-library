@@ -19,3 +19,4 @@ if ( get_option( 'LinkLibraryGeneral' ) != false ) {
 }
 
 wp_clear_scheduled_hook( 'link_library_import_links' );
+wp_clear_scheduled_hook( 'link_library_gen_thumbs' );

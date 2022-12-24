@@ -523,143 +523,6 @@ class link_library_plugin_admin {
 		return $newurl;
 	}
 
-	function ll_get_link_image( $url, $name, $mode, $linkid, $cid, $filepath, $filepathtype, $thumbnailsize, $thumbnailgenerator ) {
-		$status = false;
-		if ( $url != "" && $name != "" ) {
-			$protocol = is_ssl() ? 'https://' : 'http://';
-
-			if ( $mode == 'thumb' || $mode == 'thumbonly' ) {
-				if ( $thumbnailgenerator == 'robothumb' ) {
-					$genthumburl = $protocol . "www.robothumb.com/src/?url=" . esc_html( $url ) . "&size=" . $thumbnailsize;
-				} elseif ( $thumbnailgenerator == 'pagepeeker' ) {
-					if ( empty( $cid ) ) {
-						$genthumburl = $protocol . "free.pagepeeker.com/v2/thumbs.php?size=" . $thumbnailsize . "&url=" . esc_html( $url );
-					} else {
-						$genthumburl = $protocol . "api.pagepeeker.com/v2/thumbs.php?size=" . $thumbnailsize . "&url=" . esc_html( $url );
-					}
-				} elseif ( $thumbnailgenerator == 'shrinktheweb' ) {
-					$genthumburl .= $protocol . "images.shrinktheweb.com/xino.php?stwembed=1&stwaccesskeyid=" . $cid . "&stwsize=" . $thumbnailsize . "&stwurl=" . esc_html( $url );
-				} elseif ( $thumbnailgenerator == 'thumbshots' ) {
-					if ( !empty ( $cid ) ) {
-						$genthumburl = $protocol . "images.thumbshots.com/image.aspx?cid=" . rawurlencode( $cid ) . "&v1=w=120&url=" . esc_html( $url );
-					}
-				} elseif ( $thumbnailgenerator == 'wordpressmshots' ) {
-					$dimension_array = explode( 'x', $thumbnailsize );
-					$genthumburl = $protocol . "s0.wp.com/mshots/v1/" . rtrim( esc_html( $url ), '/' ) . '?w=' . $dimension_array[0]. '&h=' . $dimension_array[1];
-				}
-			} elseif ( $mode == 'favicon' || $mode == 'favicononly' ) {
-				$genthumburl = $protocol . "www.google.com/s2/favicons?domain=" . $url;
-			}
-
-			$uploads = wp_upload_dir();
-
-			if ( !file_exists( $uploads['basedir'] ) ) {
-				return __( 'Please create a folder called uploads under your Wordpress /wp-content/ directory with write permissions to use this functionality.', 'link-library' );
-			} elseif ( !is_writable( $uploads['basedir'] ) ) {
-				return __( 'Please make sure that the /wp-content/uploads/ directory has write permissions to use this functionality.', 'link-library' );
-			} else {
-				if ( !file_exists( $uploads['basedir'] . '/' . $filepath ) ) {
-					mkdir( $uploads['basedir'] . '/' . $filepath );
-				}
-			}
-
-			$img    = $uploads['basedir'] . "/" . $filepath . "/" . $linkid . '.png';
-			if ( $thumbnailgenerator != 'google' || $mode == 'favicon' || $mode == 'favicononly' ) {
-				$tempfile = download_url( $genthumburl );
-				if ( !is_wp_error( $tempfile ) ) {
-					copy( $tempfile, $img );
-					unlink( $tempfile );
-					$status = true;
-				}
-			} elseif ( $thumbnailgenerator == 'google' && ( $mode == 'thumb' || $mode == 'thumbonly' ) ) {
-				$screenshot = file_get_contents('https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url=' . esc_html( $url ));
-				$data_whole = json_decode($screenshot);
-
-				if (isset($data_whole->error) || empty($screenshot)) {
-					if (!(substr($url, 0, 4) == 'http')) {
-						$url2 = 'https%3A%2F%2F' . $url;
-						$screenshot = file_get_contents('https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url='.$url2);
-						$data_whole = json_decode($screenshot);
-					}
-				}
-				if (isset($data_whole->error) || empty($screenshot)) {
-					if (!(substr($url, 0, 3) == 'www')) {
-						$url3 = 'https%3A%2F%2F' . 'www.' . $url;
-						$screenshot = file_get_contents('https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?url='.$url3);
-						$data_whole = json_decode($screenshot);
-					}
-				}
-				if (isset($data_whole->error)) {
-					$status = false;
-				} else {
-					if (isset($data_whole->lighthouseResult->audits->{'final-screenshot'}->details->data)) {
-						$data = $data_whole->lighthouseResult->audits->{'final-screenshot'}->details->data;
-						$data = str_replace('data:image/jpeg;base64','',$data);
-
-						$data = str_replace('_', '/', $data);
-						$data = str_replace('-', '+', $data);
-						$base64img = str_replace('data:image/jpeg;base64,', '', $data);
-
-						$data   		  = base64_decode($data);
-						$upload_dir       = $uploads['basedir'] . '/' . $filepath; // Set upload folder
-						$image_data       = $data; // img data
-						$unique_file_name = wp_unique_filename( $uploads['basedir'] . '/' . $filepath, $linkid . '.png' ); // Generate unique name
-						$filename         = basename( $unique_file_name ); // Create image file name
-
-						// Create the image  file on the server
-						file_put_contents( $img, $image_data );
-
-						$exists = file_exists($tmp);
-						$status = true;
-					} else {
-						$status = false;
-					}
-
-				}
-
-			}
-
-			if ( $status !== false ) {
-				if ( $filepathtype == 'absolute' || empty( $filepathtype ) ) {
-					$newimagedata = $uploads['baseurl'] . "/" . $filepath . "/" . $linkid . ".png";
-				} elseif ( $filepathtype == 'relative' ) {
-					$parsedaddress = parse_url( $uploads['baseurl'] );
-					$newimagedata  = $parsedaddress['path'] . "/" . $filepath . "/" . $linkid . ".png";
-				}
-
-				if ( $mode == 'thumb' || $mode == 'favicon' ) {
-					update_post_meta( $linkid, 'link_image', $newimagedata );
-
-					if ( empty( $newimagedata ) ) {
-						delete_post_thumbnail( $linkid );
-					} else {
-						$wpFileType = wp_check_filetype( $newimagedata, null);
-
-						$attachment = array(
-							'post_mime_type' => $wpFileType['type'],  // file type
-							'post_title' => sanitize_file_name( $newimagedata ),  // sanitize and use image name as file name
-							'post_content' => '',  // could use the image description here as the content
-							'post_status' => 'inherit'
-						);
-
-						// insert and return attachment id
-						$attachmentId = wp_insert_attachment( $attachment, $newimagedata, $linkid );
-						$attachmentData = wp_generate_attachment_metadata( $attachmentId, $newimagedata );
-						wp_update_attachment_metadata( $attachmentId, $attachmentData );
-						set_post_thumbnail( $linkid, $attachmentId );
-					}
-				}
-
-				return $newimagedata;
-			} else {
-				return "";
-			}
-		}
-
-		return 'Parameters are missing';
-	}
-
-
 	//for WordPress 2.8 we have to tell, that we support 2 columns !
 	function on_screen_layout_columns( $columns, $screen ) {
 		return $columns;
@@ -1030,87 +893,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		}
 
 		if ( isset( $_GET['genthumbs'] ) || isset( $_GET['genfavicons'] ) || isset( $_GET['genthumbsingle'] ) || isset( $_GET['genfaviconsingle'] ) ) {
-			if ( isset( $_GET['genthumbs'] ) ) {
-				check_admin_referer( 'llgenthumbs' );
-			}
-
-			if ( isset( $_GET['genfavicons'] ) ) {
-				check_admin_referer( 'llgenfavicons' );
-			}
-
-			if ( isset( $_GET['genthumbs'] ) || isset( $_GET['genthumbsingle'] ) ) {
-				$filepath = "link-library-images";
-			} elseif ( isset( $_GET['genfavicons'] ) || isset( $_GET['genfaviconsingle'] ) ) {
-				$filepath = "link-library-favicons";
-			}
-
-			$uploads = wp_upload_dir();
-
-			if ( !file_exists( $uploads['basedir'] ) ) {
-				echo "<div id='message' class='updated fade'><p><strong>" . __( 'Please create a folder called uploads under your Wordpress /wp-content/ directory with write permissions to use this functionality.', 'link-library' ) . "</strong></p></div>";
-			} elseif ( !is_writable( $uploads['basedir'] ) ) {
-				echo "<div id='message' class='updated fade'><p><strong>" . __( 'Please make sure that the /wp-content/uploads/ directory has write permissions to use this functionality.', 'link-library' ) . "</strong></p></div>";
-			} else {
-				if ( !file_exists( $uploads['basedir'] . '/' . $filepath ) ) {
-					mkdir( $uploads['basedir'] . '/' . $filepath );
-				}
-
-				if ( isset( $_GET['genthumbs'] ) || isset( $_GET['genthumbsingle'] ) ) {
-					$genmode = 'thumb';
-				} elseif ( isset( $_GET['genfavicons'] ) || isset( $_GET['genfaviconsingle'] ) ) {
-					$genmode = 'favicon';
-				}
-
-				$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1, 'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ) );
-
-				if ( $options['categorylist_cpt'] != "" && !isset( $_GET['genthumbsingle'] ) && !isset( $_GET['genfaviconsingle'] ) ) {
-					$link_query_args['tax_query'] = array(
-														array( 'taxonomy' => $genoptions['cattaxonomy'],
-															    'field' => 'term-id',
-															    'terms' => $options['categorylist_cpt'],
-																'operator' => 'IN' )
-														);
-				} else if ( isset( $_GET['genthumbsingle'] ) || isset( $_GET['genfaviconsingle'] ) ) {
-					$link_query_args['p'] = intval( $_GET['linkid'] );
-				}
-
-				$the_link_query = new WP_Query( $link_query_args );
-
-				if ( $the_link_query->have_posts() ) {
-					$filescreated = 0;
-					$totallinks   = $the_link_query->found_posts;
-
-					while ( $the_link_query->have_posts() ) {
-						$the_link_query->the_post();
-
-						$link_url = get_post_meta( get_the_ID(), 'link_url', true );
-						$link_image = get_post_meta( get_the_ID(), 'link_image', true );
-
-						if ( !$options['uselocalimagesoverthumbshots'] || ( $options['uselocalimagesoverthumbshots'] && empty( $link_image ) ) ) {
-							if ( in_array( $genoptions['thumbnailgenerator'], array( 'robothumb', 'thumbshots', 'wordpressmshots', 'google' ) ) ) {
-								$this->ll_get_link_image( $link_url, get_the_title(), $genmode, get_the_ID(), $genoptions['thumbshotscid'], $filepath, $genoptions['imagefilepath'], $genoptions['thumbnailsize'], $genoptions['thumbnailgenerator'] );
-							} elseif ( 'pagepeeker' == $genoptions['thumbnailgenerator'] ) {
-								$this->ll_get_link_image( $link_url, get_the_title(), $genmode, get_the_ID(), $genoptions['pagepeekerid'], $filepath, $genoptions['imagefilepath'], $genoptions['pagepeekersize'], $genoptions['thumbnailgenerator'] );
-							} elseif ( 'shrinktheweb' == $genoptions['thumbnailgenerator'] ) {
-								$this->ll_get_link_image( $link_url, get_the_title(), $genmode, get_the_ID(), $genoptions['shrinkthewebaccesskey'], $filepath, $genoptions['imagefilepath'], $genoptions['stwthumbnailsize'], $genoptions['thumbnailgenerator'] );
-							}
-						}
-						$linkname = get_the_title();
-					}
-
-					wp_reset_postdata();
-
-					if ( isset( $_GET['genthumbs'] ) ) {
-						echo "<div id='message' class='updated fade'><p><strong>" . __( 'Thumbnails successfully generated!', 'link-library' ) . "</strong></p></div>";
-					} elseif ( isset( $_GET['genfavicons'] ) ) {
-						echo "<div id='message' class='updated fade'><p><strong>" . __( 'Favicons successfully generated!', 'link-library' ) . "</strong></p></div>";
-					} elseif ( isset( $_GET['genthumbsingle'] ) ) {
-						echo "<div id='message' class='updated fade'><p><strong>" . __( 'Thumbnail successfully generated for', 'link-library' ) . " " . $linkname . ".</strong></p></div>";
-					} elseif ( isset( $_GET['genfaviconsingle'] ) ) {
-						echo "<div id='message' class='updated fade'><p><strong>" . __( 'Favicon successfully generated for', 'link-library' ) . " " . $linkname . ".</strong></p></div>";
-					}
-				}
-			}
+			require_once plugin_dir_path( __FILE__ ) . 'link-library-image-generator.php';
+			link_library_image_generator( $this, $options );
 		} elseif ( isset( $_GET['deleteallthumbs'] ) ) {
 			check_admin_referer( 'lldeleteallthumbs' );
 			$uploads = wp_upload_dir();
@@ -1425,56 +1209,6 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		$data['genoptions'] = $genoptions;
 		global $pagehookmoderate, $pagehookstylesheet, $pagehooksettingssets, $pagehookreciprocal;
 		?>
-		<div class="ll-content">
-			<div class="ll-frame">
-				<div class="header">
-					<nav role="navigation" class="header-nav drawer-nav nav-horizontal">
-
-						<ul class="main-nav">
-							<li class="link-library-logo">
-								<img src="<?php echo plugins_url( 'icons/folder-beige-internet-icon32.png', __FILE__ ); ?>" /><span>Link Library</span>
-							</li>
-							<li class="link-library-page">
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'link-library-general-options' ), admin_url( 'admin.php' ) ) ); ?>" <?php if ( isset( $_GET['page'] ) && $_GET['page'] == 'link-library' ) {
-									echo 'class="current"';
-								} ?>><?php _e( 'General Options', 'link-library' ); ?></a>
-							</li>
-							<li class="link-library-page">
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'link-library-settingssets' ), admin_url( 'admin.php' ) ) ); ?>" <?php if ( isset( $_GET['page'] ) && $_GET['page'] == 'link-library-settingssets' ) {
-									echo 'class="current"';
-								} ?>><?php _e( 'Library Settings', 'link-library' ); ?></a>
-							</li>
-							<li class="link-library-page">
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'link-library-moderate' ), admin_url( 'admin.php' ) ) ); ?>" <?php if ( isset( $_GET['page'] ) && $_GET['page'] == 'link-library-moderate' ) {
-									echo 'class="current"';
-								} ?>><?php _e( 'Moderate', 'link-library' ); ?></a>
-							</li>
-							<li class="link-library-page">
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'link-library-stylesheet' ), admin_url( 'admin.php' ) ) ); ?>" <?php if ( isset( $_GET['page'] ) && $_GET['page'] == 'link-library-stylesheet' ) {
-									echo 'class="current"';
-								} ?>><?php _e( 'Stylesheet', 'link-library' ); ?></a>
-							</li>
-							<li class="link-library-page">
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'link-library-reciprocal' ), admin_url( 'admin.php' ) ) ); ?>" <?php if ( isset( $_GET['page'] ) && $_GET['page'] == 'link-library-reciprocal' ) {
-									echo 'class="current"';
-								} ?>><?php _e( 'Reciprocal Check', 'link-library' ); ?></a>
-							</li>
-							<li class="link-library-page">
-								<a target="LinkLibraryFAQ" href="https://github.com/ylefebvre/link-library/wiki"><?php _e( 'FAQ', 'link-library' ); ?></a>
-							</li>
-							<?php if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) { ?>
-								<li class="link-library-page">
-									<a href="https://ylefebvre.github.io/wordpress-plugins/link-library/"><img src="<?php echo plugins_url( '/icons/btn_donate_LG.gif', __FILE__ ); ?>" /></a>
-								</li>
-							<?php } ?>
-
-						</ul>
-
-					</nav>
-				</div>
-				<!-- .header -->
-			</div>
-		</div>
 		<div id="link-library-general" class="wrap">
 			<div class='icon32'>
 				<img src="<?php echo plugins_url( 'icons/folder-beige-internet-icon32.png', __FILE__ ); ?>" />
@@ -1526,7 +1260,10 @@ wp_editor( $post->post_content, 'content', $editor_config );
 								<?php
 								if ( $_GET['page'] == 'link-library-general-options' ) {
 									$this->display_menu( 'general', $genoptions );
+									$this->general_save_meta_box();
 									$this->general_meta_box( $data );
+									$this->general_thumbnail_generation_meta_box( $data );
+									$this->general_captcha_meta_box( $data );
 									$this->general_custom_fields_meta_box( $data );
 									$this->general_singleitemlayout_meta_box( $data );
 									$this->general_globalsearchresultslayout_meta_box( $data );
@@ -1537,6 +1274,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 										$this->general_hide_donation_meta_box( $data );
 									}
 									$this->general_importexport_meta_box( $data );
+									$this->general_buddypress_meta_box( $data );
 
 									$this->general_save_meta_box();
 
@@ -1640,6 +1378,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 	function display_menu( $menu_name = 'settingsset', $genoptions = '' ) {
 		if ( $menu_name == 'general' ) {
 			$tabitems = array ( 'll-general' => __( 'General', 'link-library' ),
+								'll-thumbnail-generation' => __( 'Thumbnail Generation', 'link-library' ),
+								'll-captcha' => __( 'Captcha', 'link-library' ),
 								'll-customfields' => __( 'Custom Fields', 'link-library' ),
 								'll-singleitem' => __( 'Single Item Layout', 'link-library' ),
 								'll-globalsearchresultslayout' => __( 'Global Search Results / Main Site RSS Feed Item Layout', 'link-library' ),
@@ -1648,6 +1388,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			                    'll-moderation' => __( 'Moderation', 'link-library' ),
 			                    'll-hidedonation' => __( 'Hide Donation', 'link-library' ),
 			                    'll-importexport' => __( 'Import/Export Links', 'link-library' ),
+								'll-buddypress' => __( 'BuddyPress', 'link-library' ),
 			);
 
 			if ( isset( $genoptions['hidedonation'] ) && $genoptions['hidedonation'] ) {
@@ -2227,13 +1968,20 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		} else {
 
 			if ( isset( $_POST['enableautolinksimport'] ) && !$genoptions['enableautolinksimport'] && !empty( sanitize_text_field( $_POST['importlinksschedule'] ) ) ) {
-				if (! wp_next_scheduled ( 'link_library_import_links', $args )) {
+				if ( !wp_next_scheduled ( 'link_library_import_links', $args ) ) {
 					wp_schedule_event( time(), sanitize_text_field( $_POST['importlinksschedule'] ), 'link_library_import_links' );
 				}
 			} elseif ( !isset( $_POST['enableautolinksimport'] ) && $genoptions['enableautolinksimport'] ) {
 				wp_clear_scheduled_hook( 'link_library_import_links' );
 			}
 
+			if ( isset( $_POST['autothumbgen'] ) && !$genoptions['autothumbgen'] && !empty( sanitize_text_field( $_POST['autothumbgenschedule'] ) ) ) {
+				if ( !wp_next_scheduled ( 'link_library_gen_thumbs', $args ) ) {
+					wp_schedule_event( time(), sanitize_text_field( $_POST['autothumbgenschedule'] ), 'link_library_gen_thumbs' );
+				}
+			} elseif ( !isset( $_POST['autothumbgen'] ) && $genoptions['autothumbgen'] ) {
+				wp_clear_scheduled_hook( 'link_library_gen_thumbs' );
+			}
 
 			foreach (
 				array(
@@ -2243,7 +1991,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug',
 					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings', 'defaultprotocoladmin', 'pagepeekerid', 'pagepeekersize', 'stwthumbnailsize', 'shrinkthewebaccesskey', 'customurl1label', 'customurl2label',
 					'customurl3label', 'customurl4label', 'customurl5label', 'customtext1label', 'customtext2label', 'customtext3label', 'customtext4label', 'customtext5label', 'customlist1label', 'customlist2label', 'customlist3label', 'customlist4label', 'customlist5label', 'customlist1values', 'customlist2values', 'customlist3values', 'customlist4values', 'customlist5values',
-					'customlist1html', 'customlist2html', 'customlist3html', 'customlist4html', 'customlist5html', 'global_search_results_layout', 'globalsearchresultstitleprefix', 'cattaxonomy', 'tagtaxonomy', 'ignoresortarticles', 'importlinksschedule'
+					'customlist1html', 'customlist2html', 'customlist3html', 'customlist4html', 'customlist5html', 'global_search_results_layout', 'globalsearchresultstitleprefix', 'cattaxonomy', 'tagtaxonomy', 'ignoresortarticles', 'importlinksschedule', 'autothumbgenschedule'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2280,7 +2028,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				'customurl2active', 'customurl3active', 'customurl4active', 'customurl5active', 'customtext1active', 'customtext2active',
 				'customtext3active', 'customtext4active', 'customtext5active', 'customlist1active', 'customlist2active',
 				'customlist3active', 'customlist4active', 'customlist5active', 'globalsearchresultslinkurl', 'add_to_main_rss', 'showexcerpt',
-				'enableautolinksimport' ) as $option_name ) {
+				'enableautolinksimport', 'autothumbgen' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
 					$genoptions[$option_name] = true;
 				} else {
@@ -2913,398 +2661,185 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		?>
 
 		<div style='padding-top:15px' id="ll-general" class="content-section">
-		<table>
-			<tr>
-				<td>
-					<input type='hidden' value='<?php echo $genoptions['schemaversion']; ?>' name='schemaversion' id='schemaversion' />
-					<table>
-						<tr>
-							<td colspan="2"><h4>Link Library 6.0 Upgrade Tools</h4></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Re-import', 'link-library' ); ?></td>
-							<td><button class="button" type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( __( "Using the re-import function will delete all links in your Link Library and re-import links from the old Link Library 5.9 format to version 6.x. Only use this function if you recently upgraded from 5.9 to 6.x and are having issues with the converter links.", "link-library" ) ) . "') ) window.location.href='edit.php?page=link-library-general-options&amp;post_type=link_library_links&amp;ll60reupdate=1&amp;_wpnonce=" . wp_create_nonce( 'll60reupdate' ) . "' \""; ?>><?php _e( 'Re-import links', 'link-library' ); ?></button></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Category mapping table', 'link-library' ); ?></td>
-							<td><input class="button" type="submit" id="ll60catmapping" name="ll60catmapping" value="<?php _e( 'Export category mapping', 'link-library' ); ?>" /></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Delete old Link Library 5.9 Links', 'link-library' ); ?></td>
-							<td><input class="button" type="submit" id="deletell59links" name="deletell59links" value="<?php _e( 'Delete old links', 'link-library' ); ?>" /></td>
-						</tr>
-						<tr>
-							<td colspan="2"><h4><?php _e( 'General Options', 'link-library' ); ?></h4></td>
-						</tr>
-						<?php if ( !is_multisite() ) { ?>
-						<tr>
-							<td><?php _e( 'Update channel', 'link-library' ); ?></td>
-							<td><select id="updatechannel" name="updatechannel">
-									<option value="standard" <?php selected( $genoptions['updatechannel'], 'standard' ); ?>><?php _e( 'Standard channel - Updates as they are released', 'link-library' ); ?>
-									<option value="monthly" <?php selected( $genoptions['updatechannel'], 'monthly' ); ?>><?php _e( 'Monthly Channel - Updates once per month', 'link-library' ); ?>
-								</select></td>
-						</tr>
-						<?php } ?>
-						<tr>
-							<td class='lltooltip' title='<?php _e( 'The stylesheet is now defined and stored using the Link Library admin interface. This avoids problems with updates from one version to the next.', 'link-library' ); ?>' style='width:200px'><?php _e( 'Stylesheet', 'link-library' ); ?></td>
-							<td class='lltooltip' title='<?php _e( 'The stylesheet is now defined and stored using the Link Library admin interface. This avoids problems with updates from one version to the next.', 'link-library' ); ?>'>
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'link-library-stylesheet', 'section' => 'stylesheet' ), admin_url( 'admin.php' ) ) ); ?>"><?php _e( 'Editor', 'link-library' ); ?></a>
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Number of Libraries', 'link-library' ); ?></td>
-							<td>
-								<input type="text" id="numberstylesets" name="numberstylesets" size="5" value="<?php echo $genoptions['numberstylesets']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Link Library Post Slug', 'link-library' ); ?></td>
-							<td>
-								<input type="text" id="cptslug" name="cptslug" size="20" value="<?php echo $genoptions['cptslug']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Taxonomy for link category', 'link-library' ); ?></td>
-							<td><select id="cattaxonomy" name="cattaxonomy">
-									<option value="link_library_category" <?php selected( $genoptions['cattaxonomy'], 'link_library_category' ); ?>><?php _e( 'Link Library Categories', 'link-library' ); ?>
-									<option value="category" <?php selected( $genoptions['cattaxonomy'], 'category' ); ?>><?php _e( 'Post Categories', 'link-library' ); ?>
-								</select></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Taxonomy for link tags', 'link-library' ); ?></td>
-							<td><select id="tagtaxonomy" name="tagtaxonomy">
-									<option value="link_library_tags" <?php selected( $genoptions['tagtaxonomy'], 'link_library_tags' ); ?>><?php _e( 'Link Library Tags', 'link-library' ); ?>
-									<option value="post_tag" <?php selected( $genoptions['tagtaxonomy'], 'post_tag' ); ?>><?php _e( 'Post Tags', 'link-library' ); ?>
-								</select></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Articles to be ignored when sorting (separate with |)', 'link-library' ); ?></td>
-							<td>
-								<input type="text" id="ignoresortarticles" name="ignoresortarticles" value="<?php echo $genoptions['ignoresortarticles']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e(  'Individual link pages can be seen by visitors', 'link-library' ); ?></td>
-							<td><input type="checkbox" id="publicly_queryable" name="publicly_queryable" <?php checked( $genoptions['publicly_queryable'] ); ?>/></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Links appear in search results', 'link-library' ); ?></td>
-							<td><input type="checkbox" id="exclude_from_search" name="exclude_from_search" <?php checked( $genoptions['exclude_from_search'] ); ?>/></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Links appear in main site RSS feed', 'link-library' ); ?></td>
-							<td><input type="checkbox" id="add_to_main_rss" name="add_to_main_rss" <?php checked( $genoptions['add_to_main_rss'] ); ?>/></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Minimum role for Link Library configuration', 'link-library' ); ?></td>
-							<td>
-								<?php global $wp_roles;
-								if ( $wp_roles ):?>
-									<select name='rolelevel' style='width: 200px'>
-										<?php $roles = $wp_roles->roles;
-
-										foreach ( $roles as $role ):
-											$selectedterm = selected( $genoptions['rolelevel'], $role['name'], false ); ?>
-											<option value='<?php echo $role['name']; ?>' <?php echo $selectedterm; ?>><?php echo $role['name']; ?></option>
-										<?php endforeach; ?>
-									</select>
-								<?php endif; ?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Minimum role for Link editing', 'link-library' ); ?></td>
-							<td>
-								<?php global $wp_roles;
-								if ( $wp_roles ):?>
-									<select name='editlevel' style='width: 200px'>
-										<?php $roles = $wp_roles->roles;
-
-										foreach ( $roles as $role ):
-											$selectedterm = selected( $genoptions['editlevel'], $role['name'], false ); ?>
-											<option value='<?php echo $role['name']; ?>' <?php echo $selectedterm; ?>><?php echo $role['name']; ?></option>
-										<?php endforeach; ?>
-									</select>
-								<?php endif; ?>
-							</td>
-						</tr>
-						<tr>
-							<td class="lltooltip" title="<?php _e( 'Changes how categories to be displayed are selected in library configurations. Specifying through a comma-separated list allows user to specify order to display the categories, when used in conjunction with the Results Order option' ); ?>"><?php _e( 'Category selection method', 'link-library' ); ?></td>
-							<td><select id="catselectmethod" name="catselectmethod">
-									<option value="commalist" <?php selected( $genoptions['catselectmethod'], 'commalist' ); ?>><?php _e( 'Comma-separated ID list', 'link-library' ); ?>
-									<option value="multiselectlist" <?php selected( $genoptions['catselectmethod'], 'multiselectlist' ); ?>><?php _e( 'Multi-select List', 'link-library' ); ?>
-								</select></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Default link target in editor', 'link-library' ); ?></td>
-							<td><?php $target_array = array( '_blank' => __( '_blank (new window or tab)', 'link-library' ), '' => __( '_none (same window or tab)', 'link-library' ), '_top' => __( '_top (current window or tab, with no frames)', 'link-library' ) );
-								echo '<select name="defaultlinktarget" id="defaultlinktarget">';
-									foreach ( $target_array as $target_value => $target_item ) {
-									echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultlinktarget'] ) . '>' . $target_item . '</option>';
-									}
-									echo '</select>';
-								?></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Display excerpt section in editor', 'link-library' ); ?></td>
-							<td><input type="checkbox" id="showexcerpt" name="showexcerpt" <?php checked( $genoptions['showexcerpt'] ); ?>/></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Default protocol for new links in admin when not specified', 'link-library' ); ?></td>
-							<td><?php $target_array = array( 'http' => 'http://', 'https' => 'https://' );
-								echo '<select name="defaultprotocoladmin" id="defaultprotocoladmin">';
-								foreach ( $target_array as $target_value => $target_item ) {
-									echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultprotocoladmin'] ) . '>' . $target_item . '</option>';
-								}
-								echo '</select>';
-								?></td>
-						</tr>
-						<tr>
-							<td class="lltooltip" title="<?php _e( 'Enter comma-separate list of pages on which the Link Library stylesheet and scripts should be loaded. Primarily used if you display Link Library using the API', 'link-library' ); ?>"><?php _e( 'Additional pages to load styles and scripts', 'link-library' ); ?></td>
-							<td class="lltooltip" title="<?php _e( 'Enter comma-separate list of pages on which the Link Library stylesheet and scripts should be loaded. Primarily used if you display Link Library using the API', 'link-library' ); ?>">
-								<input type="text" id="includescriptcss" name="includescriptcss" size="40" value="<?php echo $genoptions['includescriptcss']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Debug Mode', 'link-library' ); ?></td>
-							<td>
-								<input type="checkbox" id="debugmode" name="debugmode" <?php checked( $genoptions['debugmode'] ); ?>/></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Delete file if link points to local file', 'link-library' ); ?></td>
-							<td>
-								<input type="checkbox" id="deletelocalfile" name="deletelocalfile" <?php checked( $genoptions['deletelocalfile'] ); ?>/></td>
-						</tr>
-						<tr>
-							<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>"><?php _e( 'Page Title Prefix', 'link-library' ); ?></td>
-							<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>">
-								<input type="text" id="pagetitleprefix" name="pagetitleprefix" size="10" value="<?php echo $genoptions['pagetitleprefix']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>"><?php _e( 'Page Title Suffix', 'link-library' ); ?></td>
-							<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>">
-								<input type="text" id="pagetitlesuffix" name="pagetitlesuffix" size="10" value="<?php echo $genoptions['pagetitlesuffix']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td class='lltooltip' title='<?php _e( 'Path for images files that are uploaded manually or generated through thumbnail generation service', 'link-library' ); ?>'><?php _e( 'Link Image File Path', 'link-library' ); ?></td>
-							<td colspan='4' class='lltooltip' title='<?php _e( 'Path for images files that are uploaded manually or generated through thumbnail generation service', 'link-library' ); ?>'>
-								<select id="imagefilepath" name="imagefilepath">
-									<option value="absolute" <?php selected( $genoptions['imagefilepath'], 'absolute' ); ?>><?php _e( 'Absolute', 'link-library' ); ?>
-									<option value="relative" <?php selected( $genoptions['imagefilepath'], 'relative' ); ?>><?php _e( 'Relative', 'link-library' ); ?>
-								</select></td>
-						</tr>
-						<tr>
-							<td colspan="2"><hr /></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Thumbnail Generator', 'link-library' ); ?></td>
-							<td>
-								<select id="thumbnailgenerator" name="thumbnailgenerator">
-									<option value="robothumb" <?php selected( $genoptions['thumbnailgenerator'], 'robothumb' ); ?>>Robothumb.com
-									<option value="shrinktheweb" <?php selected( $genoptions['thumbnailgenerator'], 'shrinktheweb' ); ?>>Shrink The Web
-									<option value="pagepeeker" <?php selected( $genoptions['thumbnailgenerator'], 'pagepeeker' ); ?>>PagePeeker
-									<option value="wordpressmshots" <?php selected( $genoptions['thumbnailgenerator'], 'wordpressmshots' ); ?>>WordPress.com mshots
-									<option value="thumbshots" <?php selected( $genoptions['thumbnailgenerator'], 'thumbshots' ); ?>>Thumbshots.org
-									<option value="google" <?php selected( $genoptions['thumbnailgenerator'], 'google' ); ?>>Google PageSpeed
-								</select>
-							</td>
-						</tr>
-						<tr class="thumbshotsapikey" <?php if ( $genoptions['thumbnailgenerator'] != 'thumbshots' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td class='lltooltip' title='<?php _e( 'API Key for Thumbshots.com thumbnail generation accounts', 'link-library' ); ?>'><?php _e( 'Thumbshots API Key', 'link-library' ); ?></td>
-							<td colspan='4' class='lltooltip' title='<?php _e( 'API Key for Thumbshots.com thumbnail generation accounts', 'link-library' ); ?>'>
-								<input type="text" id="thumbshotscid" name="thumbshotscid" size="20" value="<?php echo $genoptions['thumbshotscid']; ?>" />
-							</td>
-						</tr>
-						<tr class="shrinkthewebaccesskey" <?php if ( $genoptions['thumbnailgenerator'] != 'shrinktheweb' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td class='lltooltip' title='<?php _e( 'Access Key for shrinktheweb.com thumbnail generation accounts', 'link-library' ); ?>'><?php _e( 'Shrink The Web Access Key', 'link-library' ); ?></td>
-							<td colspan='4' class='lltooltip' title='<?php _e( 'Access Key for shrinktheweb.com thumbnail generation accounts', 'link-library' ); ?>'>
-								<input type="text" id="shrinkthewebaccesskey" name="shrinkthewebaccesskey" size="20" value="<?php echo $genoptions['shrinkthewebaccesskey']; ?>" />
-							</td>
-						</tr>
-						<tr class="shrinkthewebsizes" <?php if ( $genoptions['thumbnailgenerator'] != 'shrinktheweb' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td><?php _e( 'Shrink the web Thumbnail size' ); ?>
-							</td>
-							<td>
-								<select id="stwthumbnailsize" name="stwthumbnailsize">
-									<?php $sizes = array( '75x57', '90x68', '100x75', '120x90', '200x150', '320x240' );
-
-									foreach ( $sizes as $size ) { ?>
-									<option value="<?php echo $size; ?>" <?php selected( $genoptions['stwthumbnailsize'], $size ); ?>><?php echo $size; ?>
-										<?php } ?>
-								</select>
-							</td>
-						</tr>
-						<tr class="pagepeekersizes" <?php if ( $genoptions['thumbnailgenerator'] != 'pagepeeker' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td><?php _e( 'PagePeeker Thumbnail size' ); ?>
-							</td>
-							<td>
-								<select id="pagepeekersize" name="pagepeekersize">
-									<?php $sizes = array( 't' => '90 x 68', 's' => '120x90', 'm' => '200 x 150', 'l' => '400 x 300', 'x'=> '480 x 360' );
-
-									foreach ( $sizes as $code => $size ) { ?>
-									<option value="<?php echo $code; ?>" <?php selected( $genoptions['pagepeekersize'], $code ); ?>><?php echo $size; ?>
-										<?php } ?>
-								</select>
-							</td>
-						</tr>
-						<tr class="pagepeekerid" <?php if ( $genoptions['thumbnailgenerator'] != 'pagepeeker' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td><?php _e( 'PagePeeker API Key (for paid or free unbranded accounts)' ); ?>
-							</td>
-							<td colspan='4' class='lltooltip' title='<?php _e( 'Pagepeeker API Key for premium thumbnail generation', 'link-library' ); ?>'>
-								<input type="text" id="pagepeekerid" name="pagepeekerid" size="20" value="<?php echo $genoptions['pagepeekerid']; ?>" />
-							</td>
-							</td>
-						</tr>
-						<tr class="robothumbsize" <?php if ( $genoptions['thumbnailgenerator'] != 'robothumb' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td><?php _e( 'Robothumb Thumbnail size', 'link-library' ); ?>
-							</td>
-							<td>
-								<select id="thumbnailsize" name="thumbnailsize">
-								<?php $sizes = array( '100x75', '120x90', '160x120', '180x135', '240x180', '320x240', '560x420', '640x480', '800x600' );
-
-								foreach ( $sizes as $size ) { ?>
-									<option value="<?php echo $size; ?>" <?php selected( $genoptions['thumbnailsize'], $size ); ?>><?php echo $size; ?>
-								<?php } ?>
-								</select>
-							</td>
-						</tr>
-						<tr class="wordpressmshotswarning" <?php if ( $genoptions['thumbnailgenerator'] != 'wordpressmshots' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td colspan="2"><?php _e( 'The WordPress mshots service is only free for non-commercial applications. If using it on a commercial site, contact <a href="https://automattic.com/contact/">Automattic</a> to get a license for use.' ); ?>
-							</td>
-						</tr>
-						<tr class="wordpressmshotssize" <?php if ( $genoptions['thumbnailgenerator'] != 'wordpressmshots' ) {
-							echo 'style="display:none;"';
-						} ?>>
-							<td><?php _e( 'WordPress.com mshots Thumbnail size' ); ?>
-							</td>
-							<td>
-								<select id="thumbnailsize" name="thumbnailsize">
-								<?php $sizes = array( '100x75', '120x90', '160x120', '180x135', '240x180', '320x240', '560x420', '640x480', '800x600', '1280x960' );
-
-								foreach ( $sizes as $size ) { ?>
-									<option value="<?php echo $size; ?>" <?php selected( $genoptions['thumbnailsize'], $size ); ?>><?php echo $size; ?>
-								<?php } ?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"><hr /></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Log link creation activity on BuddyPress feed', 'link-library' ); ?></td>
-							<td>
-								<input type="checkbox" id="bp_log_activity" name="bp_log_activity" <?php checked( $genoptions['bp_log_activity'] ); ?> />
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Link Page URL (relative or absolute)', 'link-library' ); ?></td>
-							<td>
-								<input type="text" id="bp_link_page_url" name="bp_link_page_url" size="60" value="<?php echo $genoptions['bp_link_page_url']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Library Configuration used for Links page', 'link-library' ); ?></td>
-							<td>
-								<SELECT id="bp_link_settings" name="bp_link_settings" style='width: 300px'>
-									<option><?php _e( 'Select a library configuration', 'link-library' ); ?></option>
-									<?php if ( empty( $genoptions['numberstylesets'] ) ) {
-										$numberofsets = 1;
-									} else {
-										$numberofsets = $genoptions['numberstylesets'];
-									}
-									for ( $counter = 1; $counter <= $numberofsets; $counter ++ ): ?>
-										<?php $tempoptionname = "LinkLibraryPP" . $counter;
-										$tempoptions          = get_option( $tempoptionname ); ?>
-										<option value="<?php echo $counter ?>" <?php selected( $genoptions['bp_link_settings'], $counter ); ?>><?php _e( 'Library', 'link-library' ); ?> <?php echo $counter ?><?php if ( ! empty( $tempoptions ) && isset( $tempoptions['settingssetname'] ) ) {
-												echo " (" . stripslashes( $tempoptions['settingssetname'] ) . ")";
-											} ?></option>
-									<?php endfor; ?>
-								</SELECT>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"><hr /></td>
-						</tr>
-						<tr class="captchagenerator">
-							<td><?php _e( 'Captcha generator', 'link-library' ); ?>
-							</td>
-							<td>
-								<select id="captchagenerator" name="captchagenerator">
-									<?php $captcha_generators = array( 'easycaptcha' => 'Easy Captcha', 'recaptcha' => 'Google reCAPTCHA' );
-
-									foreach ( $captcha_generators as $key => $captcha_generator ) { ?>
-									<option value="<?php echo $key; ?>" <?php selected( $genoptions['captchagenerator'], $key ); ?>><?php echo $captcha_generator; ?>
-										<?php } ?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Site Key', 'link-library' ); ?>
-							</td>
-							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>">
-								<input type="text" id="recaptchasitekey" name="recaptchasitekey" size="60" value="<?php echo $genoptions['recaptchasitekey']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Secret Key', 'link-library' ); ?>
-							</td>
-							<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>">
-								<input type="text" id="recaptchasecretkey" name="recaptchasecretkey" size="60" value="<?php echo $genoptions['recaptchasecretkey']; ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"><hr /></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Links Date Format', 'link-library' ); ?> (<a target="datehelp" href="https://codex.wordpress.org/Formatting_Date_and_Time"><?php _e( 'Help', 'link-library' ); ?></a>)
-							</td>
-							<td>
-								<input type="text" id="links_updated_date_format" name="links_updated_date_format" size="20" value="<?php echo get_option( 'links_updated_date_format' ); ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td class='lltooltip' title='<?php _e( 'Enter list of additional link protocols, seperated by commas', 'link-library' ); ?>'><?php _e( 'Additional protocols', 'link-library' ); ?></td>
-							<td class='lltooltip' title='<?php _e( 'Enter list of additional link protocols, seperated by commas', 'link-library' ); ?>'><input type="text" id="extraprotocols" name="extraprotocols" size="20" value="<?php echo $genoptions['extraprotocols']; ?>" /></td>
-						</tr>
-						<tr>
-							<td><?php _e( 'Time before clearing RSS display cache (in seconds)', 'link-library' ); ?></td>
-							<td>
-								<input type="text" id="rsscachedelay" name="rsscachedelay" size="5" value="<?php echo intval( $genoptions['rsscachedelay'] ); ?>" /></td>
-						</tr>
-					</table>
-				</td>
-				<?php if ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) { ?>
-				<td style='padding: 8px; border: 1px solid #cccccc;vertical-align:top !important;'>
-
-						<div style="width: 400px"><h3>Support the author - Third Edition just released!</h3><br />
-							<table>
-								<tr>
-									<td>
-										<a href="https://www.packtpub.com/product/wordpress-plugin-development-cookbook-third-edition/9781801810777"><img src='<?php echo plugins_url( 'icons/7683os_cover_small.jpg', __FILE__ ); ?>'>
-									</td>
-									<td></a>The third edition of my plugin development cookbook is now available. Learn how to create your own plugins with my book, including some brand new chapters on creating blocks for the Block Editor and working with external data sources.<br /><br />Order now!<br /><br /><a href="https://www.packtpub.com/product/wordpress-plugin-development-cookbook-third-edition/9781801810777">Packt Publishing</a><br /><a href="https://www.amazon.com/WordPress-Plugin-Development-Cookbook-complete/dp/180181077X/">Amazon.com</a><br /><a href="https://www.amazon.ca/WordPress-Plugin-Development-Cookbook-complete/dp/180181077X/">Amazon.ca</a>
-									</td>
-								</tr>
-							</table>
-						</div>
-				</td>
+			<input type='hidden' value='<?php echo $genoptions['schemaversion']; ?>' name='schemaversion' id='schemaversion' />
+			<table>
+				<!-- <tr>
+					<td colspan="2"><h4>Link Library 6.0 Upgrade Tools</h4></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Re-import', 'link-library' ); ?></td>
+					<td><button class="button" type="button" <?php echo "onclick=\"if ( confirm('" . esc_js( __( "Using the re-import function will delete all links in your Link Library and re-import links from the old Link Library 5.9 format to version 6.x. Only use this function if you recently upgraded from 5.9 to 6.x and are having issues with the converter links.", "link-library" ) ) . "') ) window.location.href='edit.php?page=link-library-general-options&amp;post_type=link_library_links&amp;ll60reupdate=1&amp;_wpnonce=" . wp_create_nonce( 'll60reupdate' ) . "' \""; ?>><?php _e( 'Re-import links', 'link-library' ); ?></button></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Category mapping table', 'link-library' ); ?></td>
+					<td><input class="button" type="submit" id="ll60catmapping" name="ll60catmapping" value="<?php _e( 'Export category mapping', 'link-library' ); ?>" /></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Delete old Link Library 5.9 Links', 'link-library' ); ?></td>
+					<td><input class="button" type="submit" id="deletell59links" name="deletell59links" value="<?php _e( 'Delete old links', 'link-library' ); ?>" /></td>
+				</tr>
+				<tr>
+					<td colspan="2"><h4><?php _e( 'General Options', 'link-library' ); ?></h4></td>
+				</tr> -->
+				<?php if ( !is_multisite() ) { ?>
+				<tr>
+					<td><?php _e( 'Update channel', 'link-library' ); ?></td>
+					<td><select id="updatechannel" name="updatechannel">
+							<option value="standard" <?php selected( $genoptions['updatechannel'], 'standard' ); ?>><?php _e( 'Standard channel - Updates as they are released', 'link-library' ); ?>
+							<option value="monthly" <?php selected( $genoptions['updatechannel'], 'monthly' ); ?>><?php _e( 'Monthly Channel - Updates once per month', 'link-library' ); ?>
+						</select></td>
+				</tr>
 				<?php } ?>
-		</table>
+				<tr>
+					<td><?php _e( 'Number of Libraries', 'link-library' ); ?></td>
+					<td>
+						<input type="text" id="numberstylesets" name="numberstylesets" size="5" value="<?php echo $genoptions['numberstylesets']; ?>" />
+					</td>
+					<td><?php _e( 'Link Library Post Slug', 'link-library' ); ?></td>
+					<td>
+						<input type="text" id="cptslug" name="cptslug" size="20" value="<?php echo $genoptions['cptslug']; ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Taxonomy for link category', 'link-library' ); ?></td>
+					<td><select id="cattaxonomy" name="cattaxonomy">
+							<option value="link_library_category" <?php selected( $genoptions['cattaxonomy'], 'link_library_category' ); ?>><?php _e( 'Link Library Categories', 'link-library' ); ?>
+							<option value="category" <?php selected( $genoptions['cattaxonomy'], 'category' ); ?>><?php _e( 'Post Categories', 'link-library' ); ?>
+						</select></td>
+					<td><?php _e( 'Taxonomy for link tags', 'link-library' ); ?></td>
+					<td><select id="tagtaxonomy" name="tagtaxonomy">
+							<option value="link_library_tags" <?php selected( $genoptions['tagtaxonomy'], 'link_library_tags' ); ?>><?php _e( 'Link Library Tags', 'link-library' ); ?>
+							<option value="post_tag" <?php selected( $genoptions['tagtaxonomy'], 'post_tag' ); ?>><?php _e( 'Post Tags', 'link-library' ); ?>
+						</select></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Articles to be ignored when sorting (separate with |)', 'link-library' ); ?></td>
+					<td>
+						<input type="text" id="ignoresortarticles" name="ignoresortarticles" value="<?php echo $genoptions['ignoresortarticles']; ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td><?php _e(  'Individual link pages can be seen by visitors', 'link-library' ); ?></td>
+					<td><input type="checkbox" id="publicly_queryable" name="publicly_queryable" <?php checked( $genoptions['publicly_queryable'] ); ?>/></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Links appear in search results', 'link-library' ); ?></td>
+					<td><input type="checkbox" id="exclude_from_search" name="exclude_from_search" <?php checked( $genoptions['exclude_from_search'] ); ?>/></td>
+					<td><?php _e( 'Links appear in main site RSS feed', 'link-library' ); ?></td>
+					<td><input type="checkbox" id="add_to_main_rss" name="add_to_main_rss" <?php checked( $genoptions['add_to_main_rss'] ); ?>/></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Minimum role for Link Library configuration', 'link-library' ); ?></td>
+					<td>
+						<?php global $wp_roles;
+						if ( $wp_roles ):?>
+							<select name='rolelevel' style='width: 200px'>
+								<?php $roles = $wp_roles->roles;
+
+								foreach ( $roles as $role ):
+									$selectedterm = selected( $genoptions['rolelevel'], $role['name'], false ); ?>
+									<option value='<?php echo $role['name']; ?>' <?php echo $selectedterm; ?>><?php echo $role['name']; ?></option>
+								<?php endforeach; ?>
+							</select>
+						<?php endif; ?>
+					</td>
+					<td><?php _e( 'Minimum role for Link editing', 'link-library' ); ?></td>
+					<td>
+						<?php global $wp_roles;
+						if ( $wp_roles ):?>
+							<select name='editlevel' style='width: 200px'>
+								<?php $roles = $wp_roles->roles;
+
+								foreach ( $roles as $role ):
+									$selectedterm = selected( $genoptions['editlevel'], $role['name'], false ); ?>
+									<option value='<?php echo $role['name']; ?>' <?php echo $selectedterm; ?>><?php echo $role['name']; ?></option>
+								<?php endforeach; ?>
+							</select>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<tr>
+					<td class="lltooltip" title="<?php _e( 'Changes how categories to be displayed are selected in library configurations. Specifying through a comma-separated list allows user to specify order to display the categories, when used in conjunction with the Results Order option' ); ?>"><?php _e( 'Category selection method', 'link-library' ); ?></td>
+					<td><select id="catselectmethod" name="catselectmethod">
+							<option value="commalist" <?php selected( $genoptions['catselectmethod'], 'commalist' ); ?>><?php _e( 'Comma-separated ID list', 'link-library' ); ?>
+							<option value="multiselectlist" <?php selected( $genoptions['catselectmethod'], 'multiselectlist' ); ?>><?php _e( 'Multi-select List', 'link-library' ); ?>
+						</select></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Default link target in editor', 'link-library' ); ?></td>
+					<td><?php $target_array = array( '_blank' => __( '_blank (new window or tab)', 'link-library' ), '' => __( '_none (same window or tab)', 'link-library' ), '_top' => __( '_top (current window or tab, with no frames)', 'link-library' ) );
+						echo '<select name="defaultlinktarget" id="defaultlinktarget">';
+							foreach ( $target_array as $target_value => $target_item ) {
+							echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultlinktarget'] ) . '>' . $target_item . '</option>';
+							}
+							echo '</select>';
+						?></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Display excerpt section in editor', 'link-library' ); ?></td>
+					<td><input type="checkbox" id="showexcerpt" name="showexcerpt" <?php checked( $genoptions['showexcerpt'] ); ?>/></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Default protocol for new links in admin when not specified', 'link-library' ); ?></td>
+					<td><?php $target_array = array( 'http' => 'http://', 'https' => 'https://' );
+						echo '<select name="defaultprotocoladmin" id="defaultprotocoladmin">';
+						foreach ( $target_array as $target_value => $target_item ) {
+							echo '<option value="' . $target_value . '" ' . selected( $target_value, $genoptions['defaultprotocoladmin'] ) . '>' . $target_item . '</option>';
+						}
+						echo '</select>';
+						?></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Time before clearing RSS display cache (in seconds)', 'link-library' ); ?></td>
+					<td>
+						<input type="text" id="rsscachedelay" name="rsscachedelay" size="5" value="<?php echo intval( $genoptions['rsscachedelay'] ); ?>" /></td>
+				</tr>
+				<tr>
+					<td class="lltooltip" title="<?php _e( 'Enter comma-separate list of pages on which the Link Library stylesheet and scripts should be loaded. Primarily used if you display Link Library using the API', 'link-library' ); ?>"><?php _e( 'Additional pages to load styles and scripts', 'link-library' ); ?></td>
+					<td class="lltooltip" title="<?php _e( 'Enter comma-separate list of pages on which the Link Library stylesheet and scripts should be loaded. Primarily used if you display Link Library using the API', 'link-library' ); ?>">
+						<input type="text" id="includescriptcss" name="includescriptcss" size="40" value="<?php echo $genoptions['includescriptcss']; ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Debug Mode', 'link-library' ); ?></td>
+					<td>
+						<input type="checkbox" id="debugmode" name="debugmode" <?php checked( $genoptions['debugmode'] ); ?>/></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Delete file if link points to local file', 'link-library' ); ?></td>
+					<td>
+						<input type="checkbox" id="deletelocalfile" name="deletelocalfile" <?php checked( $genoptions['deletelocalfile'] ); ?>/></td>
+				</tr>
+				<tr>
+					<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>"><?php _e( 'Page Title Prefix', 'link-library' ); ?></td>
+					<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>">
+						<input type="text" id="pagetitleprefix" name="pagetitleprefix" size="10" value="<?php echo $genoptions['pagetitleprefix']; ?>" />
+					</td>
+					<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>"><?php _e( 'Page Title Suffix', 'link-library' ); ?></td>
+					<td class="lltooltip" title="<?php _e( 'This function is only possible when showing one category at a time and while the default category is not shown.', 'link-library' ); ?>">
+						<input type="text" id="pagetitlesuffix" name="pagetitlesuffix" size="10" value="<?php echo $genoptions['pagetitlesuffix']; ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td class='lltooltip' title='<?php _e( 'Path for images files that are uploaded manually or generated through thumbnail generation service', 'link-library' ); ?>'><?php _e( 'Link Image File Path', 'link-library' ); ?></td>
+					<td colspan='4' class='lltooltip' title='<?php _e( 'Path for images files that are uploaded manually or generated through thumbnail generation service', 'link-library' ); ?>'>
+						<select id="imagefilepath" name="imagefilepath">
+							<option value="absolute" <?php selected( $genoptions['imagefilepath'], 'absolute' ); ?>><?php _e( 'Absolute', 'link-library' ); ?>
+							<option value="relative" <?php selected( $genoptions['imagefilepath'], 'relative' ); ?>><?php _e( 'Relative', 'link-library' ); ?>
+						</select></td>
+				</tr>
+				<tr>
+					<td class='lltooltip' title='<?php _e( 'Enter list of additional link protocols, seperated by commas', 'link-library' ); ?>'><?php _e( 'Additional protocols', 'link-library' ); ?></td>
+					<td class='lltooltip' title='<?php _e( 'Enter list of additional link protocols, seperated by commas', 'link-library' ); ?>'><input type="text" id="extraprotocols" name="extraprotocols" size="20" value="<?php echo $genoptions['extraprotocols']; ?>" /></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Links Date Format', 'link-library' ); ?> (<a target="datehelp" href="https://codex.wordpress.org/Formatting_Date_and_Time"><?php _e( 'Help', 'link-library' ); ?></a>)
+					</td>
+					<td>
+						<input type="text" id="links_updated_date_format" name="links_updated_date_format" size="20" value="<?php echo get_option( 'links_updated_date_format' ); ?>" />
+					</td>
+				</tr>
+			</table>
 		</div>
 
 		<script type="text/javascript">
@@ -3343,6 +2878,172 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		</script>
 	<?php
 	}
+
+function general_thumbnail_generation_meta_box( $data ) {
+	$genoptions = $data['genoptions'];
+	?>
+
+	<div style='padding-top:15px' id="ll-thumbnail-generation" class="content-section">
+		<h2><?php _e( 'URL Fields', 'link-library' ); ?></h2>
+		<table>
+			<tr>
+				<td><?php _e( 'Thumbnail Generator', 'link-library' ); ?></td>
+				<td>
+					<select id="thumbnailgenerator" name="thumbnailgenerator">
+						<option value="robothumb" <?php selected( $genoptions['thumbnailgenerator'], 'robothumb' ); ?>>Robothumb.com
+						<option value="shrinktheweb" <?php selected( $genoptions['thumbnailgenerator'], 'shrinktheweb' ); ?>>Shrink The Web
+						<option value="pagepeeker" <?php selected( $genoptions['thumbnailgenerator'], 'pagepeeker' ); ?>>PagePeeker
+						<option value="wordpressmshots" <?php selected( $genoptions['thumbnailgenerator'], 'wordpressmshots' ); ?>>WordPress.com mshots
+						<option value="thumbshots" <?php selected( $genoptions['thumbnailgenerator'], 'thumbshots' ); ?>>Thumbshots.org
+						<option value="google" <?php selected( $genoptions['thumbnailgenerator'], 'google' ); ?>>Google PageSpeed
+					</select>
+				</td>
+			</tr>
+			<tr class="thumbshotsapikey" <?php if ( $genoptions['thumbnailgenerator'] != 'thumbshots' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td class='lltooltip' title='<?php _e( 'API Key for Thumbshots.com thumbnail generation accounts', 'link-library' ); ?>'><?php _e( 'Thumbshots API Key', 'link-library' ); ?></td>
+				<td colspan='4' class='lltooltip' title='<?php _e( 'API Key for Thumbshots.com thumbnail generation accounts', 'link-library' ); ?>'>
+					<input type="text" id="thumbshotscid" name="thumbshotscid" size="20" value="<?php echo $genoptions['thumbshotscid']; ?>" />
+				</td>
+			</tr>
+			<tr class="shrinkthewebaccesskey" <?php if ( $genoptions['thumbnailgenerator'] != 'shrinktheweb' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td class='lltooltip' title='<?php _e( 'Access Key for shrinktheweb.com thumbnail generation accounts', 'link-library' ); ?>'><?php _e( 'Shrink The Web Access Key', 'link-library' ); ?></td>
+				<td colspan='4' class='lltooltip' title='<?php _e( 'Access Key for shrinktheweb.com thumbnail generation accounts', 'link-library' ); ?>'>
+					<input type="text" id="shrinkthewebaccesskey" name="shrinkthewebaccesskey" size="20" value="<?php echo $genoptions['shrinkthewebaccesskey']; ?>" />
+				</td>
+			</tr>
+			<tr class="shrinkthewebsizes" <?php if ( $genoptions['thumbnailgenerator'] != 'shrinktheweb' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td><?php _e( 'Shrink the web Thumbnail size' ); ?>
+				</td>
+				<td>
+					<select id="stwthumbnailsize" name="stwthumbnailsize">
+						<?php $sizes = array( '75x57', '90x68', '100x75', '120x90', '200x150', '320x240' );
+
+						foreach ( $sizes as $size ) { ?>
+						<option value="<?php echo $size; ?>" <?php selected( $genoptions['stwthumbnailsize'], $size ); ?>><?php echo $size; ?>
+							<?php } ?>
+					</select>
+				</td>
+			</tr>
+			<tr class="pagepeekersizes" <?php if ( $genoptions['thumbnailgenerator'] != 'pagepeeker' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td><?php _e( 'PagePeeker Thumbnail size' ); ?>
+				</td>
+				<td>
+					<select id="pagepeekersize" name="pagepeekersize">
+						<?php $sizes = array( 't' => '90 x 68', 's' => '120x90', 'm' => '200 x 150', 'l' => '400 x 300', 'x'=> '480 x 360' );
+
+						foreach ( $sizes as $code => $size ) { ?>
+						<option value="<?php echo $code; ?>" <?php selected( $genoptions['pagepeekersize'], $code ); ?>><?php echo $size; ?>
+							<?php } ?>
+					</select>
+				</td>
+			</tr>
+			<tr class="pagepeekerid" <?php if ( $genoptions['thumbnailgenerator'] != 'pagepeeker' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td><?php _e( 'PagePeeker API Key (for paid or free unbranded accounts)' ); ?>
+				</td>
+				<td colspan='4' class='lltooltip' title='<?php _e( 'Pagepeeker API Key for premium thumbnail generation', 'link-library' ); ?>'>
+					<input type="text" id="pagepeekerid" name="pagepeekerid" size="20" value="<?php echo $genoptions['pagepeekerid']; ?>" />
+				</td>
+				</td>
+			</tr>
+			<tr class="robothumbsize" <?php if ( $genoptions['thumbnailgenerator'] != 'robothumb' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td><?php _e( 'Robothumb Thumbnail size', 'link-library' ); ?>
+				</td>
+				<td>
+					<select id="thumbnailsize" name="thumbnailsize">
+					<?php $sizes = array( '100x75', '120x90', '160x120', '180x135', '240x180', '320x240', '560x420', '640x480', '800x600' );
+
+					foreach ( $sizes as $size ) { ?>
+						<option value="<?php echo $size; ?>" <?php selected( $genoptions['thumbnailsize'], $size ); ?>><?php echo $size; ?>
+					<?php } ?>
+					</select>
+				</td>
+			</tr>
+			<tr class="wordpressmshotswarning" <?php if ( $genoptions['thumbnailgenerator'] != 'wordpressmshots' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td colspan="2"><?php _e( 'The WordPress mshots service is only free for non-commercial applications. If using it on a commercial site, contact <a href="https://automattic.com/contact/">Automattic</a> to get a license for use.' ); ?>
+				</td>
+			</tr>
+			<tr class="wordpressmshotssize" <?php if ( $genoptions['thumbnailgenerator'] != 'wordpressmshots' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td><?php _e( 'WordPress.com mshots Thumbnail size' ); ?>
+				</td>
+				<td>
+					<select id="thumbnailsize" name="thumbnailsize">
+					<?php $sizes = array( '100x75', '120x90', '160x120', '180x135', '240x180', '320x240', '560x420', '640x480', '800x600', '1280x960' );
+
+					foreach ( $sizes as $size ) { ?>
+						<option value="<?php echo $size; ?>" <?php selected( $genoptions['thumbnailsize'], $size ); ?>><?php echo $size; ?>
+					<?php } ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Enable automatic generation of missing thumbnails', 'link-library' ); ?></td>
+				<td><input type="checkbox" id="autothumbgen" name="autothumbgen" <?php checked( $genoptions['autothumbgen'] ); ?> /></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Automatic thumbnail generation frequency', 'link-library' ); ?></td>
+				<td><select id="autothumbgenschedule" name="autothumbgenschedule">
+					<?php $cronschedules = wp_get_schedules();
+						foreach ( $cronschedules as $key => $cronschedule ) {
+							echo '<option value="' . $key . '" ' . selected( $genoptions['autothumbgenschedule'], $key ) . '>' . $cronschedule['display'] . '</option>';
+						} ?></select>							
+			</tr>
+		</table>
+	</div>
+<?php
+}
+
+function general_captcha_meta_box( $data ) {
+	$genoptions = $data['genoptions'];
+	?>
+
+	<div style='padding-top:15px' id="ll-captcha" class="content-section">
+		<table>
+			<tr class="captchagenerator">
+				<td><?php _e( 'Captcha generator', 'link-library' ); ?>
+				</td>
+				<td>
+					<select id="captchagenerator" name="captchagenerator">
+						<?php $captcha_generators = array( 'easycaptcha' => 'Easy Captcha', 'recaptcha' => 'Google reCAPTCHA' );
+
+						foreach ( $captcha_generators as $key => $captcha_generator ) { ?>
+						<option value="<?php echo $key; ?>" <?php selected( $genoptions['captchagenerator'], $key ); ?>><?php echo $captcha_generator; ?>
+							<?php } ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Site Key', 'link-library' ); ?>
+				</td>
+				<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>">
+					<input type="text" id="recaptchasitekey" name="recaptchasitekey" size="60" value="<?php echo $genoptions['recaptchasitekey']; ?>" />
+				</td>
+			</tr>
+			<tr>
+				<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>"><?php _e( 'Google reCAPTCHA Secret Key', 'link-library' ); ?>
+				</td>
+				<td class="lltooltip" title="<?php _e( 'Sign up for the reCAPTCHA service before activating this feature to get your Site and Secret Keys', 'link-library' ); ?>">
+					<input type="text" id="recaptchasecretkey" name="recaptchasecretkey" size="60" value="<?php echo $genoptions['recaptchasecretkey']; ?>" />
+				</td>
+			</tr>
+		</table>
+	</div>
+<?php }
 
 function general_custom_fields_meta_box( $data ) {
 	$genoptions = $data['genoptions'];
@@ -3894,6 +3595,44 @@ function general_custom_fields_meta_box( $data ) {
 		</div>
 		<?php
 	}
+
+	function general_buddypress_meta_box( $data ) {
+		require_once plugin_dir_path( __FILE__ ) . 'wp_dropdown_posts.php';
+		$genoptions = $data['genoptions'];
+		?>
+		<div style='padding-top:15px' id="ll-buddypress" class="content-section">
+			<table>
+				<tr>
+					<td><?php _e( 'Log link creation activity on BuddyPress feed', 'link-library' ); ?></td>
+					<td><input type="checkbox" id="bp_log_activity" name="bp_log_activity" <?php checked( $genoptions['bp_log_activity'] ); ?> /></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Link Page URL (relative or absolute)', 'link-library' ); ?></td>
+					<td><input type="text" id="bp_link_page_url" name="bp_link_page_url" size="60" value="<?php echo $genoptions['bp_link_page_url']; ?>" /></td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Library Configuration used for Links page', 'link-library' ); ?></td>
+					<td>
+						<SELECT id="bp_link_settings" name="bp_link_settings" style='width: 300px'>
+							<option><?php _e( 'Select a library configuration', 'link-library' ); ?></option>
+							<?php if ( empty( $genoptions['numberstylesets'] ) ) {
+								$numberofsets = 1;
+							} else {
+								$numberofsets = $genoptions['numberstylesets'];
+							}
+							for ( $counter = 1; $counter <= $numberofsets; $counter ++ ): ?>
+								<?php $tempoptionname = "LinkLibraryPP" . $counter;
+								$tempoptions          = get_option( $tempoptionname ); ?>
+								<option value="<?php echo $counter ?>" <?php selected( $genoptions['bp_link_settings'], $counter ); ?>><?php _e( 'Library', 'link-library' ); ?> <?php echo $counter ?><?php if ( ! empty( $tempoptions ) && isset( $tempoptions['settingssetname'] ) ) {
+										echo " (" . stripslashes( $tempoptions['settingssetname'] ) . ")";
+									} ?></option>
+							<?php endfor; ?>
+						</SELECT>
+					</td>
+				</tr>
+			</table>
+		</div>
+	<?php }
 
 	function general_save_meta_box() {
 		?>
