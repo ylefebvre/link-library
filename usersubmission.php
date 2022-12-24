@@ -781,6 +781,8 @@ function link_library_process_user_submission( $my_link_library_plugin ) {
 	} else {
 		if ( isset ( $_POST['pageid'] ) && is_numeric( $_POST['pageid'] ) ) {
 			$redirectaddress = get_permalink( $_POST['pageid'] );
+		} else {
+			$redirectaddress = add_query_arg( array( 'link_library_popup_content' => 'true', 'settings' => $settings ), home_url() );
 		}
 	}
 

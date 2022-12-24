@@ -328,6 +328,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 	            if ( isset( $_GET['searchll'] ) ) {
 		            $searchstring = sanitize_text_field( $_GET['searchll'] );
 		            if ( !empty( $searchstring ) ) {
+						add_filter( 'posts_search', 'll_expand_posts_search', 10, 2 );
 			            $link_query_args['s'] = $searchstring;
 		            }
 	            }
@@ -349,7 +350,9 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 
 	            $the_link_query = new WP_Query( $link_query_args );
 	            $linkcount = $the_link_query->post_count;
-	            wp_reset_postdata();
+	            
+				remove_filter( 'posts_search', 'll_expand_posts_search', 10 );
+				wp_reset_postdata();
 
 				if ( $hideemptycats && !$cat_has_children && $linkcount == 0 ) {
 					continue;
@@ -465,7 +468,7 @@ function RenderLinkLibraryCategories( $LLPluginClass, $generaloptions, $libraryo
 				                $cattext = "<a href='";
 			                }
 
-			                $cattargetaddress = esc_url( site_url() . '/' . $rewritepage . '/' . $catname->slug );
+			                $cattargetaddress = esc_url( site_url() . '/' . $rewritepage . '/' . $catname->slug . '/' );
 			                if ( $searchfiltercats && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
 				                $cattargetaddress = add_query_arg( 'searchll', sanitize_text_field( $_GET['searchll'] ), $cattargetaddress );
 			                }

@@ -17,3 +17,5 @@ if ( get_option( 'LinkLibraryGeneral' ) != false ) {
     
     delete_option( 'LinkLibraryGeneral' );
 }
+
+wp_clear_scheduled_hook( 'link_library_import_links' );

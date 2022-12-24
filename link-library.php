@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.4.13
+Version: 7.4.16
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -332,7 +332,22 @@ class link_library_plugin {
 		if ( $genoptions['add_to_main_rss'] ) {
 			add_action( 'request', array( $this, 'link_library_rss_feed_request' ) );
 			add_filter( 'the_content_feed', array( $this, 'll_display_single_link' ) );
-		}		
+		}
+
+		add_action( 'link_library_import_links', array( $this, 'll_import_links' ), 10, 0 );
+	}
+
+	function ll_import_links() {
+		require_once plugin_dir_path( __FILE__ ) . 'link-library-link-importer.php';
+
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+
+		$row = 0;
+		$successfulimport = 0;
+		$successfulupdate = 0;
+
+		$message = link_library_import_links( $genoptions, $row, $successfulimport, $successfulupdate );
 	}
 
 	function ll_rest_api_init() {
@@ -1504,7 +1519,12 @@ class link_library_plugin {
 		}
 
 		require_once plugin_dir_path( __FILE__ ) . 'render-link-library-addlink-sc.php';
-		return RenderLinkLibraryAddLinkForm( $this, $genoptions, $options, $settings, $code);
+		if ( 'inline' == $options['addlinkformdisplaymode'] ) {
+			return RenderLinkLibraryAddLinkForm( $this, $genoptions, $options, $settings, $code );
+		} elseif ( 'popup' == $options['addlinkformdisplaymode'] ) {
+			return RenderLinkLibraryAddLinkButton( $this, $genoptions, $options, $settings, $code );
+		}
+		
 	}
 
 	/********************************************** Function to Process [link-library-count] shortcode ***************************************/
@@ -2083,6 +2103,7 @@ class link_library_plugin {
 		$settingssetsids = array();
 		$load_jquery = false;
 		$load_thickbox = false;
+		$load_colorbox = false;
 		$load_recaptcha = false;
 		$load_masonry = false;
 		$load_style = '';
@@ -2100,6 +2121,7 @@ class link_library_plugin {
 		if ( is_admin() ) {
 			$load_jquery = false;
 			$load_thickbox = false;
+			$load_colorbox = false;
 			$load_style = false;
 		} else {
 			foreach ( $posts as $post ) {
@@ -2176,9 +2198,13 @@ class link_library_plugin {
 						$load_thickbox = true;
 					}
 
-					if ($options['publishrssfeed'] == true) {
+					if ( $options['publishrssfeed'] == true ) {
 						global $rss_settings;
 						$rss_settings = $settingsetid;
+					}
+
+					if ( $options['addlinkformdisplaymode'] ) {
+						$load_colorbox = true;
 					}
 				}
 			}
@@ -2214,6 +2240,11 @@ class link_library_plugin {
 			wp_enqueue_style ( 'thickbox' );
 		}
 
+		if ( $load_colorbox ) {
+			wp_enqueue_script( 'colorbox', plugins_url( 'colorbox/jquery.colorbox-min.js', __FILE__ ), array( 'jquery' ), "1.3.9" );
+			wp_enqueue_style( 'colorboxstyle', plugins_url( 'colorbox/colorbox.css', __FILE__ ) );
+		}
+
 		if ( $load_recaptcha && $genoptions['captchagenerator'] ) {
 			wp_enqueue_script( 'google_recaptcha', 'https://www.google.com/recaptcha/api.js', array(), false, true );
 		}
@@ -2243,6 +2274,10 @@ class link_library_plugin {
 			require_once plugin_dir_path( __FILE__ ) . 'cssgenerator.php';
 			link_library_generate_css( $this );
 			return '';
+		} elseif ( !empty( $_GET['link_library_popup_content'] ) ) {
+			require_once plugin_dir_path( __FILE__ ) . 'render-link-library-addlink-sc.php';
+			link_library_link_submission_popup_form( $this );
+			exit();
 		} else {
 			return $template;
 		}

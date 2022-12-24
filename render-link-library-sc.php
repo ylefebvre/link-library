@@ -88,7 +88,7 @@ function link_library_get_breadcrumb_path( $slug, $rewritepage, $rewritecategori
 		$cat_path .= '<a href="' . $new_link . '">' . $term->name . '</a>';		
 	} elseif ( $level == 0 ) {
 		$cat_path .= $term->name;
-		$new_top_link = esc_url( home_url() . '/' . $rewritecategoriespage );
+		$new_top_link = esc_url( home_url() . '/' . $rewritecategoriespage . '/' );
 
 		if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
 			$new_top_link = add_query_arg( 'link_tags', sanitize_text_field( $_GET['link_tags'] ), $new_top_link );

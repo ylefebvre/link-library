@@ -455,6 +455,8 @@ function ll_reset_options( $settings = 1, $layout = 'list', $setoptions = 'retur
 	$options['updateddays']						 = 7;
 	$options['searchfromallcats']				 = false;
 	$options['suppressonemptysearch']			 = false;
+	$options['addlinkformdisplaymode']			 = 'inline';
+	$options['popupbuttonlabel']				 = __( 'Submit a new link', 'link-library' );
 
 	if ( 'return_and_set' == $setoptions ) {
 		$settingsname = 'LinkLibraryPP' . $settings;
@@ -570,6 +572,9 @@ function ll_reset_gen_settings( $setoptions = 'return' ) {
 	$genoptions['tagtaxonomy']					  = 'link_library_tags';
 	$genoptions['ignoresortarticles']			  = '';
 	$genoptions['showexcerpt']					  = false;
+	$genoptions['enableautolinksimport']		  = false;
+	$genoptions['importlinksschedule']			  = 'weekly';
+	$genoptions['importlinksurl']				  = '';
 
 	if ( 'return_and_set' == $setoptions ) {
 		$stylesheetlocation           = plugins_url( 'stylesheettemplate.css', __FILE__ );
