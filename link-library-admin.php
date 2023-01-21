@@ -935,6 +935,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				echo "<div id='message' class='updated fade'><p><strong>" . __( 'Failed to import Global Options', 'link-library' ) . "</strong></p></div>";
 			} else if ( isset( $_GET['message'] ) && $_GET['message'] == '9' ) {
 				echo "<div id='message' class='updated fade'><p><strong>" . intval( $_GET['importrowscount'] ) . " " . __( 'row(s) found', 'link-library' ) . ". " . ( isset( $_GET['successimportcount'] ) ? intval( $_GET['successimportcount'] ) : '0' ) . " " . __( 'link(s) imported', 'link-library' ) . ", " . ( isset( $_GET['successupdatecount'] ) ? intval( $_GET['successupdatecount'] ): '0' ) . " " . __( 'link(s) updated', 'link-library' ) . ".</strong></p></div>";
+			} else if ( isset( $_GET['message'] ) && $_GET['message'] == '11' ) {
+				echo "<div id='message' class='updated fade'><p><strong>" . intval( $_GET['importrowscount'] ) . " " . __( 'row(s) found', 'link-library' ) . ". " . ( isset( $_GET['successimportcount'] ) ? intval( $_GET['successimportcount'] ) : '0' ) . " " . __( 'category(ies) imported', 'link-library' ) . ".</strong></p></div>";
 			}
 
 			$formvalue = 'save_link_library_general';
@@ -1028,7 +1030,6 @@ wp_editor( $post->post_content, 'content', $editor_config );
 						case '10':
 							echo "<div id='message' class='updated fade'><p><strong>" . __( 'Links are missing categories', 'link-library' ) . "</strong></p></div>";
 							break;
-
 					}
 
 				}
@@ -1772,7 +1773,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			} else {
 				$message = '3';
 			}
-		}  elseif ( isset( $_POST['exportallcategories'] ) ) {
+		} elseif ( isset( $_POST['exportallcategories'] ) ) {
 			$upload_dir = wp_upload_dir();
 
 			if ( is_writable( $upload_dir['path'] ) ) {
@@ -1782,15 +1783,28 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				$link_library_categories = get_terms( 'link_library_category', array( 'hide_empty' => false, ) );
 
 				if ( !empty( $link_library_categories ) ) {
-					$headerrow = array( 'Category Name', 'Category ID' );
+					$headerrow = array( 'Category ID', 'Category Name', 'Parent Category Name (Empty if top-level category)' );
 					
 					$headerdata = join( ',', $headerrow ) . "\n";
 					fwrite( $fh, $headerdata );
 
 					foreach( $link_library_categories as $link_library_cat ) {
 						$datarow = array();
-						$datarow[] = $link_library_cat->name;
 						$datarow[] = $link_library_cat->term_id;
+						$datarow[] = $link_library_cat->name;
+
+						$parent_cat_id = $link_library_cat->parent;
+
+						if ( $parent_cat_id != 0 ) {
+							$parent_cat_data = get_term_by( 'term_id', $parent_cat_id, 'link_library_category' );
+
+							if ( false !== $parent_cat_data ) {
+								$datarow[] = $parent_cat_data->name;
+							}
+						} else {
+							$datarow[] = '';
+						}
+						
 						fputcsv( $fh, $datarow, ',', '"' );
 					}
 				}
@@ -1811,6 +1825,76 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			} else {
 				$message = '3';
 			}
+		} elseif ( isset( $_POST['importcategories'] ) ) {
+			wp_defer_term_counting( true );
+			wp_defer_comment_counting( true );
+			wp_suspend_cache_addition( true );
+
+			$message = '';
+
+			define( 'WP_IMPORTING', true );
+			set_time_limit( 1800 );
+
+			if ( !empty( $_FILES['linkscatfile']['tmp_name'] ) ) {
+				if ( !empty( $_FILES['linkscatfile']['tmp_name'] ) ) {
+					$file_contents = file_get_contents( $_FILES['linkscatfile']['tmp_name'] );
+				}
+
+				if ( $file_contents ) {
+					$skiprow = 1;
+					$import_columns = array();
+
+					$imported_lines = explode( "\n", $file_contents ); // this is your array of words
+
+					foreach( $imported_lines as $imported_line ) {
+						if ( empty( $imported_line ) ) continue;
+						$data = str_getcsv( $imported_line, ',' );
+
+						$row += 1;
+						if ( $skiprow == 1 && $row >= 2 ) {
+							$skiprow = 0;
+						}
+
+						if ( 1 == $row ) {
+							foreach ( $data as $index => $column_name ) {
+								$import_columns[$column_name] = $index;
+							}
+						} else {
+							$category_name = $data[$import_columns['Category Name']];
+							$parent_category_name = $data[$import_columns['Parent Category Name (Empty if top-level category)']];
+
+							if ( !empty( $category_name ) ) {
+								$existing_cat_id = get_term_by( 'name', $category_name, 'link_library_category' );
+
+								if ( false === $existing_cat_id ) {
+									$existing_parent_cat_id = false;
+									if ( empty( $parent_category_name ) ) {
+										$existing_parent_cat_id = array( 'term_id' => 0 );
+									} else {
+										$existing_parent_cat_id = get_term_by( 'name', $parent_category_name, 'link_library_category' );
+									}								
+	
+									if ( false === $existing_parent_cat_id ) {
+										$existing_parent_cat_id = wp_insert_term( $parent_category_name, 'link_library_category', array( 'parent' => 0 ) );
+									}
+	
+									$existing_cat_id = wp_insert_term( $category_name, 'link_library_category', array( 'parent' => $existing_parent_cat_id->term_id ) );
+									$successfulimport++;
+								}	
+							}													
+						}
+					}
+				}
+			}			
+
+			$row -= 1;
+
+			$message = '11';
+
+			wp_suspend_cache_addition( false );
+			wp_defer_term_counting( false );
+			wp_defer_comment_counting( false );
+
 		} elseif ( isset( $_POST['ll60catmapping'] ) ) {
 			$upload_dir = wp_upload_dir();
 
@@ -3500,6 +3584,13 @@ function general_custom_fields_meta_box( $data ) {
 					<td><?php _e( 'Export all categories to a CSV file', 'link-library' ); ?></td>
 					<td>
 						<input class="button" type="submit" id="exportallcategories" name="exportallcategories" value="<?php _e( 'Export All Categories', 'link-library' ); ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td class='lltooltip' title='<?php _e( 'Allows for categories to be added in batch to Link Library. CSV file needs to follow template for column layout.', 'link-library' ); ?>' style='width: 330px'><?php _e( 'CSV file to upload to import categories', 'link-library' ); ?> (<a href="<?php echo plugins_url( 'catimporttemplate.csv', __FILE__ ); ?>"><?php _e( 'file template', 'link-library' ); ?></a>)
+					</td>
+					<td><input size="80" name="linkscatfile" type="file" /></td>
+					<td><input class="button" type="submit" name="importcategories" value="<?php _e( 'Import Categories from CSV', 'link-library' ); ?>" />
 					</td>
 				</tr>
 			</table>
