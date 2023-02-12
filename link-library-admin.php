@@ -2747,7 +2747,8 @@ wp_editor( $post->post_content, 'content', $editor_config );
 		<div style='padding-top:15px' id="ll-general" class="content-section">
 			<input type='hidden' value='<?php echo $genoptions['schemaversion']; ?>' name='schemaversion' id='schemaversion' />
 			<table>
-				<!-- <tr>
+				<?php if ( isset( $_GET['show60upgradetools'] ) && 1 == $_GET['show60upgradetools'] ) { ?>
+				<tr>
 					<td colspan="2"><h4>Link Library 6.0 Upgrade Tools</h4></td>
 				</tr>
 				<tr>
@@ -2764,8 +2765,9 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				</tr>
 				<tr>
 					<td colspan="2"><h4><?php _e( 'General Options', 'link-library' ); ?></h4></td>
-				</tr> -->
-				<?php if ( !is_multisite() ) { ?>
+				</tr>
+				<?php }
+				if ( !is_multisite() ) { ?>
 				<tr>
 					<td><?php _e( 'Update channel', 'link-library' ); ?></td>
 					<td><select id="updatechannel" name="updatechannel">
