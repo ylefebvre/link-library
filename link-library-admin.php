@@ -167,6 +167,7 @@ class link_library_plugin_admin {
 			),
 			'strike' => array(),	  	
 		  	'strong' => array(),
+			'table' => array(),
 			'tr' => array(
 				'style' => array(),
 				'class' => array(),
@@ -470,13 +471,13 @@ class link_library_plugin_admin {
 
 	function admin_header() {
 		global $pagenow;
-		if ( ( $pagenow == 'link.php' && $_GET['action'] == 'edit' ) || ( $pagenow == 'link-add.php' ) ) {
+		if ( ( $pagenow == 'link.php' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) || ( $pagenow == 'link-add.php' ) ) {
 			if ( function_exists( 'wp_enqueue_media' ) ) {
 				wp_enqueue_media();
 			}
 		}
 
-		if ( $pagenow == 'post-new.php' && $_GET['post_type'] == 'link_library_links' ) {
+		if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'link_library_links' ) {
 			wp_enqueue_style( 'LibraryLibraryAdminStyle', plugins_url( 'link-library-admin.css', __FILE__ ) );
 		}
 
@@ -2072,7 +2073,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'numberstylesets', 'includescriptcss', 'pagetitleprefix', 'pagetitlesuffix', 'schemaversion', 'thumbshotscid', 'approvalemailtitle',
 					'moderatorname', 'moderatoremail', 'rejectedemailtitle', 'approvalemailbody', 'rejectedemailbody', 'moderationnotificationtitle',
 					'linksubmissionthankyouurl', 'imagefilepath', 'catselectmethod', 'expandiconpath', 'collapseiconpath', 'updatechannel',
-					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'single_link_layout', 'rolelevel', 'editlevel', 'cptslug',
+					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'rolelevel', 'editlevel', 'cptslug',
 					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings', 'defaultprotocoladmin', 'pagepeekerid', 'pagepeekersize', 'stwthumbnailsize', 'shrinkthewebaccesskey', 'customurl1label', 'customurl2label',
 					'customurl3label', 'customurl4label', 'customurl5label', 'customtext1label', 'customtext2label', 'customtext3label', 'customtext4label', 'customtext5label', 'customlist1label', 'customlist2label', 'customlist3label', 'customlist4label', 'customlist5label', 'customlist1values', 'customlist2values', 'customlist3values', 'customlist4values', 'customlist5values',
 					'customlist1html', 'customlist2html', 'customlist3html', 'customlist4html', 'customlist5html', 'global_search_results_layout', 'globalsearchresultstitleprefix', 'cattaxonomy', 'tagtaxonomy', 'ignoresortarticles', 'importlinksschedule', 'autothumbgenschedule'
@@ -2082,6 +2083,17 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					$genoptions[$option_name] = sanitize_text_field( $_POST[$option_name] );
 				}
 			}
+
+			foreach (
+				array(
+					'single_link_layout', 
+				)
+				as $option_name
+			) {
+				if ( isset( $_POST[$option_name] ) ) {
+					$genoptions[$option_name] = wp_kses( $_POST[$option_name], $this->allowed_html_tags() );
+				}
+			}			
 
 			foreach (
 				array(
