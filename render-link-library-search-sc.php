@@ -44,11 +44,11 @@ function RenderLinkLibrarySearchForm( $libraryoptions ) {
 	}
 
 	if ( isset( $_GET['link_price'] ) && !empty( $_GET['link_price'] ) ) {
-		$output .= '<input type="hidden" name="link_price" value="' . sanitize_text_field( $_GET['link_price'] ) . '" />';
+		$output .= '<input type="hidden" name="link_price" value="' . esc_html( sanitize_text_field( $_GET['link_price'] ) ) . '" />';
 	}
 
 	if ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) {
-		$output .= '<input type="hidden" name="link_tags" value="' . sanitize_text_field( $_GET['link_tags'] ) . '" />';
+		$output .= '<input type="hidden" name="link_tags" value="' . esc_html( sanitize_text_field( $_GET['link_tags'] ) ) . '" />';
 	}
 
 	$output .= "<input type='submit' id='searchbutton' value='" . $searchlabel . "' />";
