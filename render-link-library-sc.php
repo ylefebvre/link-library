@@ -1016,6 +1016,15 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					);
 				}
 
+				if ( isset( $urltextfilter ) && !empty( $urltextfilter ) ) {
+					$link_query_args['meta_query']['link_url'] =
+						array(
+							'key'     => 'link_url',
+							'value'   => $urltextfilter,
+							'compare' => 'like',
+						);
+				}
+
 				if ( isset( $_GET['link_letter'] ) && !empty( $_GET['link_letter'] ) ) {
 					$link_query_args['link_starts_with'] = sanitize_text_field( $_GET['link_letter'] );
 				}

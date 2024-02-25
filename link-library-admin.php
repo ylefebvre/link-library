@@ -2367,7 +2367,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 			foreach (
 				array(
-					'columnheaderoverride','linktarget', 'settingssetname', 'loadingicon',
+					'columnheaderoverride','linktarget', 'settingssetname', 'loadingicon', 'urltextfilter',
 					'direction', 'linkdirection', 'linkorder', 'addnewlinkmsg', 'linknamelabel', 'linkaddrlabel', 'linkrsslabel',
 					'linkcatlabel', 'linkdesclabel', 'linknoteslabel', 'addlinkbtnlabel', 'newlinkmsg', 'moderatemsg', 'imagepos',
 					'imageclass', 'rssfeedtitle', 'rssfeeddescription', 'showonecatmode', 'linkcustomcatlabel', 'linkcustomcatlistentry',
@@ -4217,6 +4217,12 @@ function general_custom_fields_meta_box( $data ) {
 
 						</td>
 					<?php } ?>
+				</tr>
+				<tr>
+					<td class="lltooltip" title="<?php _e( 'Only show links with URLs that include the filter text', 'link-library' ); ?>"><?php _e( 'URL Filter', 'link-library' ); ?></td>
+					<td class="lltooltip" title="<?php _e( 'Only show links with URLs that include the filter text', 'link-library' ); ?>">
+						<input type="text" id="urltextfilter" name="urltextfilter" size="40" value="<?php echo strval( $options['urltextfilter'] ); ?>" />
+					</td>
 				</tr>
 				<tr>
 					<td class="lltooltip" title="<?php _e( 'Leave Empty to see all tags', 'link-library' ); ?><br /><br /><?php _e( 'Enter list of comma-separated', 'link-library' ); ?><br /><?php _e( 'numeric tag IDs', 'link-library' ); ?><br /><br /><?php _e( 'To find the IDs, go to the Link Categories admin page. For example', 'link-library' ); ?>: 2,4,56">

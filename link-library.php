@@ -3,7 +3,7 @@
 Plugin Name: Link Library
 Plugin URI: http://wordpress.org/extend/plugins/link-library/
 Description: Display links on pages with a variety of options
-Version: 7.6
+Version: 7.6.2
 Author: Yannick Lefebvre
 Author URI: http://ylefebvre.github.io/
 Text Domain: link-library
@@ -1677,6 +1677,7 @@ class link_library_plugin {
 		$linkorderoverride = '';
 		$linkdirectionoverride = '';
 		$addlinkdefaultcatoverride = '';
+		$urltextfilteroverride = '';
 
 		if ( isset( $atts['categorylistoverride'] ) && !empty( $atts['categorylistoverride'] ) && is_array( $atts['categorylistoverride'] ) ) {
 			$atts['categorylistoverride'] = implode( ',', $atts['categorylistoverride'] );
@@ -1717,7 +1718,8 @@ class link_library_plugin {
 			'maxlinksoverride' => '',
 			'linkorderoverride' => '',
 			'linkdirectionoverride' => '',
-			'addlinkdefaultcatoverride' => ''
+			'addlinkdefaultcatoverride' => '',
+			'urltextfilteroverride' => '',
 		), $atts ) );
 
 		$genoptions = get_option( 'LinkLibraryGeneral' );
@@ -1764,6 +1766,10 @@ class link_library_plugin {
 
 		if ( !empty( $maxlinksoverride ) ) {
 			$options['maxlinks'] = intval( $maxlinksoverride );
+		}
+
+		if ( !empty( $urltextfilteroverride ) ) {
+			$options['urltextfilter'] = $urltextfilteroverride;
 		}
 
 		if ( !empty( $linkorderoverride ) ) {

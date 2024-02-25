@@ -30,7 +30,7 @@ function RenderLinkLibrarySearchForm( $libraryoptions ) {
 	$output .= "<input type='text' onfocus=\"this.value=''\" value='";
 
 	if ( $searchtextinsearchbox && isset( $_GET['searchll'] ) && !empty( $_GET['searchll'] ) ) {
-		$output .= sanitize_text_field( $_GET['searchll'] );
+		$output .= esc_attr( sanitize_text_field( $_GET['searchll'] ) );
 	} else {
 		$output .= $searchfieldtext;
 	}
