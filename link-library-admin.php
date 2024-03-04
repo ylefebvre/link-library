@@ -552,6 +552,8 @@ class link_library_plugin_admin {
 		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 		extract( $genoptions );
 
+		add_action( 'admin_notices', array( $this, 'll_admin_notices' ) );
+
 		if ( isset($_GET['page']) && $_GET['page'] == 'link-library-faq' ) {
 			wp_redirect( 'https://github.com/ylefebvre/link-library/wiki' );
 			exit();
@@ -598,51 +600,65 @@ class link_library_plugin_admin {
 		add_action( 'admin_post_save_link_library_stylesheet', array( $this, 'on_save_changes_stylesheet' ) );
 		add_action( 'admin_post_save_link_library_reciprocal', array( $this, 'on_save_changes_reciprocal' ) );
 
-		$catnames = get_terms( $genoptions['cattaxonomy'], array( 'hide_empty' => false ) );
-
-		if ( empty( $catnames ) ) {
-			add_action( 'admin_notices', array( $this, 'll_missing_categories' ) );
-		}
-
-		if ( !empty( $genoptions ) ) {
-			if ( empty( $numberstylesets ) ) {
-				$numberofsets = 1;
-			} else {
-				$numberofsets = $numberstylesets;
-			}
-
-			$thumbshotsactive = false;
-
-			for ( $counter = 1; $counter <= $numberofsets; $counter ++ ) {
-				$tempoptionname = "LinkLibraryPP" . $counter;
-				$tempoptions    = get_option( $tempoptionname );
-				$tempoptions = wp_parse_args( $tempoptions, ll_reset_options( 1, 'list', 'return' ) );
-				if ( $tempoptions['usethumbshotsforimages'] ) {
-					$thumbshotsactive = true;
-				}
-			}
-
-			if ( $thumbshotsactive && empty( $genoptions['thumbshotscid'] ) && $genoptions['thumbnailgenerator'] == 'thumbshots' ) {
-				add_action( 'admin_notices', array( $this, 'll_thumbshots_warning' ) );
-			}
-
-			if ( $thumbshotsactive && empty( $genoptions['shrinkthewebaccesskey'] ) && $genoptions['thumbnailgenerator'] == 'shrinktheweb' ) {
-				add_action( 'admin_notices', array( $this, 'll_shrinktheweb_warning' ) );
-			}
-
-			if ( isset( $_GET['dismissll70update'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'dismissll70update' ) ) {
-				$genoptions['dismissll70update'] = true;
-				update_option( 'LinkLibraryGeneral', $genoptions );
-			} elseif ( !isset( $genoptions['dismissll70update'] ) && ( !isset( $genoptions['hidedonation'] ) || ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) ) ) {
-				add_action( 'admin_notices', array( $this, 'll70update' ) );
-			}
-		}
-
 		global $typenow;
 
-		if ($typenow === 'link_library_links') {
-			add_filter('posts_search', 'll_expand_posts_search', 10, 2);
+		if ( $typenow === 'link_library_links' ) {
+			add_filter( 'posts_search', 'll_expand_posts_search', 10, 2 );
 		}
+	}
+
+	function ll_admin_notices() {
+
+		global $pagenow;
+
+		if ( ( $pagenow == 'post-new.php' && $_GET['post_type'] == 'link_library_links' ) ||
+			 ( $pagenow == 'edit-tags.php' && $_GET['post_type'] == 'link_library_links' && $_GET['taxonomy'] == 'link_library_category' ) ||
+			 ( $pagenow == 'edit-tags.php' && $_GET['post_type'] == 'link_library_links' && $_GET['taxonomy'] == 'link_library_tags' ) ||
+			 ( $pagenow == 'edit.php' && $_GET['post_type'] == 'link_library_links' ) ) {
+			$catnames = get_terms( $genoptions['cattaxonomy'], array( 'hide_empty' => false ) );
+
+			if ( empty( $catnames ) ) {
+				$this->ll_missing_categories();
+			}
+
+			$genoptions = get_option( 'LinkLibraryGeneral' );
+			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+			extract( $genoptions );
+
+			if ( !empty( $genoptions ) ) {
+				if ( empty( $numberstylesets ) ) {
+					$numberofsets = 1;
+				} else {
+					$numberofsets = $numberstylesets;
+				}
+
+				$thumbshotsactive = false;
+
+				for ( $counter = 1; $counter <= $numberofsets; $counter ++ ) {
+					$tempoptionname = "LinkLibraryPP" . $counter;
+					$tempoptions    = get_option( $tempoptionname );
+					$tempoptions = wp_parse_args( $tempoptions, ll_reset_options( 1, 'list', 'return' ) );
+					if ( $tempoptions['usethumbshotsforimages'] ) {
+						$thumbshotsactive = true;
+					}
+				}
+
+				if ( $thumbshotsactive && empty( $genoptions['thumbshotscid'] ) && $genoptions['thumbnailgenerator'] == 'thumbshots' ) {
+					$this->ll_thumbshots_warning();
+				}
+
+				if ( $thumbshotsactive && empty( $genoptions['shrinkthewebaccesskey'] ) && $genoptions['thumbnailgenerator'] == 'shrinktheweb' ) {
+					$this->ll_shrinktheweb_warning();
+				}
+
+				if ( isset( $_GET['dismissll70update'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'dismissll70update' ) ) {
+					$genoptions['dismissll70update'] = true;
+					update_option( 'LinkLibraryGeneral', $genoptions );
+				} elseif ( !isset( $genoptions['dismissll70update'] ) && ( !isset( $genoptions['hidedonation'] ) || ( isset( $genoptions['hidedonation'] ) && !$genoptions['hidedonation'] ) ) ) {
+					$this->ll70update();
+				}
+			}
+		}		
 	}
 
 	function ll_add_category_id( $content, $column_name, $term_id ){
@@ -7121,17 +7137,17 @@ function general_custom_fields_meta_box( $data ) {
 		<table style="width:100%">
 			<tr>
 				<td style="width:20%"><?php _e( 'Web Address', 'link-library' ); ?></td>
-				<td><input type="text" style="width:70%" id="link_url" type="link_url" name="link_url" value="<?php echo $link_url; ?>" tabindex="1">
+				<td><input type="text" style="width:70%" id="link_url" type="link_url" name="link_url" value="<?php echo esc_url( $link_url ); ?>" tabindex="1">
 				<input type="button" class="upload_link_item_button" value="<?php _e( 'Assign link from media item', 'link-library' ); ?>"></td>
 
 			</tr>
 			<tr>
 				<td style="width:20%"><?php _e( 'Description', 'link-library' ); ?></td>
-				<td><input type="text" id="link_description" type="link_description" name="link_description" value="<?php echo $link_description; ?>" tabindex="2"></td>
+				<td><input type="text" id="link_description" type="link_description" name="link_description" value="<?php echo esc_attr( $link_description ); ?>" tabindex="2"></td>
 			</tr>
 			<tr>
 				<td><?php _e( 'Notes', 'link-library' ); ?></td>
-				<td><textarea style="width:100%" name="link_notes" id="link_notes" rows="5"><?php echo $link_notes; ?></textarea></td>
+				<td><textarea style="width:100%" name="link_notes" id="link_notes" rows="5"><?php echo esc_attr( $link_notes ); ?></textarea></td>
 			</tr>
 			<tr>
 				<td colspan="2"><?php _e( 'Large Description', 'link-library' ); ?></td>
@@ -7143,12 +7159,12 @@ function general_custom_fields_meta_box( $data ) {
 									'textarea_name' => 'link_textfield',
 									'wpautop' => false );
 
-		wp_editor( isset( $link_textfield ) ? stripslashes( $link_textfield ) : '', 'link_textfield', $editorsettings ); ?>
+		wp_editor( isset( $link_textfield ) ? esc_attr( stripslashes( $link_textfield ) ) : '', 'link_textfield', $editorsettings ); ?>
 
 		<table style="width:100%">
 			<tr>
 				<td><?php _e( 'RSS Address', 'link-library' ); ?></td>
-				<td><input type="text" style="width:100%" id="link_rss" type="link_rss" name="link_rss" value="<?php echo $link_rss; ?>"></td>
+				<td><input type="text" style="width:100%" id="link_rss" type="link_rss" name="link_rss" value="<?php echo esc_url( $link_rss ); ?>"></td>
 			</tr>
 			<tr>
 				<td><?php _e( 'Target', 'link-library' ); ?></td>
