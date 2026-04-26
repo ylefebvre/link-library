@@ -3,8 +3,10 @@ Contributors: jackdewey
 Donate link: https://ylefebvre.github.io/wordpress-plugins/link-library/
 Tags: link, list, directory, page, library
 Requires at least: 4.4
-Tested up to: 6.4.2
-Stable tag: 7.6.4
+Tested up to: 6.9
+Stable tag: 7.9.2
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 The purpose of this plugin is to add the ability to output a list of link categories and a complete list of links with notes and descriptions.
 
@@ -49,6 +51,83 @@ In addition to specifying a library, categories to be displayed can be specified
 Further configuration is available under the Link Library Settings panel.
 
 == Changelog ==
+
+= 7.9.2 =
+* Fix for links importer, both scheduled and manual
+* Fix for empty OPML when using multilingual plugin
+
+= 7.9.1 =
+* Fix for scheduled import not assigning categories to links
+
+= 7.9.0 =
+* Fixed bug with broken link checker
+
+= 7.8.9 =
+* Fixed potential security issue
+
+= 7.8.8 =
+* Fixed potential security issue
+
+= 7.8.7 =
+* Fix to allow proper cloning of site in network configuration
+
+= 7.8.6 =
+* Additional fix for potential security issue
+
+= 7.8.5 =
+* Fixed potential security issue
+
+= 7.8.4 =
+* Updated plugin URI
+
+= 7.8.3 =
+* Added edit links to duplicate link checker results
+
+= 7.8.2 =
+* Added ability to specify a default category to be selected when using bookmarklet
+
+= 7.8.1 =
+* Fixed potential security issue
+
+= 7.8 =
+* Fixed potential security
+* Fixed warning when visiting admin pages about post_type argument missing
+* Fixed warning about deprecation of required parameters after unrequired ones
+
+= 7.7.3 =
+* Fixed potential security issue
+
+= 7.7.2 =
+* Fixed potential security issue
+
+= 7.7.1 =
+* Added way to export all links to OPML format under Global Options
+
+= 7.7 =
+* Fixes for potential security issues
+
+= 7.6.11 =
+* Fix to avoid PHP warning
+
+= 7.6.10 =
+* Fixed to previous checkin to restore compabitility with older versions of WordPress
+
+= 7.6.9 =
+* Added check to see if current page is login page and exit plugin if it is
+
+= 7.6.8 =
+* Fix to retain comments in Stylesheet editor
+
+= 7.6.7 =
+* Fix for potential security issue
+* Fix for large description field in link editor showing bad HTML
+* Fix for taglistoverride not working when pagination is enabled
+
+= 7.6.6 =
+* Fixes to restore user link submission capabilities
+
+= 7.6.5 =
+* Link editor now automatically shows most used tag list
 
 = 7.6.4 =
 * Fixes for potential security vulnerabilities

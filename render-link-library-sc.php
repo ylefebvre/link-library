@@ -311,7 +311,7 @@ function link_library_display_pagination( $previouspagenumber, $nextpagenumber, 
  * @return                  List of categories output for browser
  */
 
-function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount = 'false', $parent_cat_id = 0, $level = 0, $display_children = true, $hide_children_cat_links = false, &$linkcount ) {
+function RenderLinkLibrary( &$linkcount, $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount = 'false', $parent_cat_id = 0, $level = 0, $display_children = true, $hide_children_cat_links = false ) {
 
 	$showonecatonly = '';
 	$showonecatmode = '';
@@ -692,6 +692,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 			}
 
 			$number_of_links = 0;
+			$tag_type = 'term_id';
 
 			if ( !empty( $taglist_cpt ) || ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
 
@@ -699,9 +700,11 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 
 				if ( ( isset( $_GET['link_tags'] ) && !empty( $_GET['link_tags'] ) ) ) {
 					$tag_array = explode( '.', sanitize_text_field( $_GET['link_tags'] ) );
+					$tag_type = 'slug';
 				} elseif( !empty( $taglist_cpt ) ) {
 					$tag_array = explode( ',', $taglist_cpt );
-				}				
+					$tag_type = 'term_id';
+				}
 			}
 
 			foreach ( $link_categories as $cat_array_index => $link_category ) {
@@ -722,7 +725,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 					$args['tax_query'][] = array( 
 						array(
 							'taxonomy'  => $generaloptions['tagtaxonomy'],
-							'field'     => 'slug',
+							'field'     => $tag_type,
 							'terms'     => $tag_array
 						)
 					);
@@ -1060,8 +1063,23 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 				}
 
 				if ( $debugmode ) {
+					foreach ( $link_query_args as $key => $value ) {
+						
+						if ( is_array( $link_query_args[$key] ) ) {
+							foreach ( $link_query_args[$key] as $lower_key => $lower_value ) {
+								if ( is_array( $link_query_args[$key][$lower_key] ) ) {
+									foreach ( $link_query_args[$key][$lower_key] as $lower2_key => $lower2_value ) {
+										$link_query_args[$key][$lower_key][$lower2_key] = esc_html( $lower2_value );
+									}
+								} else {
+									$link_query_args[$key][$lower_key] = esc_html( $lower_value );
+								}								
+							}
+						} else {
+							$link_query_args[$key] = esc_html( $value );
+						}
+					}
 					$output .= "\n<!-- Link Query: " . print_r( $link_query_args, TRUE ) . "-->\n\n";
-					$output .= "\n<!-- Link Results: " . print_r( $the_link_query, TRUE ) . "-->\n\n";
 					$output .= "\n<!-- Link Query Execution Time: " . ( microtime( true ) - $linkquerystarttime ) . "-->\n\n";
 				}
 
@@ -2862,7 +2880,7 @@ function RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $s
 								}
 							}
 
-							$current_cat_output .= RenderLinkLibrary( $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount, $link_category->term_id, $level + 1, $display_children, $hidechildcatlinks, $linkcount );
+							$current_cat_output .= RenderLinkLibrary( $linkcount, $LLPluginClass, $generaloptions, $libraryoptions, $settings, $onlycount, $link_category->term_id, $level + 1, $display_children, $hidechildcatlinks );
 
 							if ( $showlinksonclick ) {
 								$current_cat_output .= '</div>';

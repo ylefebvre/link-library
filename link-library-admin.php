@@ -36,7 +36,7 @@ class link_library_plugin_admin {
 
 		add_filter( 'plugin_row_meta', array( $this, 'set_plugin_row_meta' ), 1, 2 );
 
-		add_action( 'wpmu_new_blog', array( $this, 'new_network_site' ), 10, 6 );
+		add_action( 'wpmu_new_blog', 'new_network_site', 10, 6 );
 
 		add_action( 'admin_head', array( $this, 'admin_header' ) );
 
@@ -204,6 +204,7 @@ class link_library_plugin_admin {
 		$csstidy->set_cfg( 'template', 'low' );
 		$csstidy->set_cfg( 'discard_invalid_properties', false );
 		$csstidy->set_cfg( 'remove_last_;', false );
+		$csstidy->set_cfg( 'preserve_css', true );
 		$csstidy->parse( $css );
 
 		return $csstidy->print->plain();
@@ -233,7 +234,9 @@ class link_library_plugin_admin {
 		wp_enqueue_script( 'linklibrary-shortcodes-embed', plugins_url( "js/linklibrary-shortcode-embed.js", __FILE__ ), array( 'jquery' ), '', true );
 		wp_enqueue_style( 'linklibraryadminstyle', plugins_url( 'adminstyle.css', __FILE__ ) );
 
-		if ( 'edit.php' === $hook && isset( $_GET['post_type'] ) && 'link_library_links' === $_GET['post_type'] ) {
+		if ( 'post-new.php' === $hook || 'post.php' == $hook ) {
+			wp_enqueue_script( 'll_open_tags', plugins_url('js/ll_open_tags.js', __FILE__), false, null, true );
+		} elseif ( 'edit.php' === $hook && isset( $_GET['post_type'] ) && 'link_library_links' === $_GET['post_type'] ) {
 			wp_enqueue_script( 'll_quick_edit', plugins_url('js/ll_admin_edit.js', __FILE__), false, null, true );
 		} elseif ( 'post.php' === $hook ) {
 			wp_enqueue_style( 'll_general_css', site_url( '/?link_library_css=1' ) );
@@ -610,20 +613,20 @@ class link_library_plugin_admin {
 	function ll_admin_notices() {
 
 		global $pagenow;
+		
+		$genoptions = get_option( 'LinkLibraryGeneral' );
+		$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
+		extract( $genoptions );
 
-		if ( ( $pagenow == 'post-new.php' && $_GET['post_type'] == 'link_library_links' ) ||
-			 ( $pagenow == 'edit-tags.php' && $_GET['post_type'] == 'link_library_links' && $_GET['taxonomy'] == 'link_library_category' ) ||
-			 ( $pagenow == 'edit-tags.php' && $_GET['post_type'] == 'link_library_links' && $_GET['taxonomy'] == 'link_library_tags' ) ||
-			 ( $pagenow == 'edit.php' && $_GET['post_type'] == 'link_library_links' ) ) {
+		if ( ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'link_library_links' ) ||
+			 ( $pagenow == 'edit-tags.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'link_library_links' && isset( $_GET['taxonomy'] ) && $_GET['taxonomy'] == 'link_library_category' ) ||
+			 ( $pagenow == 'edit-tags.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'link_library_links' && $_GET['taxonomy'] == 'link_library_tags' ) ||
+			 ( $pagenow == 'edit.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'link_library_links' ) ) {
 			$catnames = get_terms( $genoptions['cattaxonomy'], array( 'hide_empty' => false ) );
 
 			if ( empty( $catnames ) ) {
 				$this->ll_missing_categories();
-			}
-
-			$genoptions = get_option( 'LinkLibraryGeneral' );
-			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
-			extract( $genoptions );
+			}			
 
 			if ( !empty( $genoptions ) ) {
 				if ( empty( $numberstylesets ) ) {
@@ -1669,7 +1672,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				$myFile = $upload_dir['path'] . "/LinksExport.csv";
 				$fh = fopen( $myFile, 'w' ) or die( "can't open file" );
 
-				$links_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1, 'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ) );
+				$links_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1, 'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' ), 'suppress_filters' => true );
 
 				$links_to_export = new WP_Query( $links_query_args );
 
@@ -1784,25 +1787,92 @@ wp_editor( $post->post_content, 'content', $editor_config );
 							$datarow[] = $value;
 						}
 						fputcsv( $fh, $datarow, ',', '"' );
-					}
+					}					
+				}
 
-					fclose( $fh );
+				fclose( $fh );
 
-					if ( file_exists( $myFile ) ) {
-						header( 'Content-Description: File Transfer' );
-						header( 'Content-Type: application/octet-stream' );
-						header( 'Content-Disposition: attachment; filename=' . basename( $myFile ) );
-						header( 'Expires: 0' );
-						header( 'Cache-Control: must-revalidate' );
-						header( 'Pragma: public' );
-						header( 'Content-Length: ' . filesize( $myFile ) );
-						readfile( $myFile );
-						exit;
-					}
+				if ( file_exists( $myFile ) ) {
+					header( 'Content-Description: File Transfer' );
+					header( 'Content-Type: application/octet-stream' );
+					header( 'Content-Disposition: attachment; filename=' . basename( $myFile ) );
+					header( 'Expires: 0' );
+					header( 'Cache-Control: must-revalidate' );
+					header( 'Pragma: public' );
+					header( 'Content-Length: ' . filesize( $myFile ) );
+					readfile( $myFile );
+					exit;
 				}
 			} else {
 				$message = '3';
 			}
+		} elseif ( isset( $_POST['exportalllinksopml'] ) ) {
+			$upload_dir = wp_upload_dir();
+
+			if ( is_writable( $upload_dir['path'] ) ) {
+				$myFile = $upload_dir['path'] . "/LinksExport.opml";
+				$fh = fopen( $myFile, 'w' ) or die( "can't open file" );
+
+				$link_categories_query_args = array( 'suppress_filters' => true );
+				$link_categories_query_args['hide_empty'] = true;
+
+				add_filter( 'get_terms', 'link_library_get_terms_filter_only_publish', 10, 3 );
+
+				$link_categories = get_terms( 'link_library_category', $link_categories_query_args );
+				
+				fwrite( $fh, '<?xml version="1.0"?' . ">\n" );
+				fwrite(	$fh, '<opml version="1.0">' . "\n" );
+				fwrite( $fh, '<head>' . "\n" );
+				fwrite( $fh, "\t" . '<title>' . sprintf( __( 'Links for %s' ), esc_attr( get_bloginfo( 'name', 'display' ) ) ) . '</title>' . "\n" );
+				fwrite( $fh, "\t" . '<dateCreated>' . gmdate( 'D, d M Y H:i:s' ) . ' GMT</dateCreated>' . "\n" );
+				fwrite( $fh, '</head>' . "\n" );
+				fwrite( $fh, '<body>' . "\n" );
+				
+				foreach ( (array) $link_categories as $link_category ) {
+					fwrite( $fh, "\t" . '<outline type="category" title="' . $link_category->name . '">' . "\n" );
+					
+					$link_query_args = array( 'post_type' => 'link_library_links', 'posts_per_page' => -1, 'post_status' => 'publish', 'suppress_filters' => true );
+					$link_query_args['orderby']['title'] = 'ASC';
+
+					$link_query_args['tax_query'][] =
+						array(
+							'taxonomy' => 'link_library_category',
+							'field'    => 'term_id',
+							'terms'    => $link_category->term_id,
+							'include_children' => false
+						);
+	
+					$the_link_query = new WP_Query( $link_query_args );
+
+					if ( $the_link_query->have_posts() ) {
+						while ( $the_link_query->have_posts() ) {
+							$the_link_query->the_post();
+							$link_url = get_post_meta( get_the_ID(), 'link_url', true );
+							$link_rss = get_post_meta( get_the_ID(), 'link_rss', true );
+							$link_updated = get_post_meta( get_the_ID(), 'link_updated', true );
+
+							fwrite( $fh, "\t\t" . '<outline text="' . get_the_title() . '" type="link" xmlUrl="' . $link_rss . '" htmlUrl="' . $link_url . '">' . "\n" );
+						}
+					}
+					fwrite( $fh, "\t" . '</outline>' . "\n" );
+				}
+				fwrite( $fh, '</body>' . "\n" );
+				fwrite( $fh, '</opml>' . "\n" );
+
+				fclose( $fh );
+
+				if ( file_exists( $myFile ) ) {
+					header( 'Content-Description: File Transfer' );
+					header( 'Content-Type: application/octet-stream' );
+					header( 'Content-Disposition: attachment; filename=' . basename( $myFile ) );
+					header( 'Expires: 0' );
+					header( 'Cache-Control: must-revalidate' );
+					header( 'Pragma: public' );
+					header( 'Content-Length: ' . filesize( $myFile ) );
+					readfile( $myFile );
+					exit;
+				}
+			}		
 		} elseif ( isset( $_POST['exportallcategories'] ) ) {
 			$upload_dir = wp_upload_dir();
 
@@ -1810,7 +1880,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				$myFile = $upload_dir['path'] . "/CategoriesExport.csv";
 				$fh = fopen( $myFile, 'w' ) or die( "can't open file" );
 
-				$link_library_categories = get_terms( 'link_library_category', array( 'hide_empty' => false, ) );
+				$link_library_categories = get_terms( 'link_library_category', array( 'hide_empty' => false, 'suppress_filters' => true ) );
 
 				if ( !empty( $link_library_categories ) ) {
 					$headerrow = array( 'Category ID', 'Category Name', 'Parent Category Name (Empty if top-level category)' );
@@ -2105,7 +2175,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'rolelevel', 'editlevel', 'cptslug',
 					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings', 'defaultprotocoladmin', 'pagepeekerid', 'pagepeekersize', 'stwthumbnailsize', 'shrinkthewebaccesskey', 'customurl1label', 'customurl2label',
 					'customurl3label', 'customurl4label', 'customurl5label', 'customtext1label', 'customtext2label', 'customtext3label', 'customtext4label', 'customtext5label', 'customlist1label', 'customlist2label', 'customlist3label', 'customlist4label', 'customlist5label', 'customlist1values', 'customlist2values', 'customlist3values', 'customlist4values', 'customlist5values',
-					'customlist1html', 'customlist2html', 'customlist3html', 'customlist4html', 'customlist5html', 'global_search_results_layout', 'globalsearchresultstitleprefix', 'cattaxonomy', 'tagtaxonomy', 'ignoresortarticles', 'importlinksschedule', 'autothumbgenschedule'
+					'customlist1html', 'customlist2html', 'customlist3html', 'customlist4html', 'customlist5html', 'global_search_results_layout', 'globalsearchresultstitleprefix', 'cattaxonomy', 'tagtaxonomy', 'ignoresortarticles', 'importlinksschedule', 'autothumbgenschedule', 'bookmarklet_default_cat'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
@@ -2336,7 +2406,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 
 			foreach ( array ( 'stylesheet' ) as $option_name ) {
 				if ( isset( $_POST[$option_name] ) ) {
-					$options[$option_name] = $this->validate_css( $_POST[$option_name] );
+					$options[$option_name] = $this->validate_css( sanitize_text_field( $_POST[$option_name] ) );
 				}
 			}
 
@@ -2695,7 +2765,7 @@ wp_editor( $post->post_content, 'content', $editor_config );
 			$genoptions = get_option( 'LinkLibraryGeneral' );
 			$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
-			$genoptions['fullstylesheet'] = $this->validate_css( $_POST['fullstylesheet'] );
+			$genoptions['fullstylesheet'] = $this->validate_css( sanitize_text_field( $_POST['fullstylesheet'] ) );
 
 			update_option( 'LinkLibraryGeneral', $genoptions );
 			$message = 1;
@@ -3423,9 +3493,7 @@ function general_custom_fields_meta_box( $data ) {
 	}
 
 	function general_meta_bookmarklet_box( $data ) {
-		/* Unencoded bookmarklet code		
-		
-		
+		/* Unencoded bookmarklet code			
 
 		$bookmarkletcode = 'javascript:
 								var code = document.documentElement.outerHTML;
@@ -3505,13 +3573,19 @@ function general_custom_fields_meta_box( $data ) {
 								linkmanpopup.focus(); */
 
 
-								//get_bloginfo( 'wpurl' )
-			$bookmarkletcode = 'javascript:(function()%7Bjavascript%3Avar%20code%20%3D%20document.documentElement.outerHTML%3Bvar%20rssregex%20%3D%20%2F%3Clink%5B%5E%3E%5D%2Btype%3D%5Cs*(%3F%3A%22%7C)(application%5C%2Frss%5C%2Bxml%7Capplication%5C%2Fatom%5C%2Bxml)%5B%5E%3E%5D*%3E%2Fmgi%3Bvar%20matches%20%3D%20code.match(rssregex)%3Bvar%20urlregex%20%3D%20%2F(http(s)%3F)%3F%3A%3F%5C%2F%5C%2F(www%5C.)%3F%5B-a-zA-Z0-9%40%3A%25._%5C%2B~%23%3D%5D%7B2%2C256%7D%5C.%5Ba-z%5D%7B2%2C6%7D%5Cb(%5B-a-zA-Z0-9%40%3A%25_%5C%2B.~%23%3F%26%2F%2F%3D%5D*)%2Fmgi%3Bvar%20nodomainurlregex%20%3D%20%2F(%3F%3Ahref%3D%22%3F)(%5C%2F%3F%5B-a-zA-Z0-9%40%3A%25._%5C%2B~%23%3D%5D%7B2%2C256%7D(%5C.%5Ba-z%5D%7B2%2C6%7D%5Cb(%5B-a-zA-Z0-9%40%3A%25_%5C%2B.~%23%3F%26%2F%2F%3D%5D*))%3F)%2B%2Fmgi%3Bvar%20html%20%3D%20%22%22%3Bvar%20rsscount%20%3D%200%3Bvar%20prompttext%20%3D%20%22Please%20select%20the%20RSS%20feed%20to%20add%20to%20your%20new%20link%5Cn%22%3Bvar%20rssarray%20%3D%20new%20Array()%3Bvar%20selectedrss%3Bif%20(%20matches%20!%3D%20null%20)%20%7Bfor%20(i%3D0%3B%20i%3Cmatches.length%3B%20i%2B%2B)%20%7Bvar%20currentfeed%20%3D%20matches%5Bi%5D.match(urlregex)%3Bif%20(%20currentfeed%20%3D%3D%20null%20)%20%7Bvar%20currentfeed%20%3D%20matches%5Bi%5D.match(nodomainurlregex).toString()%3Bif%20(%20currentfeed%20!%3D%20null%20)%20%7Bcurrentfeed%20%3D%20currentfeed.replace(%22href%3D%5C%22%22%2C%20%22%22%20)%3Bcurrentfeed%20%3D%20currentfeed.replace(%22href%3D%22%2C%20%22%22%20)%3Bif%20(%20currentfeed.charAt(0)%20!%3D%20%22%2F%22%20)%20%7Bcurrentfeed%20%3D%20%22%2F%22%20%2B%20currentfeed%3B%7Dconst%20siteurl%20%3D%20new%20URL(%20location.href%20)%3Bcurrentfeed%20%3D%20siteurl.hostname%20%2B%20currentfeed%3B%7D%7D%20else%20%7Bcurrentfeed%20%3D%20currentfeed.toString()%3Bif%20(%20%22%2F%2F%22%20%3D%3D%20currentfeed.substring(%200%2C%202%20)%20)%20%7Bcurrentfeed%20%3D%20currentfeed.replace(%22%2F%2F%22%2C%20%22%22%20)%3B%7D%7Dif%20(%20currentfeed%20!%3D%20null%20)%20%7Bif%20(%20-1%20%3D%3D%20currentfeed.indexOf(%22comments%22)%20)%20%7Brsscount%2B%2B%3Bprompttext%20%2B%3D%20rsscount%20%2B%20%22)%20%22%20%2B%20currentfeed%20%2B%20%22%5Cn%22%3Brssarray.push(%20currentfeed%20)%3B%7D%7D%7D%7Dif%20(%20rsscount%20%3E%201%20)%20%7Bselectedrss%20%3D%20prompt(%20prompttext%20)%3Bif%20(%20selectedrss%20%3E%20rssarray.length%20)%20%7Bselectedrss%20%3D%201%3B%7D%7D%20else%20if%20(%20rsscount%20%3D%3D%201%20)%20%7Bselectedrss%20%3D%201%3B%7D%20else%20%7Bselectedrss%20%3D%200%3B%7Dvar%20selectedtext%20%3D%20%22%22%3Bif%20(%20window.getSelection%20)%20%7Bselectedtext%20%3D%20window.getSelection().toString()%3B%7D%20else%20if%20(document.selection%20%26%26%20document.selection.type%20!%3D%20%22Control%22)%20%7Bselectedtext%20%3D%20document.selection.createRange().text%3B%7Dpopuptargetlink%20%3D%20%22' . get_bloginfo( 'wpurl' ) . '%2Fwp-admin%2Fpost-new.php%3Fpost_type%3Dlink_library_links%26action%3Dpopup%26linkurl%3D%22%20%2B%20escape(location.href)%20%2B%20%22%26post_title%3D%22%20%2B%20(document.title)%3Bif%20(%20selectedrss%20%3E%200%20)%20%7Bpopuptargetlink%20%3D%20popuptargetlink%20%2B%20%22%26link_rss%3D%22%20%2B%20rssarray%5Bselectedrss-1%5D%3B%7Dif%20(%20selectedtext.length%20%3E%200%20)%20%7Bpopuptargetlink%20%3D%20popuptargetlink%20%2B%20%22%26link_description%3D%22%20%2B%20selectedtext%3B%7Dlinkmanpopup%3Dwindow.open(popuptargetlink%2C%20%22Link%20Library%22%2C%22scrollbars%3Dyes%2Cwidth%3D900px%2Cheight%3D600px%2Cleft%3D15%2Ctop%3D15%2Cstatus%3Dyes%2Cresizable%3Dyes%22)%3Blinkmanpopup.focus()%3Bwindow.focus()%3Blinkmanpopup.focus()%7D)()';
+			$genoptions = $data['genoptions'];
+			
+			$bookmarkletcode = 'javascript:(function()%7Bjavascript%3Avar%20code%20%3D%20document.documentElement.outerHTML%3Bvar%20rssregex%20%3D%20%2F%3Clink%5B%5E%3E%5D%2Btype%3D%5Cs*(%3F%3A%22%7C)(application%5C%2Frss%5C%2Bxml%7Capplication%5C%2Fatom%5C%2Bxml)%5B%5E%3E%5D*%3E%2Fmgi%3Bvar%20matches%20%3D%20code.match(rssregex)%3Bvar%20urlregex%20%3D%20%2F(http(s)%3F)%3F%3A%3F%5C%2F%5C%2F(www%5C.)%3F%5B-a-zA-Z0-9%40%3A%25._%5C%2B~%23%3D%5D%7B2%2C256%7D%5C.%5Ba-z%5D%7B2%2C6%7D%5Cb(%5B-a-zA-Z0-9%40%3A%25_%5C%2B.~%23%3F%26%2F%2F%3D%5D*)%2Fmgi%3Bvar%20nodomainurlregex%20%3D%20%2F(%3F%3Ahref%3D%22%3F)(%5C%2F%3F%5B-a-zA-Z0-9%40%3A%25._%5C%2B~%23%3D%5D%7B2%2C256%7D(%5C.%5Ba-z%5D%7B2%2C6%7D%5Cb(%5B-a-zA-Z0-9%40%3A%25_%5C%2B.~%23%3F%26%2F%2F%3D%5D*))%3F)%2B%2Fmgi%3Bvar%20html%20%3D%20%22%22%3Bvar%20rsscount%20%3D%200%3Bvar%20prompttext%20%3D%20%22Please%20select%20the%20RSS%20feed%20to%20add%20to%20your%20new%20link%5Cn%22%3Bvar%20rssarray%20%3D%20new%20Array()%3Bvar%20selectedrss%3Bif%20(%20matches%20!%3D%20null%20)%20%7Bfor%20(i%3D0%3B%20i%3Cmatches.length%3B%20i%2B%2B)%20%7Bvar%20currentfeed%20%3D%20matches%5Bi%5D.match(urlregex)%3Bif%20(%20currentfeed%20%3D%3D%20null%20)%20%7Bvar%20currentfeed%20%3D%20matches%5Bi%5D.match(nodomainurlregex).toString()%3Bif%20(%20currentfeed%20!%3D%20null%20)%20%7Bcurrentfeed%20%3D%20currentfeed.replace(%22href%3D%5C%22%22%2C%20%22%22%20)%3Bcurrentfeed%20%3D%20currentfeed.replace(%22href%3D%22%2C%20%22%22%20)%3Bif%20(%20currentfeed.charAt(0)%20!%3D%20%22%2F%22%20)%20%7Bcurrentfeed%20%3D%20%22%2F%22%20%2B%20currentfeed%3B%7Dconst%20siteurl%20%3D%20new%20URL(%20location.href%20)%3Bcurrentfeed%20%3D%20siteurl.hostname%20%2B%20currentfeed%3B%7D%7D%20else%20%7Bcurrentfeed%20%3D%20currentfeed.toString()%3Bif%20(%20%22%2F%2F%22%20%3D%3D%20currentfeed.substring(%200%2C%202%20)%20)%20%7Bcurrentfeed%20%3D%20currentfeed.replace(%22%2F%2F%22%2C%20%22%22%20)%3B%7D%7Dif%20(%20currentfeed%20!%3D%20null%20)%20%7Bif%20(%20-1%20%3D%3D%20currentfeed.indexOf(%22comments%22)%20)%20%7Brsscount%2B%2B%3Bprompttext%20%2B%3D%20rsscount%20%2B%20%22)%20%22%20%2B%20currentfeed%20%2B%20%22%5Cn%22%3Brssarray.push(%20currentfeed%20)%3B%7D%7D%7D%7Dif%20(%20rsscount%20%3E%201%20)%20%7Bselectedrss%20%3D%20prompt(%20prompttext%20)%3Bif%20(%20selectedrss%20%3E%20rssarray.length%20)%20%7Bselectedrss%20%3D%201%3B%7D%7D%20else%20if%20(%20rsscount%20%3D%3D%201%20)%20%7Bselectedrss%20%3D%201%3B%7D%20else%20%7Bselectedrss%20%3D%200%3B%7Dvar%20selectedtext%20%3D%20%22%22%3Bif%20(%20window.getSelection%20)%20%7Bselectedtext%20%3D%20window.getSelection().toString()%3B%7D%20else%20if%20(document.selection%20%26%26%20document.selection.type%20!%3D%20%22Control%22)%20%7Bselectedtext%20%3D%20document.selection.createRange().text%3B%7Dpopuptargetlink%20%3D%20%22' . get_bloginfo( 'wpurl' ) . '%2Fwp-admin%2Fpost-new.php%3Fpost_type%3Dlink_library_links%26action%3Dpopup%26link_library_cat%3D' . $genoptions['bookmarklet_default_cat'] . '%26linkurl%3D%22%20%2B%20escape(location.href)%20%2B%20%22%26post_title%3D%22%20%2B%20(document.title)%3Bif%20(%20selectedrss%20%3E%200%20)%20%7Bpopuptargetlink%20%3D%20popuptargetlink%20%2B%20%22%26link_rss%3D%22%20%2B%20rssarray%5Bselectedrss-1%5D%3B%7Dif%20(%20selectedtext.length%20%3E%200%20)%20%7Bpopuptargetlink%20%3D%20popuptargetlink%20%2B%20%22%26link_description%3D%22%20%2B%20selectedtext%3B%7Dlinkmanpopup%3Dwindow.open(popuptargetlink%2C%20%22Link%20Library%22%2C%22scrollbars%3Dyes%2Cwidth%3D900px%2Cheight%3D600px%2Cleft%3D15%2Ctop%3D15%2Cstatus%3Dyes%2Cresizable%3Dyes%22)%3Blinkmanpopup.focus()%3Bwindow.focus()%3Blinkmanpopup.focus()%7D)()';
+
+			
 		?>
 		<div style='padding-top:15px' id="ll-bookmarklet" class="content-section">
 		<p><?php _e( 'Add new links to your site with this bookmarklet.', 'link-library' ); ?></p>
 		<p><?php _e( 'To use this feature, drag-and-drop the button below to your favorite / bookmark toolbar.', 'link-library' ); ?></p>
-		<a href="<?php echo $bookmarkletcode; ?>" class='button' title="<?php _e( 'Add to Links', 'link-library' ); ?>"><?php _e( 'Add to Links', 'link-library' ); ?></a>
+		<a href="<?php echo $bookmarkletcode; ?>" class='button' title="<?php _e( 'Add to Links', 'link-library' ); ?>"><?php _e( 'Add to Links', 'link-library' ); ?></a><br /><br />
+
+		<?php _e( 'Default category', 'link-library' ); ?> <?php wp_dropdown_categories( array( 'taxonomy' => 'link_library_category', 'show_option_none' => 'No default', 'name' => 'bookmarklet_default_cat', 'selected' => $genoptions['bookmarklet_default_cat'], 'orderby' => 'name' ) ); ?>
+
 		</div>
 
 	<?php
@@ -3621,6 +3695,12 @@ function general_custom_fields_meta_box( $data ) {
 					<td><?php _e( 'Export all links to a CSV file', 'link-library' ); ?></td>
 					<td>
 						<input class="button" type="submit" id="exportalllinks" name="exportalllinks" value="<?php _e( 'Export All Links', 'link-library' ); ?>" />
+					</td>
+				</tr>
+				<tr>
+					<td><?php _e( 'Export all links in OPML format', 'link-library' ); ?></td>
+					<td>
+						<input class="button" type="submit" id="exportalllinksopml" name="exportalllinksopml" value="<?php _e( 'Export All Links in OPML format', 'link-library' ); ?>" />
 					</td>
 				</tr>
 				<tr>
@@ -3929,7 +4009,7 @@ function general_custom_fields_meta_box( $data ) {
 		<?php _e( 'If the stylesheet editor is empty after upgrading, reset to the default stylesheet using the button below or copy/paste your backup stylesheet into the editor.', 'link-library' ); ?>
 		<br /><br />
 
-		<textarea name='fullstylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( $genoptions['fullstylesheet'] ); ?></textarea>
+		<textarea name='fullstylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( sanitize_text_field( $genoptions['fullstylesheet'] ) ); ?></textarea>
 		<div>
 			<input type="submit" class="button button-primary submitstyle" name="submitstyle" value="<?php _e( 'Submit', 'link-library' ); ?>" /><span style='padding-left: 650px'><input type="submit" class="button button-primary resetstyle" name="resetstyle" value="<?php _e( 'Reset to default', 'link-library' ); ?>" /></span>
 		</div>
@@ -6004,7 +6084,7 @@ function general_custom_fields_meta_box( $data ) {
 		?>
 
 		<div style='padding-top:15px' id="ll-style" class="content-section">
-			<textarea name='stylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( $options['stylesheet'] ); ?></textarea>
+			<textarea name='stylesheet' id='fancy-textarea' style='font-family:Courier' rows="30" cols="100"><?php echo stripslashes( sanitize_text_field( $options['stylesheet'] ) ); ?></textarea>
 		</div>
 
 	<?php }
@@ -7159,7 +7239,7 @@ function general_custom_fields_meta_box( $data ) {
 									'textarea_name' => 'link_textfield',
 									'wpautop' => false );
 
-		wp_editor( isset( $link_textfield ) ? esc_attr( stripslashes( $link_textfield ) ) : '', 'link_textfield', $editorsettings ); ?>
+		wp_editor( isset( $link_textfield ) ? wp_kses_post( $link_textfield ) : '', 'link_textfield', $editorsettings ); ?>
 
 		<table style="width:100%">
 			<tr>
@@ -7531,7 +7611,7 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td><?php _e( 'Telephone', 'link-library' ); ?></td>
 				<td>
-					<input type="text" id="link_telephone" name="link_telephone" style="width:100%" value="<?php echo $link_telephone; ?>" />
+					<input type="text" id="link_telephone" name="link_telephone" style="width:100%" value="<?php echo esc_html( $link_telephone ); ?>" />
 				</td>
 			</tr>
 			<tr>
@@ -7543,8 +7623,8 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td><?php _e( 'Reciprocal Link', 'link-library' ); ?></td>
 				<td>
-					<input type="text" id="link_reciprocal" name="link_reciprocal" style="width:100%" value="<?php echo $link_reciprocal; ?>" /> <?php if ( !empty( $link_reciprocal ) ) {
-						echo " <a href=" . esc_url( stripslashes( $link_reciprocal ) ) . ">" . __( 'Visit', 'link-library' ) . "</a>";
+					<input type="text" id="link_reciprocal" name="link_reciprocal" style="width:100%" value="<?php echo esc_html( $link_reciprocal ); ?>" /> <?php if ( !empty( $link_reciprocal ) ) {
+						echo " <a href=" . esc_url( stripslashes( esc_html( $link_reciprocal ) ) ) . ">" . __( 'Visit', 'link-library' ) . "</a>";
 					} ?></td>
 			</tr>
 			<tr>
@@ -7556,19 +7636,19 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td><?php _e( 'Submitter', 'link-library' ); ?></td>
 				<td>
-					<input type="text" id="link_submitter" name="link_submitter" style="width:100%" value="<?php echo $link_submitter; ?>" />
+					<input type="text" id="link_submitter" name="link_submitter" style="width:100%" value="<?php echo esc_html(  $link_submitter ); ?>" />
 				</td>
 			</tr>
 			<tr>
 				<td><?php _e( 'Submitter Name', 'link-library' ); ?></td>
 				<td>
-					<input type="text" id="link_submitter_name" name="link_submitter_name" style="width:100%" value="<?php echo $link_submitter_name; ?>" />
+					<input type="text" id="link_submitter_name" name="link_submitter_name" style="width:100%" value="<?php echo esc_html( $link_submitter_name ); ?>" />
 				</td>
 			</tr>
 			<tr>
 				<td><?php _e( 'Submitter E-mail', 'link-library' ); ?></td>
 				<td>
-					<input type="text" id="link_submitter_email" name="link_submitter_email" style="width:100%" value="<?php echo $link_submitter_email; ?>" />
+					<input type="text" id="link_submitter_email" name="link_submitter_email" style="width:100%" value="<?php echo ( $link_submitter_email ); ?>" />
 				</td>
 			</tr>
 			<tr>
@@ -7595,7 +7675,7 @@ function general_custom_fields_meta_box( $data ) {
 			<tr>
 				<td><?php _e( 'Rel Tags', 'link-library' ); ?></td>
 				<td>
-					<input type="text" style="width: 100%" id="link_rel" name="link_rel" value="<?php echo $link_rel; ?>" />
+					<input type="text" style="width: 100%" id="link_rel" name="link_rel" value="<?php echo esc_html( $link_rel ); ?>" />
 				</td>
 			</tr>
 			<tr>
@@ -7780,9 +7860,9 @@ function general_custom_fields_meta_box( $data ) {
 				$uploads = wp_upload_dir();
 
 				$pathpos = strpos( $delete_link_url, $uploads['baseurl'] );
-				$filepath = $uploads['basedir'] . substr( $delete_link_url, $pathpos + strlen( $uploads['baseurl'] ) );
+				$filepath = realpath( $uploads['basedir'] . substr( $delete_link_url, $pathpos + strlen( $uploads['baseurl'] ) ) );
 
-				if ( $pathpos !== false ) {
+				if ( $pathpos !== false && strpos( $filepath, $uploads['baseurl'] ) == 0 ) {
 					global $wpdb;
 					$attachment_id = $wpdb->get_col($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid='%s';", $delete_link_url ));
 
@@ -8077,7 +8157,7 @@ function general_custom_fields_meta_box( $data ) {
 
 		if ( $links ) {
 			foreach ( $links as $link ) {
-				echo $link->ID . ' - ' . $link->post_title . ': ' . $link->meta_value . '<br /><br />';
+				echo $link->ID . ' - ' . $link->post_title . ': ' . $link->meta_value . ' - <a href="' . esc_url( add_query_arg( array( 'action' => 'edit', 'post' => $link->ID ), admin_url( 'post.php' ) ) ) . '<br /><br />';
 			}
 		} else {
 			echo 'No duplicate URL links found';
@@ -8156,6 +8236,10 @@ function wp_dropdown_cats_multiple( $output, $r ) {
 
 function link_library_reciprocal_link_checker() {
 
+	if ( !wp_verify_nonce( $_POST['_ajax_nonce'], 'link_library_recipbrokencheck' ) || !current_user_can( 'manage_options' ) ) {
+		die();
+	}
+
 	$genoptions = get_option( 'LinkLibraryGeneral' );
 	$genoptions = wp_parse_args( $genoptions, ll_reset_gen_settings( 'return' ) );
 
@@ -8163,6 +8247,8 @@ function link_library_reciprocal_link_checker() {
 	$recipcheckdelete403 = ( isset( $_POST['recipcheckdelete403'] ) && !empty( $_POST['recipcheckdelete403'] ) && 'true' == $_POST['recipcheckdelete403'] ? true : false );
 	$check_type = ( isset( $_POST['mode'] ) && !empty( $_POST['mode'] ) ? sanitize_text_field( $_POST['mode'] ) : 'reciprocal' );
 	$rsscheckdays = ( ( isset( $_POST['rsscheckdays'] ) && !empty( $_POST['rsscheckdays'] ) ) ? intval( $_POST['rsscheckdays'] ) : $genoptions['rsscheckdays'] );
+
+	var_dump( $check_type );
 
 	if ( ! empty( $RecipCheckAddress ) || ( empty( $RecipCheckAddress ) && ( 'reciprocal' != $check_type || 'emptycat' == $check_type ) )  ) {
 		$args = array(
