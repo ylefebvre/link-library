@@ -323,6 +323,12 @@ function RenderLinkLibrary( &$linkcount, $LLPluginClass, $generaloptions, $libra
 	$libraryoptions = wp_parse_args( $libraryoptions, ll_reset_options( 1, 'list', 'return' ) );
 	extract( $libraryoptions );
 
+	// Latchshot authenticates server-to-server. Always use the locally stored
+	// image instead of exposing a Bearer key in a visitor-facing image URL.
+	if ( 'latchshot' == $thumbnailgenerator ) {
+		$usethumbshotsforimages = false;
+	}
+
 	global $globallibraryoptions;
 	$globallibraryoptions = $libraryoptions;
 

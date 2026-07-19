@@ -2150,6 +2150,10 @@ wp_editor( $post->post_content, 'content', $editor_config );
 				$message = '8';
 			}
 		} else {
+			$clear_latchshot_api_key = isset( $_POST['clearlatchshotapikey'] );
+			if ( $clear_latchshot_api_key ) {
+				$genoptions['latchshotapikey'] = '';
+			}
 
 			if ( isset( $_POST['enableautolinksimport'] ) && !$genoptions['enableautolinksimport'] && !empty( sanitize_text_field( $_POST['importlinksschedule'] ) ) ) {
 				if ( !wp_next_scheduled ( 'link_library_import_links', $args ) ) {
@@ -2173,13 +2177,17 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					'moderatorname', 'moderatoremail', 'rejectedemailtitle', 'approvalemailbody', 'rejectedemailbody', 'moderationnotificationtitle',
 					'linksubmissionthankyouurl', 'imagefilepath', 'catselectmethod', 'expandiconpath', 'collapseiconpath', 'updatechannel',
 					'extraprotocols', 'thumbnailsize', 'thumbnailgenerator', 'rsscachedelay', 'rolelevel', 'editlevel', 'cptslug',
-					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings', 'defaultprotocoladmin', 'pagepeekerid', 'pagepeekersize', 'stwthumbnailsize', 'shrinkthewebaccesskey', 'customurl1label', 'customurl2label',
+					'defaultlinktarget', 'bp_link_page_url', 'bp_link_settings', 'defaultprotocoladmin', 'pagepeekerid', 'pagepeekersize', 'stwthumbnailsize', 'shrinkthewebaccesskey', 'latchshotapikey', 'latchshotsize', 'customurl1label', 'customurl2label',
 					'customurl3label', 'customurl4label', 'customurl5label', 'customtext1label', 'customtext2label', 'customtext3label', 'customtext4label', 'customtext5label', 'customlist1label', 'customlist2label', 'customlist3label', 'customlist4label', 'customlist5label', 'customlist1values', 'customlist2values', 'customlist3values', 'customlist4values', 'customlist5values',
 					'customlist1html', 'customlist2html', 'customlist3html', 'customlist4html', 'customlist5html', 'global_search_results_layout', 'globalsearchresultstitleprefix', 'cattaxonomy', 'tagtaxonomy', 'ignoresortarticles', 'importlinksschedule', 'autothumbgenschedule', 'bookmarklet_default_cat'
 				) as $option_name
 			) {
 				if ( isset( $_POST[$option_name] ) ) {
-					$genoptions[$option_name] = sanitize_text_field( $_POST[$option_name] );
+					$option_value = sanitize_text_field( $_POST[$option_name] );
+					if ( 'latchshotapikey' == $option_name && empty( $option_value ) && !$clear_latchshot_api_key && !empty( $genoptions[$option_name] ) ) {
+						continue;
+					}
+					$genoptions[$option_name] = $option_value;
 				}
 			}
 
@@ -3064,6 +3072,9 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					jQuery(".wordpressmshotssize").hide();
 					jQuery(".shrinkthewebsizes").hide();
 					jQuery(".shrinkthewebaccesskey").hide();
+					jQuery(".latchshotapikey").hide();
+					jQuery(".latchshotsizes").hide();
+					jQuery(".latchshotnotice").hide();
 
 					if ( jQuery( '#thumbnailgenerator').val() == 'thumbshots' ) {
 						jQuery(".thumbshotsapikey").show();
@@ -3078,6 +3089,10 @@ wp_editor( $post->post_content, 'content', $editor_config );
 					} else if ( jQuery( '#thumbnailgenerator').val() == 'wordpressmshots' ) {
 						jQuery(".wordpressmshotswarning").show();
 						jQuery(".wordpressmshotssize").show();
+					} else if ( jQuery( '#thumbnailgenerator').val() == 'latchshot' ) {
+						jQuery(".latchshotapikey").show();
+						jQuery(".latchshotsizes").show();
+						jQuery(".latchshotnotice").show();
 					}
 				});
 			});
@@ -3102,6 +3117,7 @@ function general_thumbnail_generation_meta_box( $data ) {
 						<option value="wordpressmshots" <?php selected( $genoptions['thumbnailgenerator'], 'wordpressmshots' ); ?>>WordPress.com mshots
 						<option value="thumbshots" <?php selected( $genoptions['thumbnailgenerator'], 'thumbshots' ); ?>>Thumbshots.org
 						<option value="google" <?php selected( $genoptions['thumbnailgenerator'], 'google' ); ?>>Google PageSpeed
+						<option value="latchshot" <?php selected( $genoptions['thumbnailgenerator'], 'latchshot' ); ?>>Latchshot
 					</select>
 				</td>
 			</tr>
@@ -3135,6 +3151,37 @@ function general_thumbnail_generation_meta_box( $data ) {
 							<?php } ?>
 					</select>
 				</td>
+			</tr>
+			<tr class="latchshotapikey" <?php if ( $genoptions['thumbnailgenerator'] != 'latchshot' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td class='lltooltip' title='<?php _e( 'Bearer API key for a Latchshot thumbnail generation account', 'link-library' ); ?>'><?php _e( 'Latchshot API Key', 'link-library' ); ?></td>
+				<td colspan='4' class='lltooltip' title='<?php _e( 'The key is sent only in the server-side Authorization header and is never placed in a public image URL.', 'link-library' ); ?>'>
+					<input type="password" id="latchshotapikey" name="latchshotapikey" size="36" autocomplete="new-password" aria-describedby="latchshotapikeyhelp" value="" placeholder="<?php echo !empty( $genoptions['latchshotapikey'] ) ? esc_attr__( 'Saved — leave blank to keep', 'link-library' ) : ''; ?>" />
+					<p id="latchshotapikeyhelp" class="description"><?php _e( 'The saved key is never rendered back into this page. Enter a new value only to replace it.', 'link-library' ); ?></p>
+					<?php if ( !empty( $genoptions['latchshotapikey'] ) ) { ?>
+						<label><input type="checkbox" name="clearlatchshotapikey" value="1" /> <?php _e( 'Clear the saved Latchshot key', 'link-library' ); ?></label>
+					<?php } ?>
+				</td>
+			</tr>
+			<tr class="latchshotsizes" <?php if ( $genoptions['thumbnailgenerator'] != 'latchshot' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td><?php _e( 'Latchshot Thumbnail size', 'link-library' ); ?></td>
+				<td>
+					<select id="latchshotsize" name="latchshotsize">
+					<?php $sizes = array( '320x240', '400x300', '640x480', '800x600', '1200x630', '1280x800' );
+
+					foreach ( $sizes as $size ) { ?>
+						<option value="<?php echo esc_attr( $size ); ?>" <?php selected( $genoptions['latchshotsize'], $size ); ?>><?php echo esc_html( $size ); ?>
+					<?php } ?>
+					</select>
+				</td>
+			</tr>
+			<tr class="latchshotnotice" <?php if ( $genoptions['thumbnailgenerator'] != 'latchshot' ) {
+				echo 'style="display:none;"';
+			} ?>>
+				<td colspan="2"><?php echo wp_kses_post( __( 'Latchshot supports server-side generation and local storage only. Dynamic link images are intentionally disabled so the Bearer key is never exposed to visitors. <a href="https://latchshot.fly.dev/?intent=linklibrary#trial" target="_blank" rel="noopener noreferrer">Get a recurring Free-plan key<span class="screen-reader-text"> (opens in a new tab)</span></a>.', 'link-library' ) ); ?></td>
 			</tr>
 			<tr class="pagepeekersizes" <?php if ( $genoptions['thumbnailgenerator'] != 'pagepeeker' ) {
 				echo 'style="display:none;"';
@@ -6102,7 +6149,10 @@ function general_custom_fields_meta_box( $data ) {
 					<?php _e( 'Use thumbnail service for dynamic link images', 'link-library' ); ?>
 				</td>
 				<td class='lltooltip' title='<?php _e( 'Checking this option will get images from the selected thumbnail generation service every time', 'link-library' ); ?>.' style='width:75px;padding-right:20px'>
-					<input type="checkbox" id="usethumbshotsforimages" name="usethumbshotsforimages" <?php checked( $options['usethumbshotsforimages'] ); ?>/>
+					<input type="checkbox" id="usethumbshotsforimages" name="usethumbshotsforimages" <?php checked( $options['usethumbshotsforimages'] ); ?> <?php disabled( 'latchshot' == $genoptions['thumbnailgenerator'] ); ?>/>
+					<?php if ( 'latchshot' == $genoptions['thumbnailgenerator'] ) { ?>
+						<span class="description"><?php _e( 'Latchshot images must be generated and stored locally.', 'link-library' ); ?></span>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -6114,9 +6164,9 @@ function general_custom_fields_meta_box( $data ) {
 			</tr>
 			<tr>
 				<td><?php _e( 'Generate Images / Favorite Icons', 'link-library' ); ?></td>
-				<td class="lltooltip" title="<?php if ( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ) {
+				<td class="lltooltip" title="<?php if ( ( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ) || ( $genoptions['thumbnailgenerator'] == 'latchshot' && empty( $genoptions['latchshotapikey'] ) ) ) {
 					_e( 'This button is only available when a valid API key is entered under the Link Library General Settings.', 'link-library' );
-				} ?>"><INPUT class="button" type="button" name="genthumbs" <?php disabled( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ); ?> value="<?php _e( 'Generate Thumbnails and Store locally', 'link-library' ); ?>" onClick="window.location= 'admin.php?page=link-library-settingssets&amp;settings=<?php echo $settings; ?>&amp;_wpnonce=<?php echo wp_create_nonce( 'llgenthumbs' ); ?>&amp;genthumbs=<?php echo $settings; ?>'">
+				} ?>"><INPUT class="button" type="button" name="genthumbs" <?php disabled( ( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ) || ( $genoptions['thumbnailgenerator'] == 'latchshot' && empty( $genoptions['latchshotapikey'] ) ) ); ?> value="<?php _e( 'Generate Thumbnails and Store locally', 'link-library' ); ?>" onClick="window.location= 'admin.php?page=link-library-settingssets&amp;settings=<?php echo $settings; ?>&amp;_wpnonce=<?php echo wp_create_nonce( 'llgenthumbs' ); ?>&amp;genthumbs=<?php echo $settings; ?>'">
 				</td>
 				<td>
 					<INPUT class="button" type="button" name="genfavicons" value="<?php _e( 'Generate Favorite Icons and Store locally', 'link-library' ); ?>" onClick="window.location= 'admin.php?page=link-library-settingssets&amp;settings=<?php echo $settings; ?>&amp;_wpnonce=<?php echo wp_create_nonce( 'llgenfavicons' ); ?>&amp;genfavicons=<?php echo $settings; ?>'">
@@ -7288,10 +7338,10 @@ function general_custom_fields_meta_box( $data ) {
 			<?php if ( isset( $link->ID ) && !empty( $link->ID ) ): ?>
 				<tr>
 					<td><?php _e( 'Automatic Image Generation', 'link-library' ); ?></td>
-					<td title="<?php if ( ( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ) || ( $genoptions['thumbnailgenerator'] == 'shrinktheweb' && empty( $genoptions['shrinkthewebaccesskey'] ) ) ) {
+					<td title="<?php if ( ( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ) || ( $genoptions['thumbnailgenerator'] == 'shrinktheweb' && empty( $genoptions['shrinkthewebaccesskey'] ) ) || ( $genoptions['thumbnailgenerator'] == 'latchshot' && empty( $genoptions['latchshotapikey'] ) ) ) {
 						_e( 'This button is only available when a valid API key is entered under the Link Library General Settings.', 'link-library' );
 					} ?>">
-						<INPUT type="button" id="genthumbs" name="genthumbs" <?php disabled( ( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ) || ( $genoptions['thumbnailgenerator'] == 'shrinktheweb' && empty( $genoptions['shrinkthewebaccesskey'] ) ) );?>value="<?php _e( 'Generate Thumbnail and Store locally', 'link-library' ); ?>">
+						<INPUT type="button" id="genthumbs" name="genthumbs" <?php disabled( ( $genoptions['thumbnailgenerator'] == 'thumbshots' && empty( $genoptions['thumbshotscid'] ) ) || ( $genoptions['thumbnailgenerator'] == 'shrinktheweb' && empty( $genoptions['shrinkthewebaccesskey'] ) ) || ( $genoptions['thumbnailgenerator'] == 'latchshot' && empty( $genoptions['latchshotapikey'] ) ) );?>value="<?php _e( 'Generate Thumbnail and Store locally', 'link-library' ); ?>">
 						<INPUT type="button" id="genfavicons" name="genfavicons" value="<?php _e( 'Generate Favorite Icon and Store locally', 'link-library' ); ?>">
 					</td>
 				</tr>

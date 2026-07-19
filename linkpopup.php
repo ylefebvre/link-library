@@ -78,7 +78,7 @@ function link_library_popup_content( $my_link_library_plugin ) {
 
             $imageoutput .= '" id="link-' . $link_data->ID . '" class="track_this_link ' . ( $link_featured ? 'featured' : '' ). '" ' . $rel . $title . $target. '>';
 
-            if ( $options['usethumbshotsforimages'] ) {
+            if ( $options['usethumbshotsforimages'] && 'latchshot' != $generaloptions['thumbnailgenerator'] ) {
 	            $protocol = is_ssl() ? 'https://' : 'http://';
 
 	            if ( $generaloptions['thumbnailgenerator'] == 'robothumb' ) {
@@ -288,4 +288,3 @@ function link_library_popup_content( $my_link_library_plugin ) {
 
     exit;
 }
-

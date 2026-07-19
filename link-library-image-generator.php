@@ -4,6 +4,52 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require_once plugin_dir_path( __FILE__ ) . 'link-library-defaults.php';
 
+function ll_get_latchshot_image( $url, $api_key, $thumbnailsize ) {
+    if ( empty( $api_key ) || !preg_match( '/^(\d+)x(\d+)$/', $thumbnailsize, $matches ) ) {
+        return false;
+    }
+
+    $width = intval( $matches[1] );
+    $height = intval( $matches[2] );
+    if ( $width < 320 || $width > 2560 || $height < 240 || $height > 1440 ) {
+        return false;
+    }
+
+    $response = wp_remote_post(
+        'https://latchshot.fly.dev/v1/render',
+        array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type'  => 'application/json',
+            ),
+            'body'    => wp_json_encode(
+                array(
+                    'url'       => esc_url_raw( $url ),
+                    'width'     => $width,
+                    'height'    => $height,
+                    'format'    => 'png',
+                    'waitUntil' => 'networkidle',
+                    'delay'     => 250,
+                    'timeout'   => 30000,
+                )
+            ),
+            'timeout' => 45,
+        )
+    );
+
+    if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+        return false;
+    }
+
+    $content_type = wp_remote_retrieve_header( $response, 'content-type' );
+    $image_data = wp_remote_retrieve_body( $response );
+    if ( 0 !== stripos( $content_type, 'image/png' ) || empty( $image_data ) || strlen( $image_data ) > 10 * 1024 * 1024 || "\x89PNG\r\n\x1a\n" !== substr( $image_data, 0, 8 ) ) {
+        return false;
+    }
+
+    return $image_data;
+}
+
 function ll_get_link_image( $url, $name, $mode, $linkid, $cid, $filepath, $filepathtype, $thumbnailsize, $thumbnailgenerator ) {
     $status = false;
     if ( $url != "" && $name != "" ) {
@@ -46,7 +92,18 @@ function ll_get_link_image( $url, $name, $mode, $linkid, $cid, $filepath, $filep
 
         $img    = $uploads['basedir'] . "/" . $filepath . "/" . $linkid . '.png';
 
-        if ( $thumbnailgenerator != 'google' || $mode == 'favicon' || $mode == 'favicononly' ) {
+        if ( $thumbnailgenerator == 'latchshot' && ( $mode == 'thumb' || $mode == 'thumbonly' ) ) {
+            $image_data = ll_get_latchshot_image( $url, $cid, $thumbnailsize );
+            if ( false !== $image_data ) {
+                $tempfile = wp_tempnam( 'link-library-latchshot.png' );
+                if ( $tempfile ) {
+                    if ( false !== file_put_contents( $tempfile, $image_data ) && copy( $tempfile, $img ) ) {
+                        $status = true;
+                    }
+                    unlink( $tempfile );
+                }
+            }
+        } elseif ( $thumbnailgenerator != 'google' || $mode == 'favicon' || $mode == 'favicononly' ) {
             $tempfile = download_url( $genthumburl );
             if ( !is_wp_error( $tempfile ) ) {
                 copy( $tempfile, $img );
@@ -163,6 +220,8 @@ function link_library_ajax_image_generator ( $my_link_library_plugin_admin ) {
 	    echo ll_get_link_image($url, $name, $mode, $linkid, $generaloptions['pagepeekerid'], $filepath, $filepathtype, $generaloptions['pagepeekersize'], $generaloptions['thumbnailgenerator'] );
     } elseif ( 'shrinktheweb' == $generaloptions['thumbnailgenerator'] ) {
 	    echo ll_get_link_image($url, $name, $mode, $linkid, $generaloptions['shrinkthewebaccesskey'], $filepath, $filepathtype, $generaloptions['stwthumbnailsize'], $generaloptions['thumbnailgenerator'] );
+    } elseif ( 'latchshot' == $generaloptions['thumbnailgenerator'] ) {
+	    echo ll_get_link_image($url, $name, $mode, $linkid, $generaloptions['latchshotapikey'], $filepath, $filepathtype, $generaloptions['latchshotsize'], $generaloptions['thumbnailgenerator'] );
     }
 
     exit;
@@ -236,6 +295,8 @@ function link_library_image_generator( $LLPluginClass, $options = array(), $auto
                         ll_get_link_image( $link_url, get_the_title(), $genmode, get_the_ID(), $genoptions['pagepeekerid'], $filepath, $genoptions['imagefilepath'], $genoptions['pagepeekersize'], $genoptions['thumbnailgenerator'] );
                     } elseif ( 'shrinktheweb' == $genoptions['thumbnailgenerator'] ) {
                         ll_get_link_image( $link_url, get_the_title(), $genmode, get_the_ID(), $genoptions['shrinkthewebaccesskey'], $filepath, $genoptions['imagefilepath'], $genoptions['stwthumbnailsize'], $genoptions['thumbnailgenerator'] );
+                    } elseif ( 'latchshot' == $genoptions['thumbnailgenerator'] ) {
+                        ll_get_link_image( $link_url, get_the_title(), $genmode, get_the_ID(), $genoptions['latchshotapikey'], $filepath, $genoptions['imagefilepath'], $genoptions['latchshotsize'], $genoptions['thumbnailgenerator'] );
                     }
                 }
                 $linkname = get_the_title();
